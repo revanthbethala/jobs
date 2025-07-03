@@ -11,20 +11,20 @@ export const signup = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { userName, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   const existing = await prisma.user.findFirst({
-    where: { OR: [{ email }, { userName }] },
+    where: { OR: [{ email }, { username }] },
   });
   if (existing)
-    return res.status(400).json({ message: "Username or Email exists" });
+    return res.status(400).json({ message: "username or Email exists" });
 
   const hashed = await hashPassword(password);
   const otp = generateOTP();
-  const expiry = new Date(Date.now() + 10 * 60 * 1000); 
+  const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
   const user = await prisma.user.create({
-    data: { userName, email, password: hashed, otp, otpExpiry: expiry },
+    data: { username, email, password: hashed, otp, otpExpiry: expiry },
   });
 
   await sendOtpEmail(email, otp);
@@ -54,28 +54,28 @@ export const verifyEmail = async (
 };
 
 export const login = async (req: Request, res: Response): Promise<Response> => {
-  const { userName, password } = req.body;
+  const { username, password } = req.body;
 
-  const user = await prisma.user.findFirst({ where: { userName: userName } });
-  if (!user || !user.isVerified) 
+  const user = await prisma.user.findFirst({ where: { username: username } });
+  if (!user || !user.isVerified)
     return res.status(403).json({ message: "Unverified or not found" });
 
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-const token = generateToken(user.id.toString());  
-  res.cookie('auth_token', token, {
+  const token = generateToken(user.id.toString());
+  res.cookie("auth_token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', 
-    sameSite: 'strict',
-    maxAge: 24 * 60 * 60 * 1000 
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
   const { password: _, ...userWithoutPassword } = user;
-  return res.json({ 
-    user: userWithoutPassword, 
+  return res.json({
+    user: userWithoutPassword,
     token,
-    message: "Login successful" 
+    message: "Login successful",
   });
 };
 
@@ -106,7 +106,12 @@ export const resetPassword = async (
   const { email, otp, newPassword } = req.body;
 
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || user.otp !== otp || !user.otpExpiry || user.otpExpiry < new Date()) {
+  if (
+    !user ||
+    user.otp !== otp ||
+    !user.otpExpiry ||
+    user.otpExpiry < new Date()
+  ) {
     return res.status(400).json({ message: "Invalid or expired OTP" });
   }
 
@@ -124,12 +129,12 @@ export const logout = async (
   _req: Request,
   res: Response
 ): Promise<Response> => {
-  res.clearCookie('auth_token', {
+  res.clearCookie("auth_token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   });
-  
+
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
@@ -138,7 +143,7 @@ export const updateProfile = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const userId = parseInt((req as any).user.id); 
+    const userId = parseInt((req as any).user.id);
     const data = req.body;
 
     const { password, otp, otpExpiry, ...safeData } = data;
@@ -148,15 +153,15 @@ export const updateProfile = async (
       data: safeData,
       select: {
         id: true,
-        userName: true,
+        username: true,
         email: true,
         isVerified: true,
-      }
+      },
     });
 
-    return res.json({ 
+    return res.json({
       user: updatedUser,
-      message: "Profile updated successfully" 
+      message: "Profile updated successfully",
     });
   } catch (error) {
     return res.status(500).json({ message: "Update failed", error });
@@ -168,16 +173,16 @@ export const getProfile = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const userId = parseInt((req as any).user.id); 
-    
+    const userId = parseInt((req as any).user.id);
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
-        userName: true,
+        username: true,
         email: true,
         isVerified: true,
-      }
+      },
     });
 
     if (!user) {

@@ -2,21 +2,22 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Mail } from "lucide-react";
+import { ArrowLeft, CloudCog, Mail } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { otpSchema, OtpFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { otpVerification } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 export const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isResending, setIsResending] = useState(false);
   const [timer, setTimer] = useState(30);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
+  const navigate = useNavigate();
   const { email, setCurrentStep, setAuthenticated } = useAuthStore();
   const { toast } = useToast();
-
   const {
     handleSubmit,
     formState: { isSubmitting },
@@ -66,47 +67,48 @@ export const OtpVerification = () => {
   };
 
   const onSubmit = async (data: OtpFormData) => {
+    const new_data = { ...data, email };
+    console.log(new_data);
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await otpVerification(new_data);
+      
+      if (!res || !res.status) {
+        throw new Error("No response from server.");
+      }
 
-      console.log("OTP verification:", data);
+      if (res.status === 200) {
+        toast({
+          title: "Email Verified!",
+          description:
+            res.message || "Your account has been successfully verified.",
+        });
+        setAuthenticated(true);
+        navigate("/");
+      } else if (res.status === 400 || res.status === 401) {
+        setOtp(["", "", "", "", "", ""]);
+        setValue("otp", "");
 
-      toast({
-        title: "Email Verified!",
-        description: "Your account has been successfully verified.",
-      });
-
-      setAuthenticated(true);
+        toast({
+          title: "Invalid OTP",
+          description:
+            res.message || "The OTP you entered is incorrect or expired.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Verification Error",
+          description: res.message || "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error("OTP verification failed:", error);
       toast({
-        title: "Verification Failed",
-        description: "Invalid OTP. Please try again.",
+        title: "Network or Server Error",
+        description: error?.message || "Unable to verify at this time.",
         variant: "destructive",
       });
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setIsResending(true);
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast({
-        title: "OTP Sent!",
-        description: "A new verification code has been sent to your email.",
-      });
-
-      setTimer(30);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to resend OTP. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsResending(false);
     }
   };
 
@@ -184,21 +186,7 @@ export const OtpVerification = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
         className="text-center"
-      >
-        <p className="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
-
-        {timer > 0 ? (
-          <p className="text-sm text-gray-500">Resend in {timer}s</p>
-        ) : (
-          <button
-            onClick={handleResendOtp}
-            disabled={isResending}
-            className="text-sm text-brand-blue-light hover:text-brand-blue-dark font-medium transition-colors"
-          >
-            {isResending ? "Sending..." : "Resend OTP"}
-          </button>
-        )}
-      </motion.div>
+      ></motion.div>
     </div>
   );
 };

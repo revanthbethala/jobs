@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { userSignUp } from "@/services/authService";
 
 export const SignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,12 +26,10 @@ export const SignupForm = () => {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log("Signup data:", data);
-
       setEmail(data.email);
+      const res = await userSignUp(data);
+      console.log(res);
+      console.log("Signup data:", data);
       toast({
         title: "Account Created!",
         description: "Please verify your email with the OTP we sent.",

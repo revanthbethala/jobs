@@ -129,7 +129,7 @@ const Header = () => {
                   : "text-white hover:text-brand-blue-light"
               }`}
             >
-              <NavLink to="login">Sign In</NavLink>
+              <NavLink to="/auth">Sign In</NavLink>
             </Button>
             <Button
               onClick={handleSignupClick}

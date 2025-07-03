@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { userLogin } from "@/services/authService";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,21 +26,16 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log("Login data:", data);
-
+      const res = await userLogin(data);
+      console.log(res);
       toast({
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
-
-      setAuthenticated(true);
-    } catch (error) {
+    } catch (err) {
       toast({
         title: "Login Failed",
-        description: "Please check your credentials and try again.",
+        description: "Invalid email or password.",
         variant: "destructive",
       });
     }
@@ -66,7 +62,7 @@ export const LoginForm = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Label htmlFor="emailOrUsername" className="text-brand-gray-dark">
+          <Label htmlFor="email" className="text-brand-gray-dark">
             Email
           </Label>
           <div className="relative mt-1">

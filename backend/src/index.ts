@@ -2,24 +2,33 @@ import express from "express";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
 import { PrismaClient } from "@prisma/client";
-
+import cors from "cors";
 dotenv.config();
 
 const prisma = new PrismaClient();
 
 const app = express();
 
+app.use(cors()); // <-- Enable CORS
 app.use(express.json());
+
 app.use("/api/users", userRoutes);
 
 app.get("/", (_req, res) => {
-  res.send("✅ API is running...");
+  res.send("API is running...");
 });
 
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error("Unexpected error:", err);
-  res.status(500).json({ message: "Something went wrong!" });
-});
+app.use(
+  (
+    err: any,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error("Unexpected error:", err);
+    res.status(500).json({ message: "Something went wrong!" });
+  }
+);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
