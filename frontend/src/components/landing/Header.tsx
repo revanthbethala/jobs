@@ -1,15 +1,29 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const { isLoggedIn, logOut } = useAuthStore();
   const setCurrentStep = useAuthStore((state) => state.setCurrentStep);
+  const MotionNavLink = motion(NavLink);
+
+  const [showDropdown, setShowDropdown] = useState(false);
   const heroHeight = 600;
   const handleSignupClick = () => {
     setCurrentStep("signup");
@@ -28,7 +42,7 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   const navItems = [
-    { name: "Home", href: "#home" },
+    { name: "Home", href: !isLoggedIn ? "#home" : "/" },
     { name: "Dashboard", href: "#about" },
     { name: "Jobs", href: "#services" },
   ];
@@ -95,9 +109,9 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navItems.map((item, index) => (
-              <motion.a
+              <MotionNavLink
                 key={item.name}
-                href={item.href}
+                to={item.href}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -110,38 +124,113 @@ const Header = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 {item.name}
-              </motion.a>
+              </MotionNavLink>
             ))}
           </nav>
 
           {/* Desktop Auth Buttons */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="hidden md:flex items-center gap-5"
-          >
-            <Button
-              variant={isScrolled ? "ghost" : "ghost"}
-              className={`hover:bg-white/10 ${
-                isScrolled
-                  ? "text-gray-900 hover:text-brand-blue-light"
-                  : "text-white hover:text-brand-blue-light"
-              }`}
+          {!isLoggedIn ? (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="hidden md:flex items-center gap-5"
             >
-              <NavLink to="/auth">Sign In</NavLink>
-            </Button>
-            <Button
-              onClick={handleSignupClick}
-              className={`${
-                isScrolled
-                  ? "bg-brand-blue-light hover:bg-blue-600 text-white"
-                  : "bg-brand-blue-light hover:bg-blue-600 text-white"
-              }`}
-            >
-              Sign Up
-            </Button>
-          </motion.div>
+              <Button
+                variant={isScrolled ? "ghost" : "ghost"}
+                className={`hover:bg-white/10 ${
+                  isScrolled
+                    ? "text-gray-900 hover:text-brand-blue-light"
+                    : "text-white hover:text-brand-blue-light"
+                }`}
+              >
+                <NavLink to="/auth">Sign In</NavLink>
+              </Button>
+              <Button
+                onClick={handleSignupClick}
+                className={`${
+                  isScrolled
+                    ? "bg-brand-blue-light hover:bg-blue-600 text-white"
+                    : "bg-brand-blue-light hover:bg-blue-600 text-white"
+                }`}
+              >
+                Sign Up
+              </Button>
+            </motion.div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setShowDropdown((prev) => !prev)}
+                className={`flex items-center justify-center w-10 h-10 rounded-full transition-colors ${
+                  isScrolled ? "text-gray-900" : "text-white"
+                }`}
+              >
+                <User className="w-6 h-6" />
+              </button>
+              <AnimatePresence>
+                {showDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={`absolute right-0 mt-2 w-40 rounded-md shadow-lg z-50 ${
+                      isScrolled ? "bg-white" : "bg-gray-800"
+                    }`}
+                  >
+                    <div className="py-1">
+                      <button
+                        onClick={() => navigate("/profile")}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          isScrolled
+                            ? "text-gray-900 hover:bg-gray-100"
+                            : "text-white hover:bg-gray-700"
+                        }`}
+                      >
+                        Profile
+                      </button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            className={`w-full text-left px-4 py-2 text-sm ${
+                              isScrolled
+                                ? "text-gray-900 hover:bg-gray-100"
+                                : "text-white hover:bg-gray-700"
+                            }`}
+                          >
+                            Logout
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              You will be logged out from your account.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel
+                              onClick={() => setShowDropdown(false)}
+                            >
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                logOut();
+                                setShowDropdown(false);
+                                navigate("/");
+                              }}
+                            >
+                              Logout
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <motion.button

@@ -38,7 +38,7 @@ export const userSignUp = async (userDetails: SignupFormData) => {
 };
 type otpDetailsType = {
   email: string;
-  otp: number;
+  otp: string;
 };
 
 export const otpVerification = async (otpDetails: otpDetailsType) => {
@@ -79,22 +79,17 @@ export const requestOtp = async (data: ForgotPasswordFormData) => {
 
 export const resetPasswordService = async (data: ResetPasswordFormData) => {
   try {
-    const res = await axios.post(
-      `${backend_url}/users/reset-password`,
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const res = await axios.post(`${backend_url}/users/reset-password`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return res;
   } catch (error) {
     console.log("");
     throw error;
   }
 };
-
 
 export const adminLogin = async (userDetails: LoginFormData) => {
   try {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Mail, User } from "lucide-react";
+import { Eye, EyeOff, LogIn, Mail, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { loginSchema, LoginFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,11 @@ import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setCurrentStep } = useAuthStore();
+  const {
+    setCurrentStep,
+    loginToken,
+    isAuthenticated,
+  } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const {
@@ -33,6 +37,8 @@ export const LoginForm = () => {
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
+      const { token } = res;
+      loginToken(token);
       navigate("/");
     } catch (err) {
       toast({

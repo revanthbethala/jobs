@@ -67,7 +67,9 @@ export const OtpVerification = () => {
   };
 
   const onSubmit = async () => {
-    const new_data = { ...otp, email };
+    const otp_str = (otp.join(""));
+    console.log(otp_str);
+    const new_data = { otp: otp_str, email };
     console.log(new_data);
 
     try {
@@ -118,14 +120,6 @@ export const OtpVerification = () => {
         transition={{ delay: 0.1 }}
         className="text-center"
       >
-        <button
-          onClick={() => setCurrentStep("signup")}
-          className="inline-flex items-center text-brand-blue-light hover:text-brand-blue-dark mb-4 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </button>
-
         <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-blue-light rounded-full mb-4">
           <Mail className="h-8 w-8 text-white" />
         </div>
@@ -178,6 +172,15 @@ export const OtpVerification = () => {
           </Button>
         </motion.div>
       </form>
+      <div className="flex items-center justify-center">
+        <button
+          onClick={() => setCurrentStep("signup")}
+          className="inline-flex items-center text-brand-blue-light hover:text-brand-blue-dark mb-4 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </button>
+      </div>
 
       <motion.div
         initial={{ opacity: 0 }}

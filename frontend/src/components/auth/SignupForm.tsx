@@ -34,7 +34,6 @@ export const SignupForm = () => {
         title: "Account Created!",
         description: "Please verify your email with the OTP we sent.",
       });
-
       setCurrentStep("otp");
     } catch (error) {
       toast({

@@ -18,7 +18,6 @@ export const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { email, setCurrentStep } = useAuthStore();
-  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -30,17 +29,14 @@ export const ResetPassword = () => {
   });
 
   const onSubmit = async (data: ResetPasswordFormData) => {
+    const { otp, password: newPassword } = data;
     try {
-      const res = await resetPasswordService(data);
-      console.log(res);
-
-      console.log("Reset password:", data);
-
+      const new_data = { email, otp, newPassword };
+      const res = await resetPasswordService(new_data);
       toast({
         title: "Password Reset Successful!",
         description: "Your password has been updated. You can now sign in.",
       });
-
       setCurrentStep("login");
     } catch (error) {
       toast({
@@ -49,7 +45,7 @@ export const ResetPassword = () => {
         variant: "destructive",
       });
     }
-};
+  };
 
   return (
     <div className="space-y-6">
@@ -88,15 +84,7 @@ export const ResetPassword = () => {
             className="text-center font-mono text-lg border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
             {...register("otp")}
           />
-          <div className="flex items-center justify-center pt-3">
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className=" bg-brand-blue-light pt-3 text-center  hover:bg-brand-blue-dark transition-colors"
-            >
-              {isSubmitting ? "Verifying..." : "Verify"}
-            </Button>
-          </div>
+
           {errors.otp && (
             <p className="mt-1 text-sm text-red-600">{errors.otp.message}</p>
           )}

@@ -7,8 +7,7 @@ export const loginSchema = z.object({
     .email("Please enter a valid email"),
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters")
-    .max(12, "Password must be less than 12 characters"),
+    .min(8, "Password must be at least 8 characters")
 });
 
 export const adminLoginSchema = z.object({
@@ -18,8 +17,7 @@ export const adminLoginSchema = z.object({
     .email("Please enter a valid email address"),
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters")
-    .max(50, "Password must be less than 50 characters"),
+    .min(8, "Password must be at least 8 characters")
 });
 
 export const signupSchema = z.object({
