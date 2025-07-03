@@ -66,39 +66,37 @@ export const OtpVerification = () => {
     setValue("otp", pastedData);
   };
 
-  const onSubmit = async (data: OtpFormData) => {
-    const new_data = { ...data, email };
+  const onSubmit = async () => {
+    const new_data = { ...otp, email };
     console.log(new_data);
 
     try {
       const res = await otpVerification(new_data);
-      
-      if (!res || !res.status) {
+
+      if (!res) {
         throw new Error("No response from server.");
       }
 
-      if (res.status === 200) {
+      if (res === 200) {
         toast({
           title: "Email Verified!",
-          description:
-            res.message || "Your account has been successfully verified.",
+          description: "Your account has been successfully verified.",
         });
         setAuthenticated(true);
         navigate("/");
-      } else if (res.status === 400 || res.status === 401) {
+      } else if (res === 400 || res === 401) {
         setOtp(["", "", "", "", "", ""]);
         setValue("otp", "");
 
         toast({
           title: "Invalid OTP",
-          description:
-            res.message || "The OTP you entered is incorrect or expired.",
+          description: "The OTP you entered is incorrect or expired.",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Verification Error",
-          description: res.message || "Something went wrong. Please try again.",
+          description: "Something went wrong. Please try again.",
           variant: "destructive",
         });
       }

@@ -11,6 +11,7 @@ import {
   ForgotPasswordFormData,
   forgotPasswordSchema,
 } from "@/schemas/authSchema";
+import { requestOtp } from "@/services/authService";
 
 export const ForgotPassword = () => {
   const { setCurrentStep, setEmail } = useAuthStore();
@@ -26,19 +27,16 @@ export const ForgotPassword = () => {
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log("Forgot password:", data);
-
+      const res = await requestOtp(data);
+      console.log("response", res);
       setEmail(data.email);
       toast({
         title: "Reset Code Sent!",
         description: "Check your email for the password reset code.",
       });
-
       setCurrentStep("reset-password");
     } catch (error) {
+      console.log(error)
       toast({
         title: "Error",
         description: "Failed to send reset code. Please try again.",
@@ -55,14 +53,6 @@ export const ForgotPassword = () => {
         transition={{ delay: 0.1 }}
         className="text-center"
       >
-        <button
-          onClick={() => setCurrentStep("login")}
-          className="inline-flex items-center text-brand-blue-light hover:text-brand-blue-dark mb-4 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Login
-        </button>
-
         <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-blue-light rounded-full mb-4">
           <Key className="h-8 w-8 text-white" />
         </div>
@@ -132,6 +122,13 @@ export const ForgotPassword = () => {
             Sign In
           </button>
         </p>
+        <button
+          onClick={() => setCurrentStep("login")}
+          className="inline-flex items-center text-base pt-2 text-brand-blue-light hover:text-brand-blue-dark mb-4 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Login
+        </button>
       </motion.div>
     </div>
   );

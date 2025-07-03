@@ -1,4 +1,10 @@
-import { LoginFormData, OtpFormData, SignupFormData } from "@/schemas/authSchema";
+import {
+  ForgotPasswordFormData,
+  LoginFormData,
+  OtpFormData,
+  ResetPasswordFormData,
+  SignupFormData,
+} from "@/schemas/authSchema";
 import axios from "axios";
 
 const backend_url = `${import.meta.env.VITE_BACKEND_URL}/api`;
@@ -30,28 +36,69 @@ export const userSignUp = async (userDetails: SignupFormData) => {
     throw error;
   }
 };
+type otpDetailsType = {
+  email: string;
+  otp: number;
+};
 
-export const otpVerification = async(otp:OtpFormData) =>{
-  try{
-    const res = await axios.post(`${backend_url}/users/verify-email`,
-      otp,{
-        headers:{
+export const otpVerification = async (otpDetails: otpDetailsType) => {
+  try {
+    const res = await axios.post(
+      `${backend_url}/users/verify-email`,
+      otpDetails,
+      {
+        headers: {
           "Content-Type": "application/json",
-        }
-    }
-    )
-    return res
-  }
-
-  catch(error) {
+        },
+      }
+    );
+    return res.status;
+  } catch (error) {
     console.log(error);
-    throw error
+    throw error;
   }
-}
+};
+
+export const requestOtp = async (data: ForgotPasswordFormData) => {
+  try {
+    const res = await axios.post(
+      `${backend_url}/users/request-password-otp`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res.status;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const resetPasswordService = async (data: ResetPasswordFormData) => {
+  try {
+    const res = await axios.post(
+      `${backend_url}/users/reset-password`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res;
+  } catch (error) {
+    console.log("");
+    throw error;
+  }
+};
+
 
 export const adminLogin = async (userDetails: LoginFormData) => {
   try {
-    const res = await axios.post(`${backend_url}/login`,userDetails, {
+    const res = await axios.post(`${backend_url}/login`, userDetails, {
       headers: {
         "Content-Type": "application/json",
       },

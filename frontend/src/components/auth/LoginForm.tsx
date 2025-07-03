@@ -10,12 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { userLogin } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setCurrentStep, setAuthenticated } = useAuthStore();
+  const { setCurrentStep } = useAuthStore();
   const { toast } = useToast();
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -32,6 +33,7 @@ export const LoginForm = () => {
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
+      navigate("/");
     } catch (err) {
       toast({
         title: "Login Failed",

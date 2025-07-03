@@ -1,20 +1,24 @@
-
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, Eye, EyeOff, Shield } from 'lucide-react';
-import { useAuthStore } from '@/store/authStore';
-import { resetPasswordSchema, ResetPasswordFormData } from '@/schemas/authSchema';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Eye, EyeOff, Shield } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import {
+  resetPasswordSchema,
+  ResetPasswordFormData,
+} from "@/schemas/authSchema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { resetPasswordService } from "@/services/authService";
 
 export const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { email, setCurrentStep } = useAuthStore();
+  const [isVerified, setIsVerified] = useState(false);
   const { toast } = useToast();
 
   const {
@@ -27,17 +31,17 @@ export const ResetPassword = () => {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Reset password:', data);
-      
+      const res = await resetPasswordService(data);
+      console.log(res);
+
+      console.log("Reset password:", data);
+
       toast({
         title: "Password Reset Successful!",
         description: "Your password has been updated. You can now sign in.",
       });
-      
-      setCurrentStep('login');
+
+      setCurrentStep("login");
     } catch (error) {
       toast({
         title: "Reset Failed",
@@ -45,7 +49,7 @@ export const ResetPassword = () => {
         variant: "destructive",
       });
     }
-  };
+};
 
   return (
     <div className="space-y-6">
@@ -55,30 +59,16 @@ export const ResetPassword = () => {
         transition={{ delay: 0.1 }}
         className="text-center"
       >
-        <button
-          onClick={() => setCurrentStep('forgot-password')}
-          className="inline-flex items-center text-brand-blue-light hover:text-brand-blue-dark mb-4 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </button>
-        
         <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-blue-light rounded-full mb-4">
           <Shield className="h-8 w-8 text-white" />
         </div>
-        
+
         <h2 className="text-2xl font-bold text-brand-gray-dark mb-2">
           Reset Password
         </h2>
-        <p className="text-gray-600 text-sm">
-          Enter the code sent to
-        </p>
-        <p className="text-brand-blue-dark font-medium text-sm mb-2">
-          {email}
-        </p>
-        <p className="text-gray-600 text-sm">
-          and create a new password
-        </p>
+        <p className="text-gray-600 text-sm">Enter the code sent to</p>
+        <p className="text-brand-blue-dark font-medium text-sm mb-2">{email}</p>
+        <p className="text-gray-600 text-sm">and create a new password</p>
       </motion.div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -96,12 +86,19 @@ export const ResetPassword = () => {
             placeholder="Enter 6-digit code"
             maxLength={6}
             className="text-center font-mono text-lg border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
-            {...register('otp')}
+            {...register("otp")}
           />
+          <div className="flex items-center justify-center pt-3">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className=" bg-brand-blue-light pt-3 text-center  hover:bg-brand-blue-dark transition-colors"
+            >
+              {isSubmitting ? "Verifying..." : "Verify"}
+            </Button>
+          </div>
           {errors.otp && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.otp.message}
-            </p>
+            <p className="mt-1 text-sm text-red-600">{errors.otp.message}</p>
           )}
         </motion.div>
 
@@ -116,10 +113,10 @@ export const ResetPassword = () => {
           <div className="relative mt-1">
             <Input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Create a strong password"
               className="pr-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
-              {...register('password')}
+              {...register("password")}
             />
             <button
               type="button"
@@ -151,10 +148,10 @@ export const ResetPassword = () => {
           <div className="relative mt-1">
             <Input
               id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
+              type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm your new password"
               className="pr-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
-              {...register('confirmPassword')}
+              {...register("confirmPassword")}
             />
             <button
               type="button"
@@ -185,7 +182,7 @@ export const ResetPassword = () => {
             disabled={isSubmitting}
             className="w-full bg-brand-blue-light hover:bg-brand-blue-dark transition-colors"
           >
-            {isSubmitting ? 'Resetting Password...' : 'Reset Password'}
+            {isSubmitting ? "Resetting Password..." : "Reset Password"}
           </Button>
         </motion.div>
       </form>
@@ -197,14 +194,21 @@ export const ResetPassword = () => {
         className="text-center"
       >
         <p className="text-sm text-gray-600">
-          Remember your password?{' '}
+          Remember your password?{" "}
           <button
-            onClick={() => setCurrentStep('login')}
+            onClick={() => setCurrentStep("login")}
             className="text-brand-blue-light hover:text-brand-blue-dark font-medium transition-colors"
           >
             Sign In
           </button>
         </p>
+        <button
+          onClick={() => setCurrentStep("forgot-password")}
+          className="inline-flex items-center text-base pt-2 text-brand-blue-light hover:text-brand-blue-dark mb-4 transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </button>
       </motion.div>
     </div>
   );
