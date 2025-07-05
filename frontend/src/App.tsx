@@ -1,9 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Index from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import Home from "@/pages/Home";
-import AuthPage from "./pages/AuthPage";
-import { Toaster } from "./components/ui/toaster";
+import AuthPage from "@/pages/AuthPage";
+import { Toaster } from "@/components/ui/toaster";
+import Profile from "@/components/profile/Profile";
 
 export default function App() {
   // const query = new QueryClient();
@@ -17,6 +17,10 @@ export default function App() {
       element: <AuthPage />,
     },
     {
+      path: "/profile",
+      element: <Profile />
+    },
+    {
       path: "*",
       element: <NotFound />,
     },
@@ -24,7 +28,7 @@ export default function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster/>
+      <Toaster />
       {/* <QueryClientProvider query={query} /> */}
     </>
   );
