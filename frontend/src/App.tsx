@@ -6,7 +6,7 @@ import Profile from "@/components/profile/Profile";
 import { useAuthStore } from "./store/authStore";
 import SideNav from "./components/SideNav";
 import LandingPage from "./pages/Home";
-import Jobs from "./components/jobs/AllJobs";
+import Jobs from "./components/jobs/Jobs";
 
 export default function App() {
   const { isLoggedIn } = useAuthStore();
@@ -16,20 +16,26 @@ export default function App() {
     {
       path: "/",
       element: isLoggedIn ? <SideNav /> : <LandingPage />,
-      children: [
-        {
-          index: true,
-          element: <div className="text-2xl p-4">Welcome to JobQuest Dashboard</div>,
-        },
-        {
-          path: "profile",
-          element: <Profile />,
-        },
-        {
-          path: "jobs",
-          element: <Jobs />,
-        },
-      ],
+      children: isLoggedIn
+        ? [
+            {
+              index: true,
+              element: (
+                <div className="text-2xl p-4">
+                  Welcome to JobQuest Dashboard
+                </div>
+              ),
+            },
+            {
+              path: "profile",
+              element: <Profile />,
+            },
+            {
+              path: "jobs",
+              element: <Jobs />,
+            },
+          ]
+        : [],
     },
     {
       path: "/auth",

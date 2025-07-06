@@ -66,14 +66,19 @@ export const verifyEmail = async (
 
   return res.status(200).json({ message: "Email verified successfully" });
 };
-
 export const login = async (req: Request, res: Response): Promise<Response> => {
   const { username, password } = req.body;
-  const user = await prisma.user.findFirst({ where: { username: username } });
 
-  if (!user) return res.status(404).json({ message: "User not found" });
-  if (!user?.isVerified)
-    return res.status(403).json({ message: "User Unverified" });
+  const user = await prisma.user.findFirst({ where: { username: username } });
+  if (!user) return res.status(403).json({ message: "User not found" });
+
+  if (!user.isVerified) {
+    const otp = generateOTP();
+    await sendOtpEmail(user.email, otp);
+    return res.status(403).json({
+      message: "Please verify your email first. OTP sent to your email.",
+    });
+  }
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
@@ -92,7 +97,6 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     message: "Login successful",
   });
 };
-
 export const requestPasswordOtp = async (
   req: Request,
   res: Response
@@ -208,20 +212,15 @@ export const getProfile = async (
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        isVerified: true,
-        role: true,
-      },
+      include: { education: true },
     });
 
+    const cleanedUsers = safeUser(user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.json({ user });
+    return res.json({ cleanedUsers });
   } catch (error) {
     console.error("Get profile error:", error);
     return res.status(500).json({ message: "Failed to get profile", error });
