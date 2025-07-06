@@ -7,30 +7,44 @@ import { generateOTP } from "../utils/otp";
 
 const prisma = new PrismaClient();
 
+import { Role } from "@prisma/client";
+
 export const signup = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
   const existing = await prisma.user.findFirst({
     where: { OR: [{ email }, { username }] },
   });
   if (existing)
-    return res.status(400).json({ message: "username or Email exists" });
+    return res
+      .status(400)
+      .json({ message: "Username or Email already exists" });
 
   const hashed = await hashPassword(password);
   const otp = generateOTP();
   const expiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  const user = await prisma.user.create({
-    data: { username, email, password: hashed, otp, otpExpiry: expiry },
+  const assignedRole = role === "ADMIN" ? Role.ADMIN : Role.USER;
+
+  await prisma.user.create({
+    data: {
+      username,
+      email,
+      password: hashed,
+      otp,
+      otpExpiry: expiry,
+      role: assignedRole,
+    },
   });
 
   await sendOtpEmail(email, otp);
-  return res
-    .status(201)
-    .json({ message: "OTP sent to email. Please verify your account." });
+
+  return res.status(201).json({
+    message: "OTP sent to email. Please verify your account.",
+  });
 };
 
 export const verifyEmail = async (
@@ -55,15 +69,15 @@ export const verifyEmail = async (
 
 export const login = async (req: Request, res: Response): Promise<Response> => {
   const { username, password } = req.body;
-
   const user = await prisma.user.findFirst({ where: { username: username } });
-  if (!user || !user.isVerified)
-    return res.status(403).json({ message: "Unverified or not found" });
 
+  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user?.isVerified)
+    return res.status(403).json({ message: "User Unverified" });
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-  const token = generateToken(user.id.toString());
+  const token = generateToken(user.id.toString(), user.role);
   res.cookie("auth_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -142,21 +156,37 @@ export const updateProfile = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
+  console.log("🔧 updateProfile controller hit");
+
   try {
-    const userId = parseInt((req as any).user.id);
-    const data = req.body;
+    const userId = (req as any).user?.id as string;
+    console.log("Updating user:", userId);
 
-    const { password, otp, otpExpiry, ...safeData } = data;
+    const { password, otp, otpExpiry, education, ...safeData } = req.body;
 
-    const updatedUser = await prisma.user.update({
+    const userUpdate = await prisma.user.update({
       where: { id: userId },
       data: safeData,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        isVerified: true,
-      },
+    });
+
+    if (Array.isArray(education)) {
+      await prisma.education.deleteMany({
+        where: { userId },
+      });
+
+      for (const edu of education) {
+        await prisma.education.create({
+          data: {
+            ...edu,
+            userId,
+          },
+        });
+      }
+    }
+
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { education: true },
     });
 
     return res.json({
@@ -164,6 +194,7 @@ export const updateProfile = async (
       message: "Profile updated successfully",
     });
   } catch (error) {
+    console.error("❌ Update failed:", error);
     return res.status(500).json({ message: "Update failed", error });
   }
 };
@@ -173,7 +204,7 @@ export const getProfile = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const userId = parseInt((req as any).user.id);
+    const userId = (req as any).user.id as string;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -182,6 +213,7 @@ export const getProfile = async (
         username: true,
         email: true,
         isVerified: true,
+        role: true,
       },
     });
 
@@ -191,7 +223,33 @@ export const getProfile = async (
 
     return res.json({ user });
   } catch (error) {
-    console.error("Get profile error:", error); // Add logging for debugging
+    console.error("Get profile error:", error);
     return res.status(500).json({ message: "Failed to get profile", error });
+  }
+};
+
+const safeUser = (user: any) => {
+  const { password, otp, otpExpiry, applications, roundResults, ...rest } =
+    user;
+  return rest;
+};
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const users = await prisma.user.findMany({
+      include: {
+        education: true,
+      },
+    });
+
+    const cleanedUsers = users.map(safeUser);
+
+    return res.json({ users: cleanedUsers });
+  } catch (error) {
+    console.error("❌ Failed to fetch users:", error);
+    return res.status(500).json({ message: "Failed to fetch users", error });
   }
 };

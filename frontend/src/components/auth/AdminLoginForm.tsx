@@ -8,13 +8,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { AdminLoginFormData, adminLoginSchema } from "@/schemas/authSchema";
+import {
+  AdminLoginFormData,
+  adminLoginSchema,
+  LoginFormData,
+} from "@/schemas/authSchema";
+import { userLogin } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
 
 export const AdminLoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setAuthenticated } = useAuthStore();
   const { toast } = useToast();
-
+  const { loginToken } = useAuthStore();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -22,24 +28,29 @@ export const AdminLoginForm = () => {
   } = useForm<AdminLoginFormData>({
     resolver: zodResolver(adminLoginSchema),
   });
-
-  const onSubmit = async (data: AdminLoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
+    const new_data = { ...data };
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      console.log("Admin login data:", data);
-
+      const res = await userLogin(new_data);
+      console.log(res);
       toast({
-        title: "Admin Login Successful!",
-        description: "Welcome to the admin panel.",
+        title: "Login Successful!",
+        description: "Welcome back to JobQuest.",
       });
-
-      setAuthenticated(true);
-    } catch (error) {
+      const { token, ...userDetails } = res;
+      loginToken(token, userDetails);
+      navigate("/");
+    } catch (err) {
+      if (err.response.status == 403) {
+        toast({
+          title: "Login Failed",
+          description: "Please verify your account before logging in.",
+          variant: "destructive",
+        });
+      }
       toast({
         title: "Login Failed",
-        description: "Please check your credentials and try again.",
+        description: "Invalid username or password",
         variant: "destructive",
       });
     }

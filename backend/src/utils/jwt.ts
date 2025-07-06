@@ -8,13 +8,12 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not defined");
 }
 
-// Generate JWT token with expiration
-export const generateToken = (userId: string): string => {
+export const generateToken = (userId: string,role:string): string => {
   return jwt.sign(
-    { id: userId }, 
+    { id: userId,role:role }, 
     JWT_SECRET, 
     { 
-      expiresIn: '24h', // Token expires in 24 hours
+      expiresIn: '24h', 
       issuer: 'your-app-name',
       audience: 'your-app-users'
     }

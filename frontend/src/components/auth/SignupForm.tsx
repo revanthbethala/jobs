@@ -27,7 +27,8 @@ export const SignupForm = () => {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setEmail(data.email);
-      const res = await userSignUp(data);
+      const updated_data = { ...data, role: "USER" };
+      const res = await userSignUp(updated_data);
       console.log(res);
       console.log("Signup data:", data);
       toast({

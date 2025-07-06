@@ -11,14 +11,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { userLogin } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
+import { OtpVerification } from "./OtpVerification";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const {
-    setCurrentStep,
-    loginToken,
-    isAuthenticated,
-  } = useAuthStore();
+  const { setCurrentStep, loginToken, isAuthenticated } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const {
@@ -31,19 +28,28 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const res = await userLogin(data);
+      const new_data = { ...data};
+      const res = await userLogin(new_data);
       console.log(res);
       toast({
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
-      const { token } = res;
-      loginToken(token);
+      const { token, ...userDetails } = res;
+      loginToken(token, userDetails);
       navigate("/");
     } catch (err) {
+      if (err.response.status == 403) {
+        toast({
+          title: "Login Failed",
+          description: "Please verify your account before logging in.",
+          variant: "destructive",
+        });
+        setCurrentStep("login-email");
+      }
       toast({
         title: "Login Failed",
-        description: "Invalid email or password.",
+        description: "Invalid username or password",
         variant: "destructive",
       });
     }
@@ -71,22 +77,24 @@ export const LoginForm = () => {
           transition={{ delay: 0.2 }}
         >
           <Label htmlFor="email" className="text-brand-gray-dark">
-            Email
+            Username
           </Label>
           <div className="relative mt-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <User className="h-5 w-5 text-gray-400" />
             </div>
             <Input
-              id="email"
+              id="username"
               type="text"
               placeholder="Enter your email or username"
               className="pl-10 border-gray-300 focus:outline-none focus:border-brand-blue-light focus:ring-brand-blue-light"
-              {...register("email")}
+              {...register("username")}
             />
           </div>
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          {errors.username && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.username.message}
+            </p>
           )}
         </motion.div>
 

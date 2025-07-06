@@ -2,20 +2,20 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, CloudCog, Mail } from "lucide-react";
+import { ArrowLeft, CloudCog, Mail, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { otpSchema, OtpFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { otpVerification } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 
 export const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [isResending, setIsResending] = useState(false);
   const [timer, setTimer] = useState(30);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const navigate = useNavigate();
   const { email, setCurrentStep, setAuthenticated } = useAuthStore();
   const { toast } = useToast();
   const {
@@ -67,7 +67,7 @@ export const OtpVerification = () => {
   };
 
   const onSubmit = async () => {
-    const otp_str = (otp.join(""));
+    const otp_str = otp.join("");
     console.log(otp_str);
     const new_data = { otp: otp_str, email };
     console.log(new_data);
@@ -82,10 +82,11 @@ export const OtpVerification = () => {
       if (res === 200) {
         toast({
           title: "Email Verified!",
-          description: "Your account has been successfully verified.",
+          description:
+            "Your account has been successfully verified.Please Login to Continue",
         });
         setAuthenticated(true);
-        navigate("/");
+        setCurrentStep("login");
       } else if (res === 400 || res === 401) {
         setOtp(["", "", "", "", "", ""]);
         setValue("otp", "");
@@ -136,7 +137,7 @@ export const OtpVerification = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="flex justify-center space-x-2"
+          className="flex space-x-2 justify-center"
         >
           {otp.map((digit, index) => (
             <input

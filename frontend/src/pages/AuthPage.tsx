@@ -7,6 +7,7 @@ import { SignupForm } from "@/components/auth/SignupForm";
 import { AdminLoginForm } from "@/components/auth/AdminLoginForm";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { UserTypeToggle } from "@/components/auth/UserTypeToggle";
+import { LoginEmail } from "@/components/auth/LoginEmail";
 
 const AuthPage = () => {
   const { userType, currentStep } = useAuthStore();
@@ -17,6 +18,7 @@ const AuthPage = () => {
     if (currentStep === "otp") return <OtpVerification />;
     if (currentStep === "forgot-password") return <ForgotPassword />;
     if (currentStep === "reset-password") return <ResetPassword />;
+    if (currentStep === "login-email") return <LoginEmail />;
     if (currentStep === "signup" && userType === "user") return <SignupForm />;
     if (userType === "admin") return <AdminLoginForm />;
     return <LoginForm />;

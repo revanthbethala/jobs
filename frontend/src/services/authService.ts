@@ -1,7 +1,6 @@
 import {
   ForgotPasswordFormData,
   LoginFormData,
-  OtpFormData,
   ResetPasswordFormData,
   SignupFormData,
 } from "@/schemas/authSchema";

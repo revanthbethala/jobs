@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { PersonalDetailsSection } from './PersonalDetailsSection';
-import { EducationSection } from './EducationSection';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Edit, Save, X, Upload, FileText, Download, Eye } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useProfileStore } from '@/store/profileStore';
-import { educationSchema, personalDetailsSchema, resumeFileSchema } from '@/schemas/profileSchema';
+import React, { useState } from "react";
+import { PersonalDetailsSection } from "./PersonalDetailsSection";
+import { EducationSection } from "./EducationSection";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Edit, Save, X, Upload, FileText, Download, Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useProfileStore } from "@/store/profileStore";
+import {
+  educationSchema,
+  personalDetailsSchema,
+  resumeFileSchema,
+} from "@/schemas/profileSchema";
+import { useAuthStore } from "@/store/authStore";
 
 const Profile: React.FC = () => {
   const {
@@ -18,15 +23,17 @@ const Profile: React.FC = () => {
     cancelChanges,
     uploadResume,
   } = useProfileStore();
-
   const { toast } = useToast();
+
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-
+  const [file, setFile] = useState("");
+  const userDetails = useAuthStore((state) => state.userDetails);
+  console.log("User at profile page", userDetails);
   const handleSave = async () => {
     try {
       personalDetailsSchema.parse(personalDetails);
-
+      console.log("At save ", file);
       education.forEach((edu) => {
         educationSchema.parse(edu);
       });
@@ -35,15 +42,15 @@ const Profile: React.FC = () => {
       await saveChanges();
 
       toast({
-        title: 'Success',
-        description: 'Profile updated successfully!',
+        title: "Success",
+        description: "Profile updated successfully!",
       });
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error("Validation error:", error);
       toast({
-        title: 'Validation Error',
-        description: 'Please check all fields and try again.',
-        variant: 'destructive',
+        title: "Validation Error",
+        description: "Please check all fields and try again.",
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
@@ -53,15 +60,17 @@ const Profile: React.FC = () => {
   const handleCancel = () => {
     cancelChanges();
     toast({
-      title: 'Changes Cancelled',
-      description: 'All unsaved changes have been reverted.',
+      title: "Changes Cancelled",
+      description: "All unsaved changes have been reverted.",
     });
   };
 
-  const handleResumeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleResumeUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
+    console.log(file);
     try {
       resumeFileSchema.parse({ file });
 
@@ -69,19 +78,19 @@ const Profile: React.FC = () => {
       await uploadResume(file);
 
       toast({
-        title: 'Success',
-        description: 'Resume uploaded successfully!',
+        title: "Success",
+        description: "Resume uploaded successfully!",
       });
     } catch (error) {
-      console.error('Resume upload error:', error);
+      console.error("Resume upload error:", error);
       toast({
-        title: 'Upload Error',
-        description: 'Please select a valid PDF file under 3MB.',
-        variant: 'destructive',
+        title: "Upload Error",
+        description: "Please select a valid PDF file under 3MB.",
+        variant: "destructive",
       });
     } finally {
       setIsUploading(false);
-      event.target.value = '';
+      event.target.value = "";
     }
   };
 
@@ -125,7 +134,7 @@ const Profile: React.FC = () => {
                     className="bg-gradient-to-r from-brand-blue-light to-brand-blue-dark hover:from-brand-blue-dark hover:to-brand-blue-light transition-all duration-300 shadow-lg hover:shadow-xl h-12 px-6"
                   >
                     <Save className="w-5 h-5 mr-2" />
-                    {isSaving ? 'Saving...' : 'Save Changes'}
+                    {isSaving ? "Saving..." : "Save Changes"}
                   </Button>
                 </>
               )}
@@ -158,7 +167,9 @@ const Profile: React.FC = () => {
                           <FileText className="w-7 h-7 text-white" />
                         </div>
                         <div>
-                          <h4 className="font-semibold text-brand-gray-dark text-lg">Current Resume</h4>
+                          <h4 className="font-semibold text-brand-gray-dark text-lg">
+                            Current Resume
+                          </h4>
                           <p className="text-gray-600">PDF Document</p>
                         </div>
                       </div>
@@ -185,10 +196,7 @@ const Profile: React.FC = () => {
                           asChild
                           className="border-brand-blue-light text-brand-blue-light hover:bg-brand-blue-light hover:text-white transition-colors"
                         >
-                          <a
-                            href={personalDetails.resume}
-                            download
-                          >
+                          <a href={personalDetails.resume} download>
                             <Download className="w-4 h-4 mr-2" />
                             Download
                           </a>
@@ -217,7 +225,9 @@ const Profile: React.FC = () => {
                       </div>
                       <div>
                         <p className="font-semibold text-brand-gray-dark text-lg">
-                          {isUploading ? 'Uploading Resume...' : 'Upload New Resume'}
+                          {isUploading
+                            ? "Uploading Resume..."
+                            : "Upload New Resume"}
                         </p>
                         <p className="text-gray-600 mt-1">
                           PDF files only, maximum 3MB
@@ -241,4 +251,4 @@ const Profile: React.FC = () => {
     </div>
   );
 };
-export default Profile
+export default Profile;

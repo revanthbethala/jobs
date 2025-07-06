@@ -6,9 +6,31 @@ export type AuthStep =
   | "login"
   | "signup"
   | "otp"
+  | "login-email"
   | "forgot-password"
   | "reset-password";
 
+// You can extend this based on actual backend response
+export interface UserDetails {
+  id: string;
+  email: string;
+  username: string;
+  role: string;
+  isVerified: boolean;
+  otp: string | null;
+  otpExpiry: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  fatherName: string | null;
+  motherName: string | null;
+  phoneNumber: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  profilePic: string | null;
+  resume: string | null;
+}
 interface AuthState {
   userType: UserType;
   currentStep: AuthStep;
@@ -17,6 +39,7 @@ interface AuthState {
   token: string;
   isAuthenticated: boolean;
   isLoggedIn: boolean;
+  userDetails: UserDetails | null;
 
   setUserType: (type: UserType) => void;
   setCurrentStep: (step: AuthStep) => void;
@@ -25,14 +48,14 @@ interface AuthState {
   setToken: (token: string) => void;
   setAuthenticated: (status: boolean) => void;
   setLoggedIn: (status: boolean) => void;
+  setUserDetails: (details: UserDetails) => void;
 
-  loginToken: (token: string) => void;
+  loginToken: (token: string, userDetails: UserDetails) => void;
   logOut: () => void;
-
   reset: () => void;
 }
 
-// Initialize from cookie if exists
+// Get token from cookies
 const storedToken = Cookies.get("token") || "";
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -43,6 +66,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: storedToken,
   isAuthenticated: !!storedToken,
   isLoggedIn: !!storedToken,
+  userDetails: null,
 
   setUserType: (type) => set({ userType: type }),
   setCurrentStep: (step) => set({ currentStep: step }),
@@ -51,12 +75,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   setToken: (token) => set({ token }),
   setAuthenticated: (status) => set({ isAuthenticated: status }),
   setLoggedIn: (status) => set({ isLoggedIn: status }),
-  loginToken: (token: string) => {
+  setUserDetails: (details) => set({ userDetails: details }),
+
+  loginToken: (token, userDetails) => {
     Cookies.set("token", token);
     set({
       token,
       isLoggedIn: true,
       isAuthenticated: true,
+      userDetails,
     });
   },
 
@@ -68,6 +95,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       isAuthenticated: false,
       email: "",
       username: "",
+      userDetails: null,
     });
   },
 
@@ -80,5 +108,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       token: "",
       isAuthenticated: false,
       isLoggedIn: false,
+      userDetails: null,
     }),
 }));

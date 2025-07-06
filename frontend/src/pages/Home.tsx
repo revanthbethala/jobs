@@ -5,7 +5,7 @@ import Services from "@/components/landing/Services";
 import HowItWorks from "@/components/landing/HowItWorks";
 import Footer from "@/components/landing/Footer";
 
-const Home = () => {
+const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <Header />
@@ -18,4 +18,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default LandingPage;
