@@ -20,19 +20,12 @@ export default function App() {
         ? [
             {
               index: true,
-              element: (
-                <div className="text-2xl p-4">
-                  Welcome to JobQuest Dashboard
-                </div>
-              ),
+              path: "jobs",
+              element: <Jobs />,
             },
             {
               path: "profile",
               element: <Profile />,
-            },
-            {
-              path: "jobs",
-              element: <Jobs />,
             },
           ]
         : [],
