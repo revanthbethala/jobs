@@ -2,11 +2,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import NotFound from "@/pages/NotFound";
 import AuthPage from "@/pages/AuthPage";
 import { Toaster } from "@/components/ui/toaster";
-import Profile from "@/components/profile/Profile";
 import { useAuthStore } from "./store/authStore";
 import SideNav from "./components/SideNav";
 import LandingPage from "./pages/Home";
 import Jobs from "./components/jobs/Jobs";
+import Profile from "./components/profile/ProfilePage.tsx";
 
 export default function App() {
   const { isLoggedIn } = useAuthStore();

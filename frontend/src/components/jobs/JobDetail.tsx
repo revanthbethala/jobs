@@ -27,7 +27,7 @@ export const JobDetail = ({ job }: JobDetailProps) => {
       {/* Header */}
       <div className="p-6 border-b">
         <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-4">x
+          <div className="flex items-start space-x-4">
             <img
               src={job.companyLogo}
               alt={`${job.companyName} logo`}

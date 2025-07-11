@@ -66,6 +66,7 @@ export const verifyEmail = async (
 
   return res.status(200).json({ message: "Email verified successfully" });
 };
+
 export const login = async (req: Request, res: Response): Promise<Response> => {
   const { username, password } = req.body;
 
@@ -75,9 +76,11 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
   if (!user.isVerified) {
     const otp = generateOTP();
     await sendOtpEmail(user.email, otp);
-    return res.status(403).json({
-      message: "Please verify your email first. OTP sent to your email.",
-    });
+    return res
+      .status(403)
+      .json({
+        message: "Please verify your email first. OTP sent to your email.",
+      });
   }
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
@@ -97,6 +100,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     message: "Login successful",
   });
 };
+
 export const requestPasswordOtp = async (
   req: Request,
   res: Response
@@ -160,7 +164,7 @@ export const updateProfile = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  console.log("🔧 updateProfile controller hit");
+  console.log("updateProfile controller hit");
 
   try {
     const userId = (req as any).user?.id as string;
@@ -198,7 +202,7 @@ export const updateProfile = async (
       message: "Profile updated successfully",
     });
   } catch (error) {
-    console.error("❌ Update failed:", error);
+    console.error("Update failed:", error);
     return res.status(500).json({ message: "Update failed", error });
   }
 };
@@ -212,15 +216,18 @@ export const getProfile = async (
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { education: true },
+      include: {
+        education: true,
+      },
     });
 
-    const cleanedUsers = safeUser(user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.json({ cleanedUsers });
+    const cleanedUser = safeUser(user);
+
+    return res.json({ user: cleanedUser });
   } catch (error) {
     console.error("Get profile error:", error);
     return res.status(500).json({ message: "Failed to get profile", error });
@@ -248,7 +255,33 @@ export const getAllUsers = async (
 
     return res.json({ users: cleanedUsers });
   } catch (error) {
-    console.error("❌ Failed to fetch users:", error);
+    console.error("Failed to fetch users:", error);
     return res.status(500).json({ message: "Failed to fetch users", error });
+  }
+};
+
+export const getAdminDashboard = async (_req: Request, res: Response) => {
+  try {
+    const [jobsCount, applicationsCount, usersCount, qualifiedCount] =
+      await Promise.all([
+        prisma.job.count(),
+        prisma.jobApplication.count(),
+        prisma.user.count(),
+        prisma.results.count({ where: { status: "Qualified" } }),
+      ]);
+
+    return res.json({
+      dashboard: {
+        totalJobs: jobsCount,
+        totalApplications: applicationsCount,
+        totalUsers: usersCount,
+        totalQualified: qualifiedCount,
+      },
+    });
+  } catch (error) {
+    console.error("Admin dashboard failed:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to load admin dashboard", error });
   }
 };

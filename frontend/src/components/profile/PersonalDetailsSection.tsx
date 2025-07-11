@@ -1,322 +1,129 @@
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ImageCropper } from './ImageCropper';
-import { Camera, Upload } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useProfileStore } from '@/store/profileStore';
-import { profilePhotoSchema } from '@/schemas/profileSchema';
+import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { MapPin, Users } from "lucide-react";
+import { type ProfileData } from "@/services/profileServices";
 
-export const PersonalDetailsSection: React.FC = () => {
-  const { personalDetails, isEditMode, setPersonalDetails, uploadProfilePhoto } = useProfileStore();
-  const { toast } = useToast();
-  const [showCropper, setShowCropper] = useState(false);
-  const [tempImageUrl, setTempImageUrl] = useState('');
-  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+interface PersonalDetailsSectionProps {
+  profile: ProfileData;
+  isEditing: boolean;
+  onUpdate: (field: string, value: any) => void;
+}
 
-  const handleInputChange = (field: string, value: string) => {
-    setPersonalDetails({ [field]: value });
-  };
-
-  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      profilePhotoSchema.parse({ file });
-      
-      const imageUrl = URL.createObjectURL(file);
-      setTempImageUrl(imageUrl);
-      setShowCropper(true);
-    } catch (error) {
-      console.error('Photo upload error:', error);
-      toast({
-        title: 'Upload Error',
-        description: 'Please select a valid image file under 3MB.',
-        variant: 'destructive',
-      });
-    }
-    
-    event.target.value = '';
-  };
-
-  const handleCropComplete = async (croppedImageUrl: string) => {
-    try {
-      setIsUploadingPhoto(true);
-      await uploadProfilePhoto(croppedImageUrl);
-      
-      toast({
-        title: 'Success',
-        description: 'Profile photo updated successfully!',
-      });
-    } catch (error) {
-      console.error('Photo save error:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update profile photo.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsUploadingPhoto(false);
-      setShowCropper(false);
-      URL.revokeObjectURL(tempImageUrl);
-    }
-  };
-
-  const getInitials = () => {
-    return `${personalDetails.firstName[0] || ''}${personalDetails.lastName[0] || ''}`.toUpperCase();
-  };
+export const PersonalDetailsSection: React.FC<PersonalDetailsSectionProps> = ({
+  profile,
+  isEditing,
+  onUpdate,
+}) => {
+  const renderField = (
+    field: keyof ProfileData,
+    label: string,
+    placeholder: string,
+    icon: React.ReactNode,
+    isTextarea = false
+  ) => (
+    <div className="space-y-2">
+      <Label htmlFor={field} className="text-sm font-medium">
+        {label}
+      </Label>
+      {isEditing ? (
+        isTextarea ? (
+          <Textarea
+            id={field}
+            value={(profile[field] as string) || ""}
+            onChange={(e) => onUpdate(field, e.target.value)}
+            placeholder={placeholder}
+            className="min-h-[80px] transition-all focus:ring-2 focus:ring-primary/20"
+          />
+        ) : (
+          <Input
+            id={field}
+            value={(profile[field] as string) || ""}
+            onChange={(e) => onUpdate(field, e.target.value)}
+            placeholder={placeholder}
+            className="transition-all focus:ring-2 focus:ring-primary/20"
+          />
+        )
+      ) : (
+        <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-md min-h-[42px]">
+          {icon}
+          <span className="flex-1">
+            {(profile[field] as string) || `No ${label.toLowerCase()} provided`}
+          </span>
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div>
-      <div className="flex items-center gap-6 mb-8">
-        <div className="relative">
-          <Avatar className="w-24 h-24 ring-4 ring-blue-100">
-            <AvatarImage src={personalDetails.profilePic} alt="Profile" />
-            <AvatarFallback className="bg-gradient-to-br from-brand-blue-light to-brand-blue-dark text-white text-2xl font-bold">
-              {getInitials()}
-            </AvatarFallback>
-          </Avatar>
-          {isEditMode && (
-            <div className="absolute -bottom-2 -right-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="hidden"
-                id="photo-upload"
-                disabled={isUploadingPhoto}
-              />
-              <label
-                htmlFor="photo-upload"
-                className="cursor-pointer w-8 h-8 bg-brand-blue-light hover:bg-brand-blue-dark rounded-full flex items-center justify-center text-white shadow-lg transition-colors"
-              >
-                <Camera className="w-4 h-4" />
-              </label>
-            </div>
+    <Card className="shadow-card hover:shadow-md transition-all duration-300">
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <Users className="h-5 w-5 text-primary" />
+          <span>Personal Details</span>
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="space-y-6">
+        {/* Family Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {renderField(
+            "fatherName",
+            "Father's Name",
+            "Enter father's name",
+            <Users className="h-4 w-4 text-muted-foreground" />
+          )}
+
+          {renderField(
+            "motherName",
+            "Mother's Name",
+            "Enter mother's name",
+            <Users className="h-4 w-4 text-muted-foreground" />
           )}
         </div>
-        
-        <div className="flex-1">
-          <h3 className="text-2xl font-bold text-brand-gray-dark">
-            {personalDetails.firstName} {personalDetails.lastName}
-          </h3>
-          <p className="text-gray-600 text-lg">{personalDetails.email}</p>
-          <p className="text-gray-500">{personalDetails.phoneNumber}</p>
-        </div>
-      </div>
 
-      <div className="bg-gradient-to-r from-brand-blue-light/5 to-brand-blue-dark/5 rounded-xl p-1 mb-6">
-        <div className="bg-white rounded-lg p-6">
-          <h3 className="text-xl font-bold text-brand-gray-dark mb-6 flex items-center gap-2">
-            Personal Information
+        {/* Address Information */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-foreground border-b border-border pb-2">
+            Address Information
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <Label htmlFor="firstName" className="text-sm font-semibold text-brand-gray-dark">
-                First Name
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="firstName"
-                  type="text"
-                  value={personalDetails.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.firstName}
-                </div>
-              )}
-            </div>
+          <div className="space-y-4">
+            {renderField(
+              "address",
+              "Street Address",
+              "Enter your complete address",
+              <MapPin className="h-4 w-4 text-muted-foreground" />,
+              true
+            )}
 
-            <div className="space-y-3">
-              <Label htmlFor="lastName" className="text-sm font-semibold text-brand-gray-dark">
-                Last Name
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="lastName"
-                  type="text"
-                  value={personalDetails.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.lastName}
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {renderField(
+                "city",
+                "City",
+                "Enter city",
+                <MapPin className="h-4 w-4 text-muted-foreground" />
               )}
-            </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="email" className="text-sm font-semibold text-brand-gray-dark">
-                Email
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="email"
-                  type="email"
-                  value={personalDetails.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.email}
-                </div>
+              {renderField(
+                "state",
+                "State/Province",
+                "Enter state",
+                <MapPin className="h-4 w-4 text-muted-foreground" />
               )}
-            </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="phoneNumber" className="text-sm font-semibold text-brand-gray-dark">
-                Phone Number
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="phoneNumber"
-                  type="tel"
-                  value={personalDetails.phoneNumber}
-                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.phoneNumber}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3 md:col-span-2">
-              <Label htmlFor="address" className="text-sm font-semibold text-brand-gray-dark">
-                Address
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="address"
-                  type="text"
-                  value={personalDetails.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.address}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="city" className="text-sm font-semibold text-brand-gray-dark">
-                City
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="city"
-                  type="text"
-                  value={personalDetails.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.city}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="state" className="text-sm font-semibold text-brand-gray-dark">
-                State
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="state"
-                  type="text"
-                  value={personalDetails.state}
-                  onChange={(e) => handleInputChange('state', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.state}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="country" className="text-sm font-semibold text-brand-gray-dark">
-                Country
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="country"
-                  type="text"
-                  value={personalDetails.country}
-                  onChange={(e) => handleInputChange('country', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.country}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="fatherName" className="text-sm font-semibold text-brand-gray-dark">
-                Father's Name
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="fatherName"
-                  type="text"
-                  value={personalDetails.fatherName}
-                  onChange={(e) => handleInputChange('fatherName', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.fatherName}
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-3">
-              <Label htmlFor="motherName" className="text-sm font-semibold text-brand-gray-dark">
-                Mother's Name
-              </Label>
-              {isEditMode ? (
-                <Input
-                  id="motherName"
-                  type="text"
-                  value={personalDetails.motherName}
-                  onChange={(e) => handleInputChange('motherName', e.target.value)}
-                  className="h-11 transition-all duration-200 focus:ring-2 focus:ring-brand-blue-light border-gray-300"
-                />
-              ) : (
-                <div className="py-3 px-4 bg-gray-50 rounded-lg text-brand-gray-dark font-medium">
-                  {personalDetails.motherName}
-                </div>
+              {renderField(
+                "country",
+                "Country",
+                "Enter country",
+                <MapPin className="h-4 w-4 text-muted-foreground" />
               )}
             </div>
           </div>
         </div>
-      </div>
-
-      <ImageCropper
-        isOpen={showCropper}
-        onClose={() => {
-          setShowCropper(false);
-          URL.revokeObjectURL(tempImageUrl);
-        }}
-        onCrop={handleCropComplete}
-        imageUrl={tempImageUrl}
-      />
-    </div>
+      </CardContent>
+    </Card>
   );
 };
