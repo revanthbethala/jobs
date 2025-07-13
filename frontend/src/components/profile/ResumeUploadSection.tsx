@@ -12,12 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { uploadFile } from "@/services/profileService";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/store/profileStore";
-
-const USE_MOCK_UPLOAD = false;
+import { useNavigate, useParams } from "react-router-dom";
+import { applyJob } from "@/services/jobServices";
 
 const ResumeUploadSection = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -31,6 +30,7 @@ const ResumeUploadSection = () => {
     setCurrentStep,
     updateProfile,
     setEditing,
+    forceEditing,
   } = useProfileStore();
 
   const handleFileSelect = async (
@@ -117,19 +117,22 @@ const ResumeUploadSection = () => {
       window.open(tempResume, "_blank");
     }
   };
-
+  const navigate = useNavigate();
+  const { id } = useParams();
   const handleBack = () => {
     setCurrentStep(1); // assuming 0: personal, 1: education, 2: resume
   };
-
+  console.log(forceEditing);
   const handleSubmit = async () => {
-    await updateProfile(); // sends tempPersonalInfo, tempEducation, tempResume
+    await updateProfile();
+    // if (forceEditing) {
+    //   const res = await applyJob(id);
+    //   console.log(res);
+    //   navigate("/jobs");
+    // } else {
     setCurrentStep(0);
-    // isEditing = !isEditing;
     setEditing(false);
   };
-
-  // 👇 All code remains the same at the top...
 
   return (
     <motion.div
@@ -325,9 +328,9 @@ const ResumeUploadSection = () => {
           <Button
             onClick={handleSubmit}
             disabled={isUploading}
-            className="w-full sm:w-auto"
+            className="w-full bg-brand-blue-dark hover:bg-brand-blue-dark/90 sm:w-auto"
           >
-            Submit Profile
+            {forceEditing ? " Update Profile & Apply" : "Update Profile"}
           </Button>
         </div>
       )}

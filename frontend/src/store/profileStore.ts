@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { toast } from "@/hooks/use-toast";
-import { EducationItem, ProfileData } from "@/services/profileService";
 import { getProfile, updateProfile } from "@/services/api";
-import EducationSection from "@/components/profile/EducationSection";
+import { EducationItem, ProfileData } from "@/types/profileTypes";
 
 const default_profile =
   "https://imgs.search.brave.com/xlfqxb13HWmf6vJkyEshElDmDh1XDri1WnVlTCuRYas/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWd2/My5mb3Rvci5jb20v/aW1hZ2VzL2dhbGxl/cnkvZ2VuZXJhdGUt/YS1jeWJlcnB1bmst/YWktYXZhdGFyLW9m/LWEtbWFsZS1pbi1m/b3Rvci5qcGc";
@@ -14,18 +13,21 @@ interface ProfileState {
   profile: ProfileData | null;
   isLoading: boolean;
   isEditing: boolean;
+  forceEditing: boolean;
   currentStep: number;
   profilePictureAnimationComplete: boolean;
 
-  // Temporary staged data
+  // Temp/staged values
   tempPersonalInfo: Partial<ProfileData>;
   tempEducation: EducationItem[];
   tempResume: string;
 
   // Actions
   fetchProfile: () => Promise<void>;
-  updateProfile: () => Promise<void>; // Now uses temp values
+  updateProfile: () => Promise<void>;
+
   setEditing: (editing: boolean) => void;
+  setForceEditing: (editing: boolean) => void;
   setCurrentStep: (step: number) => void;
   setProfilePictureAnimationComplete: (complete: boolean) => void;
 
@@ -38,6 +40,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   profile: null,
   isLoading: false,
   isEditing: false,
+  forceEditing: false,
   currentStep: 0,
   profilePictureAnimationComplete: false,
 
@@ -49,18 +52,15 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     set({ isLoading: true });
     try {
       const profileData = await getProfile();
-      console.log("Profile", profileData);
       const finalData = {
         ...profileData.user,
-        // profilePicture: profileData.profilePicture || default_profile,
-        // resume: profileData.resume,
       };
-console.log("Final data",finalData);
+
       set({
         profile: finalData,
         tempPersonalInfo: finalData,
         tempEducation: finalData.education || [],
-        tempResume: finalData.resume,
+        tempResume: finalData.resume || default_resume,
         isLoading: false,
       });
     } catch (error) {
@@ -75,17 +75,15 @@ console.log("Final data",finalData);
 
   updateProfile: async () => {
     set({ isLoading: true });
-
     const { tempPersonalInfo, tempEducation, tempResume } = get();
-
     const { profilePicture, ...rest } = tempPersonalInfo;
+
     const finalUpdate: Partial<ProfileData> = {
       ...rest,
       profilePicture: default_profile,
       education: tempEducation,
       resume: tempResume,
     };
-    console.log("updating data", finalUpdate);
 
     try {
       const updatedProfile = await updateProfile(finalUpdate);
@@ -96,8 +94,15 @@ console.log("Final data",finalData);
         resume: updatedProfile.resume || default_resume,
       };
 
-      set({ profile: withDefaults, isLoading: false });
-      toast({ title: "Success", description: "Profile updated successfully" });
+      set({
+        profile: withDefaults,
+        isLoading: false,
+      });
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
     } catch (error) {
       toast({
         title: "Error",
@@ -109,10 +114,10 @@ console.log("Final data",finalData);
   },
 
   setEditing: (editing) => set({ isEditing: editing }),
+  setForceEditing: (editing) => set({ forceEditing: editing }),
   setCurrentStep: (step) => set({ currentStep: step }),
   setProfilePictureAnimationComplete: (complete) =>
     set({ profilePictureAnimationComplete: complete }),
-
   setTempPersonalInfo: (data) => set({ tempPersonalInfo: data }),
   setTempEducation: (data) => set({ tempEducation: data }),
   setTempResume: (resume) => set({ tempResume: resume }),

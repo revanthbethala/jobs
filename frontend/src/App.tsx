@@ -5,12 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { useAuthStore } from "./store/authStore";
 import SideNav from "./components/SideNav";
 import LandingPage from "./pages/Home";
-import Jobs from "./components/jobs/Jobs";
 import Profile from "./pages/Profile";
+import Jobs from "./pages/Jobs";
 
 export default function App() {
   const { isLoggedIn } = useAuthStore();
-  console.log("isLoggedIn:", isLoggedIn); // <--- Add this line
 
   const router = createBrowserRouter([
     {
@@ -22,6 +21,10 @@ export default function App() {
               index: true,
               path: "jobs",
               element: <Jobs />,
+            },
+            {
+              path: "job/:id/profile",
+              element: <Profile forceEditing={true} showEditButton={false} />,
             },
             {
               path: "profile",

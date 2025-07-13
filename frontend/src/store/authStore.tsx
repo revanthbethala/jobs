@@ -79,6 +79,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   loginToken: (token, userDetails) => {
     Cookies.set("token", token);
+    Cookies.set("userId", userDetails.id);
     set({
       token,
       isLoggedIn: true,
@@ -89,6 +90,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logOut: () => {
     Cookies.remove("token");
+    Cookies.remove("userId");
     set({
       token: "",
       isLoggedIn: false,

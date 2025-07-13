@@ -4,15 +4,23 @@ import { Edit, Save, X, User, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { cn } from "@/lib/utils";
+
 import PersonalInfoSection from "@/components/profile/PersonalInfoSection";
 import EducationSection from "@/components/profile/EducationSection";
 import ResumeUploadSection from "@/components/profile/ResumeUploadSection";
-import { useProfileStore } from "@/store/profileStore";
 import ProfileStepper from "@/components/profile/ProfileStepper";
+import { useProfileStore } from "@/store/profileStore";
 
-const Profile = () => {
+interface ProfileProps {
+  forceEditing?: boolean;
+  showEditButton?: boolean;
+}
+
+const Profile: React.FC<ProfileProps> = ({
+  forceEditing = false,
+  showEditButton = true,
+}) => {
   const {
     profile,
     isLoading,
@@ -35,9 +43,20 @@ const Profile = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Ensure edit mode is true when forced
+    if (forceEditing) {
+      setEditing(true);
+    }
+  }, [forceEditing, setEditing]);
+
+  const isEditMode = forceEditing || isEditing;
+
   const handleEditToggle = () => {
-    setEditing(!isEditing);
-    if (isEditing) setCurrentStep(0);
+    if (!forceEditing) {
+      setEditing(!isEditing);
+      if (isEditing) setCurrentStep(0);
+    }
   };
 
   const renderCurrentSection = () => {
@@ -47,19 +66,14 @@ const Profile = () => {
         return (
           <PersonalInfoSection
             profile={profile}
-            isEditing={isEditing}
+            isEditing={isEditMode}
             showAnimation={showInitialAnimation}
           />
         );
       case 1:
-        return <EducationSection profile={profile} isEditing={isEditing} />;
+        return <EducationSection profile={profile} isEditing={isEditMode} />;
       case 2:
-        return (
-          <ResumeUploadSection
-          // isEditing={isEditing}
-          // resume={profile?.resume}
-          />
-        );
+        return <ResumeUploadSection />;
       default:
         return null;
     }
@@ -136,24 +150,30 @@ const Profile = () => {
               <User className="w-8 h-8 text-blue-600" />
               <h1 className="text-2xl font-bold text-foreground">My Profile</h1>
             </div>
-            <Button
-              onClick={handleEditToggle}
-              variant={isEditing ? "outline" : "default"}
-              className={cn(
-                "transition-all duration-300 w-full sm:w-auto",
-                !isEditing && "bg-blue-700 hover:bg-brand-blue-light"
-              )}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : isEditing ? (
-                <X className="w-4 h-4 mr-2" />
-              ) : (
-                <Edit className="w-4 h-4 mr-2" />
-              )}
-              {isLoading ? "Loading..." : isEditing ? "Cancel" : "Edit Profile"}
-            </Button>
+            {showEditButton && (
+              <Button
+                onClick={handleEditToggle}
+                variant={isEditMode ? "outline" : "default"}
+                className={cn(
+                  "transition-all duration-300 w-full sm:w-auto",
+                  !isEditMode && "bg-blue-700 hover:bg-brand-blue-light"
+                )}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : isEditMode ? (
+                  <X className="w-4 h-4 mr-2" />
+                ) : (
+                  <Edit className="w-4 h-4 mr-2" />
+                )}
+                {isLoading
+                  ? "Loading..."
+                  : isEditMode
+                  ? "Cancel"
+                  : "Edit Profile"}
+              </Button>
+            )}
           </div>
         </div>
       </motion.header>

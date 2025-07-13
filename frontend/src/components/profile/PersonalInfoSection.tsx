@@ -1,33 +1,19 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Shield, ShieldCheck, User, Phone, MapPin, Users } from "lucide-react";
-import { ProfileData } from "@/services/profileService";
 import { useProfileStore } from "@/store/profileStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import ProfilePictureUpload from "./ProfilePictureUpload";
 import { cn } from "@/lib/utils";
 import {
   PersonalInfoFormData,
   personalInfoSchema,
 } from "@/schemas/profileSchema";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@radix-ui/react-select";
+import { ProfileData } from "@/types/profileTypes";
 
 interface PersonalInfoSectionProps {
   profile: ProfileData;
@@ -42,7 +28,6 @@ const PersonalInfoSection = ({
 }: PersonalInfoSectionProps) => {
   const { currentStep, setCurrentStep, setTempPersonalInfo, tempPersonalInfo } =
     useProfileStore();
-  console.log(profile);
   const {
     register,
     handleSubmit,
@@ -54,6 +39,7 @@ const PersonalInfoSection = ({
       lastName: tempPersonalInfo?.lastName ?? profile.lastName ?? "",
       email: tempPersonalInfo?.email ?? profile.email ?? "",
       phoneNumber: tempPersonalInfo?.phoneNumber ?? profile.phoneNumber ?? "",
+      gender: tempPersonalInfo?.gender ?? profile.gender ?? "",
       username: tempPersonalInfo?.username ?? profile.username ?? "",
       fatherName: tempPersonalInfo?.fatherName ?? profile.fatherName ?? "",
       motherName: tempPersonalInfo?.motherName ?? profile.motherName ?? "",

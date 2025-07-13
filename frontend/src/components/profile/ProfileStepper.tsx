@@ -58,7 +58,7 @@ const ProfileStepper = ({
         const Icon = step.icon;
         const isActive = currentStep === step.id;
         const isCompleted = currentStep > step.id;
-        const isClickable = !isEditing ;
+        const isClickable = !isEditing;
         // const isClickable = true;
 
         return (
@@ -91,7 +91,7 @@ const ProfileStepper = ({
                 default: { duration: 0.3 },
               }}
             >
-              {isCompleted ? (
+              {isEditing && isCompleted ? (
                 <Check className="w-5 h-5" />
               ) : (
                 <Icon className="w-5 h-5" />

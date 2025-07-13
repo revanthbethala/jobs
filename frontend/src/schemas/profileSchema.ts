@@ -17,16 +17,26 @@ export const personalInfoSchema = z.object({
   state: z.string().min(1, "City is required"),
   country: z.string().min(1, "Country is required"),
 });
+const currentYear = new Date().getFullYear();
 
 export const educationSchema = z.object({
-  educationalLevel: z.string().min(1, "Level is required"),
+  educationalLevel: z.string().min(1, "Education level is required"),
   institution: z.string().min(1, "Institution is required"),
   specialization: z.string().optional(),
-  boardOrUniversity: z.string().min(1, "Board is required"),
-  percentage: z.number().min(1, "Percentage is required"),
-  passedOutYear: z.number().nonnegative().min(1, "Passed year is required"),
+  boardOrUniversity: z.string().min(1, "Board/University is required"),
+  percentage: z
+    .number({ invalid_type_error: "Percentage must be a number" })
+    .min(0, "Percentage cannot be less than 0")
+    .max(100, "Percentage cannot be more than 100"),
+  passedOutYear: z
+    .number({ invalid_type_error: "Passed out year must be a number" })
+    // .min(1950, "Year must be 1950 or later")
+    .max(currentYear + 10, `Year must not be beyond ${currentYear + 10}`),
   location: z.string().min(1, "Location is required"),
-  noOfActiveBacklogs: z.number().nonnegative().default(0),
+  noOfActiveBacklogs: z
+    .number({ invalid_type_error: "Backlogs must be a number" })
+    .min(0, "Backlogs cannot be negative")
+    .default(0),
 });
 
 export const profileSchema = z.object({

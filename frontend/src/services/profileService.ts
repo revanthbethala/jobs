@@ -1,47 +1,14 @@
 import { useAuthStore } from "@/store/authStore";
+import { ProfileData } from "@/types/profileTypes";
 import axios from "axios";
-
-export interface ProfileData {
-  isVerified: boolean;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  gender: string;
-  username: string;
-  role: "USER" | "ADMIN";
-  fatherName: string;
-  motherName: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  profilePicture: string;
-  resume: string;
-  education: EducationItem[];
-}
-
-export interface EducationItem {
-  id?: string;
-  educationalLevel?: string;
-  institution: string;
-  specialization?: string;
-  board: string;
-  percentage?: string;
-  passedOutYear: string;
-  location: string;
-  activeBacklogs: number;
-}
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL + "/api/users"; // Ensure this is set in your .env
 
-// Get authorization headers with token
 const getAuthHeaders = (token: string) => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${token}`,
 });
 
-// ✅ Get user profile
 export const getProfile = async () => {
   try {
     const token = useAuthStore.getState().token;

@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-
 export const createJob = async (req: Request, res: Response) => {
   try {
     const {
@@ -22,8 +21,8 @@ export const createJob = async (req: Request, res: Response) => {
       companyEmail,
       companyPhone,
       lastDateToApply,
-      allowedBranches,   
-      allowedPassingYears,      
+      allowedBranches,
+      allowedPassingYears,
     } = req.body;
 
     const job = await prisma.job.create({
@@ -41,8 +40,8 @@ export const createJob = async (req: Request, res: Response) => {
         companyLogo,
         companyEmail,
         companyPhone,
-        allowedBranches,  
-        allowedPassingYears,    
+        allowedBranches,
+        allowedPassingYears,
         lastDateToApply: lastDateToApply ? new Date(lastDateToApply) : null,
         rounds: {
           create: Array.isArray(rounds)
@@ -68,13 +67,12 @@ export const createJob = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getAllJobs = async (_req: Request, res: Response) => {
   try {
     const jobs = await prisma.job.findMany({
       include: {
         rounds: {
-          orderBy: { roundNumber: "asc" }, 
+          orderBy: { roundNumber: "asc" },
         },
       },
       orderBy: { postedDate: "desc" },
@@ -84,7 +82,6 @@ export const getAllJobs = async (_req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch jobs", error: err });
   }
 };
-
 
 export const getJobById = async (req: Request, res: Response) => {
   try {
@@ -107,7 +104,6 @@ export const getJobById = async (req: Request, res: Response) => {
   }
 };
 
-
 export const updateJob = async (req: Request, res: Response) => {
   const jobId = req.params.id;
   const dataToUpdate = req.body;
@@ -122,18 +118,32 @@ export const updateJob = async (req: Request, res: Response) => {
       where: { id: jobId },
       data: {
         ...(dataToUpdate.jobTitle && { jobTitle: dataToUpdate.jobTitle }),
-        ...(dataToUpdate.jobDescription && { jobDescription: dataToUpdate.jobDescription }),
-        ...(dataToUpdate.skillsRequired && { skillsRequired: dataToUpdate.skillsRequired }),
+        ...(dataToUpdate.jobDescription && {
+          jobDescription: dataToUpdate.jobDescription,
+        }),
+        ...(dataToUpdate.skillsRequired && {
+          skillsRequired: dataToUpdate.skillsRequired,
+        }),
         ...(dataToUpdate.location && { location: dataToUpdate.location }),
         ...(dataToUpdate.salary && { salary: dataToUpdate.salary }),
         ...(dataToUpdate.experience && { experience: dataToUpdate.experience }),
         ...(dataToUpdate.jobRole && { jobRole: dataToUpdate.jobRole }),
         ...(dataToUpdate.jobType && { jobType: dataToUpdate.jobType }),
-        ...(dataToUpdate.companyName && { companyName: dataToUpdate.companyName }),
-        ...(dataToUpdate.companyWebsite && { companyWebsite: dataToUpdate.companyWebsite }),
-        ...(dataToUpdate.companyLogo && { companyLogo: dataToUpdate.companyLogo }),
-        ...(dataToUpdate.companyEmail && { companyEmail: dataToUpdate.companyEmail }),
-        ...(dataToUpdate.companyPhone && { companyPhone: dataToUpdate.companyPhone }),
+        ...(dataToUpdate.companyName && {
+          companyName: dataToUpdate.companyName,
+        }),
+        ...(dataToUpdate.companyWebsite && {
+          companyWebsite: dataToUpdate.companyWebsite,
+        }),
+        ...(dataToUpdate.companyLogo && {
+          companyLogo: dataToUpdate.companyLogo,
+        }),
+        ...(dataToUpdate.companyEmail && {
+          companyEmail: dataToUpdate.companyEmail,
+        }),
+        ...(dataToUpdate.companyPhone && {
+          companyPhone: dataToUpdate.companyPhone,
+        }),
         ...(dataToUpdate.lastDateToApply && {
           lastDateToApply: new Date(dataToUpdate.lastDateToApply),
         }),
@@ -174,9 +184,11 @@ export const updateJob = async (req: Request, res: Response) => {
 
     const jobWithUpdatedRounds = await prisma.job.findUnique({
       where: { id: jobId },
-      include: { rounds: {
-        orderBy: { roundNumber: "asc"}
-      } },
+      include: {
+        rounds: {
+          orderBy: { roundNumber: "asc" },
+        },
+      },
     });
 
     return res.json({
@@ -188,7 +200,6 @@ export const updateJob = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to update job", error: err });
   }
 };
-
 
 export const deleteJob = async (req: Request, res: Response) => {
   try {

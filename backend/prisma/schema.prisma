@@ -15,29 +15,27 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  username    String?   @unique @db.VarChar(255)
-  email       String    @unique @db.VarChar(255)
-  password    String    @db.VarChar(255)
-  token       String?   @db.VarChar(255)
-  isVerified  Boolean   @default(false)
-  otp         String?   @db.VarChar(10)
-  otpExpiry   DateTime?
-  gender      String?   @db.VarChar(100)
-  firstName   String?   @db.VarChar(255)
-  lastName    String?   @db.VarChar(255)
-  phoneNumber String?   @db.VarChar(20)
-  address     String?   @db.VarChar(255)
-  fatherName  String?   @db.VarChar(255)
-  motherName  String?   @db.VarChar(255)
-  city        String?   @db.VarChar(100)
-  state       String?   @db.VarChar(100)
-  country     String?   @db.VarChar(100)
-  profilePicture  String?   @db.VarChar(1000)
-  resume      String?   @db.VarChar(1000)
-
+  id             String    @id @default(uuid())
+  username       String?   @unique @db.VarChar(255)
+  email          String    @unique @db.VarChar(255)
+  password       String    @db.VarChar(255)
+  token          String?   @db.VarChar(255)
+  isVerified     Boolean   @default(false)
+  otp            String?   @db.VarChar(10)
+  otpExpiry      DateTime?
+  gender         String?   @db.VarChar(100)
+  firstName      String?   @db.VarChar(255)
+  lastName       String?   @db.VarChar(255)
+  phoneNumber    String?   @db.VarChar(20)
+  address        String?   @db.VarChar(255)
+  fatherName     String?   @db.VarChar(255)
+  motherName     String?   @db.VarChar(255)
+  city           String?   @db.VarChar(100)
+  state          String?   @db.VarChar(100)
+  country        String?   @db.VarChar(100)
+  profilePicture String?   @db.VarChar(1000)
+  resume         String?   @db.VarChar(1000)
   role Role @default(USER)
-
   education    Education[]
   applications JobApplication[]
   roundResults Results[]
@@ -48,13 +46,12 @@ model Education {
   userId            String
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   educationalLevel  String  @db.VarChar(50)
-  institution   String  @db.VarChar(255)
+  institution       String  @db.VarChar(255)
   specialization    String? @db.VarChar(255)
   boardOrUniversity String? @db.VarChar(255)
   percentage        Float
   passedOutYear     Int
   location          String? @db.VarChar(255)
-
   noOfActiveBacklogs Int? @default(0)
 }
 

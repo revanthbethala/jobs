@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-import { sendJobApplicationEmail } from "../utils/email"; 
+import { sendJobApplicationEmail } from "../utils/email";
 
 export const applyToJob = async (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
@@ -28,7 +28,9 @@ export const applyToJob = async (req: Request, res: Response) => {
     });
 
     if (alreadyApplied) {
-      return res.status(400).json({ message: "You already applied for this job" });
+      return res
+        .status(400)
+        .json({ message: "You already applied for this job" });
     }
 
     const btech = user.education.find(
@@ -84,13 +86,14 @@ export const applyToJob = async (req: Request, res: Response) => {
       job.companyName
     );
 
-    return res.status(201).json({ message: "Application submitted", application });
+    return res
+      .status(201)
+      .json({ message: "Application submitted", application });
   } catch (error) {
     console.error("❌ Application failed:", error);
     return res.status(500).json({ message: "Failed to apply", error });
   }
 };
-
 
 export const getMyApplications = async (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
@@ -104,7 +107,9 @@ export const getMyApplications = async (req: Request, res: Response) => {
 
     return res.json({ applications: apps });
   } catch (error) {
-    return res.status(500).json({ message: "Failed to fetch applications", error });
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch applications", error });
   }
 };
 
@@ -129,12 +134,13 @@ export const getApplicationsForJob = async (req: Request, res: Response) => {
     return res.json({ jobTitle: job.jobTitle, applications });
   } catch (error) {
     console.error("Error fetching applications:", error);
-    return res.status(500).json({ message: "Failed to fetch applications", error });
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch applications", error });
   }
 };
 
 import ExcelJS from "exceljs";
-
 
 export const exportApplicationsExcel = async (req: Request, res: Response) => {
   const jobId = req.params.jobId;
@@ -155,7 +161,9 @@ export const exportApplicationsExcel = async (req: Request, res: Response) => {
 
     const eduLevelsSet = new Set<string>();
     applications.forEach((app) => {
-      app.user.education.forEach((edu) => eduLevelsSet.add(edu.educationalLevel));
+      app.user.education.forEach((edu) =>
+        eduLevelsSet.add(edu.educationalLevel)
+      );
     });
     const eduLevels = Array.from(eduLevelsSet);
 
@@ -206,8 +214,14 @@ export const exportApplicationsExcel = async (req: Request, res: Response) => {
       worksheet.addRow(rowData);
     });
 
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", `attachment; filename="applications_${job.jobTitle.replace(/\s+/g, "_")}.xlsx"`);
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="applications_${job.jobTitle.replace(/\s+/g, "_")}.xlsx"`
+    );
 
     await workbook.xlsx.write(res);
     res.end();
@@ -216,4 +230,3 @@ export const exportApplicationsExcel = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Failed to export Excel", error });
   }
 };
-

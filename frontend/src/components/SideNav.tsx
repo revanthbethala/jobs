@@ -1,23 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { User, Briefcase, FileText, LogOut, Menu, X } from "lucide-react";
+import {
+  User,
+  Briefcase,
+  FileText,
+  LogOut,
+  Menu,
+  X,
+  ChevronLeft,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
 
 const SideNav = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const navigate = useNavigate();
   const { logOut } = useAuthStore();
   const isMobile = useIsMobile();
+
+  // Handle responsive behavior
+  useEffect(() => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+      setIsCollapsed(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isMobile]);
+
   const handleLogout = () => {
     logOut();
     navigate("/");
   };
 
   const toggleSidebar = () => {
-    if (!isMobile) setIsSidebarOpen(!isSidebarOpen);
-    else setIsSidebarOpen(!isMobile);
+    if (isMobile) {
+      setIsSidebarOpen(!isSidebarOpen);
+    } else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
+
+  const closeMobileSidebar = () => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const navItems = [
@@ -26,87 +56,169 @@ const SideNav = () => {
     { name: "Applied Jobs", path: "/applied-jobs", icon: FileText },
   ];
 
+  const sidebarWidth = isCollapsed && !isMobile ? "w-16" : "w-64";
+  const mainMargin = isMobile ? "ml-0" : isCollapsed ? "ml-16" : "ml-64";
+
   return (
-    <div className="flex h-full bg-gray-50 overflow-hidden ">
+    <div className="flex h-screen bg-gray-50/50">
+      {/* Mobile Overlay */}
+      {isMobile && isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={closeMobileSidebar}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
         className={cn(
-          "bg-white shadow-lg h-full fixed top-0 left-0 flex flex-col justify-between transition-all duration-300 ease-in-out z-10",
-          isSidebarOpen ? "w-64" : "w-16"
+          "bg-white border-r border-gray-200/60 h-full fixed top-0 left-0 flex flex-col justify-between transition-all duration-300 ease-in-out z-50",
+          sidebarWidth,
+          isMobile
+            ? isSidebarOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+            : "translate-x-0"
         )}
       >
         {/* Sidebar Header */}
         <div>
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-            {isSidebarOpen && (
-              <h1 className="text-xl font-bold text-gray-800">Dashboard</h1>
+          <div className="h-16 px-4 border-b border-gray-200/60 flex items-center justify-between">
+            {(!isCollapsed || isMobile) && (
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
+                  <Briefcase className="h-4 w-4 text-white" />
+                </div>
+                <h1 className="text-lg font-semibold text-gray-900 tracking-tight">
+                  JobQuest
+                </h1>
+              </div>
             )}
-            <button
+
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={toggleSidebar}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="h-8 w-8 p-0 hover:bg-gray-100"
             >
-              {isSidebarOpen ? (
-                <X className="h-5 w-5 text-gray-600" />
+              {isMobile ? (
+                <X className="h-4 w-4" />
+              ) : isCollapsed ? (
+                <Menu className="h-4 w-4" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-600" />
+                <ChevronLeft className="h-4 w-4" />
               )}
-            </button>
+            </Button>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center px-1 py-3 gap-2 rounded-xl transition-all duration-200",
-                    "hover:bg-blue-50 hover:text-blue-600",
-                    isActive
-                      ? "bg-blue-100 text-blue-600  font-medium"
-                      : "text-gray-700",
-                    isSidebarOpen ? "" : "justify-center"
-                  )
-                }
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {isSidebarOpen && (
-                  <span className="text-sm font-medium">{item.name}</span>
-                )}
-              </NavLink>
-            ))}
+          <nav className="flex-1 p-3 space-y-1">
+            <div className="space-y-1">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={closeMobileSidebar}
+                  className={({ isActive }) =>
+                    cn(
+                      "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
+                      "hover:bg-gray-100 hover:text-gray-900",
+                      isActive
+                        ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
+                        : "text-gray-600",
+                      isCollapsed && !isMobile ? "justify-center px-2" : ""
+                    )
+                  }
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {(!isCollapsed || isMobile) && (
+                    <span className="ml-3 truncate">{item.name}</span>
+                  )}
+
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && !isMobile && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                      {item.name}
+                    </div>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           </nav>
         </div>
 
-        {/* Logout */}
-        <div className="p-4 border-t  border-gray-200">
-          <button
+        {/* User section and Logout */}
+        <div className="border-t border-gray-200/60 p-3 space-y-2">
+          {/* User info - only show when not collapsed */}
+          {/* {(!isCollapsed || isMobile) && (
+            <div className="flex items-center px-3 py-2 text-sm">
+              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <User className="h-4 w-4 text-gray-600" />
+              </div>
+              <div className="ml-3 flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  John Doe
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  john@example.com
+                </p>
+              </div>
+            </div>
+          )} */}
+
+          <Button
+            variant="ghost"
             onClick={handleLogout}
             className={cn(
-              "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200",
-              "hover:bg-red-50 hover:text-red-600 text-gray-700 w-full"
+              "w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors",
+              isCollapsed && !isMobile ? "px-2" : "px-3"
             )}
           >
-            <LogOut className="h-5 w-5 flex-shrink-0" />
-            {isSidebarOpen && (
-              <span className="text-sm font-medium">Logout</span>
-            )}
-          </button>
+            <LogOut className="h-4 w-4 flex-shrink-0" />
+            {(!isCollapsed || isMobile) && <span className="ml-3">Logout</span>}
+          </Button>
         </div>
       </aside>
 
       {/* Main content */}
       <div
         className={cn(
-          "lg:ml-16 ml-10 transition-all duration-300 w-full lg:p-6 px-3",
-          isSidebarOpen && "ml-64"
+          "flex-1 flex flex-col transition-all duration-300",
+          mainMargin
         )}
       >
-        <Outlet />
+        {/* Mobile header */}
+        {isMobile && (
+          <header className="h-16 bg-white border-b border-gray-200/60 flex items-center px-4 lg:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSidebar}
+              className="h-8 w-8 p-0 mr-3"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md flex items-center justify-center">
+                <Briefcase className="h-3 w-3 text-white" />
+              </div>
+              <h1 className="text-lg font-semibold text-gray-900">Job Quest</h1>
+            </div>
+          </header>
+        )}
+
+        {/* Page content */}
+        <main className="flex-1 overflow-auto">
+          <div className="p-4 md:p-6 lg:p-8">
+            <Outlet />
+          </div>
+        </main>
       </div>
     </div>
   );
 };
 
 export default SideNav;
+
+
+
