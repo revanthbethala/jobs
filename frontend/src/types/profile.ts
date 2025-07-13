@@ -5,7 +5,7 @@ export interface User {
   email: string;
   phone?: string;
   username?: string;
-  role: 'USER' | 'ADMIN';
+  role: "USER" | "ADMIN";
   profilePicture?: string;
   fatherName?: string;
   motherName?: string;
@@ -22,12 +22,19 @@ export interface User {
 
 export interface Education {
   id?: string;
-  level: 'btech' | 'mtech' | 'mba' | 'bpharmacy' | 'mpharmacy' | '12th' | '10th' | 'diploma';
+  educationLevel:
+    | "btech"
+    | "mtech"
+    | "mba"
+    | "bpharmacy"
+    | "mpharmacy"
+    | "12th"
+    | "10th"
+    | "diploma";
   institution: string;
   specialization?: string;
   board: string;
   percentage?: number;
-  cgpa?: number;
   passedYear: number;
   location: string;
   backlogs?: number;

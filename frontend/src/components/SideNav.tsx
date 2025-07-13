@@ -3,19 +3,21 @@ import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { User, Briefcase, FileText, LogOut, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const SideNav = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const { logOut } = useAuthStore();
-
+  const isMobile = useIsMobile();
   const handleLogout = () => {
     logOut();
     navigate("/");
   };
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    if (!isMobile) setIsSidebarOpen(!isSidebarOpen);
+    else setIsSidebarOpen(!isMobile);
   };
 
   const navItems = [
@@ -25,7 +27,7 @@ const SideNav = () => {
   ];
 
   return (
-    <div className="flex h-full bg-gray-50 overflow-hidden">
+    <div className="flex h-full bg-gray-50 overflow-hidden ">
       {/* Sidebar */}
       <aside
         className={cn(
@@ -59,11 +61,12 @@ const SideNav = () => {
                 to={item.path}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200",
+                    "flex items-center px-1 py-3 gap-2 rounded-xl transition-all duration-200",
                     "hover:bg-blue-50 hover:text-blue-600",
                     isActive
-                      ? "bg-blue-100 text-blue-600 font-medium"
-                      : "text-gray-700"
+                      ? "bg-blue-100 text-blue-600  font-medium"
+                      : "text-gray-700",
+                    isSidebarOpen ? "" : "justify-center"
                   )
                 }
               >
@@ -96,7 +99,7 @@ const SideNav = () => {
       {/* Main content */}
       <div
         className={cn(
-          "ml-16 transition-all duration-300 w-full p-6",
+          "lg:ml-16 ml-10 transition-all duration-300 w-full lg:p-6 px-3",
           isSidebarOpen && "ml-64"
         )}
       >

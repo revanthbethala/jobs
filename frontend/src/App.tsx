@@ -6,7 +6,7 @@ import { useAuthStore } from "./store/authStore";
 import SideNav from "./components/SideNav";
 import LandingPage from "./pages/Home";
 import Jobs from "./components/jobs/Jobs";
-import Profile from "./components/profile/ProfilePage.tsx";
+import Profile from "./pages/Profile";
 
 export default function App() {
   const { isLoggedIn } = useAuthStore();

@@ -13,7 +13,7 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
@@ -70,6 +70,7 @@ export default {
           white: "#FFFFFF",
         },
       },
+ 
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

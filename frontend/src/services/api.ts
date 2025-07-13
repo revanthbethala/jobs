@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/authStore";
-
+import Cookie from "js-cookie";
 const backend_url = `${import.meta.env.VITE_BACKEND_URL}/api/users`;
 
 // Helper to get token from Zustand store
 const getAuthToken = () => {
-  const store = useAuthStore.getState();
-  return store.token;
+  const token = Cookie.get("token");
+  return token;
 };
 
 export const getProfile = async () => {
@@ -25,7 +25,7 @@ export const getProfile = async () => {
   }
 };
 
-export const updateProfile = async (data: any) => {
+export const updateProfile = async (data: unknown) => {
   try {
     const token = getAuthToken();
     const res = await axios.put(`${backend_url}/update-profile`, data, {
