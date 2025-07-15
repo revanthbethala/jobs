@@ -127,7 +127,7 @@ export function JobDetails({ job, onBack }: JobDetailsProps) {
     } catch (err) {
       const err_msg = err?.response?.data?.message;
       toast({
-        title: err_msg ||"Unknown error occurred",
+        title: err_msg || "Unknown error occurred",
         variant: "destructive",
       });
     }
@@ -152,6 +152,7 @@ export function JobDetails({ job, onBack }: JobDetailsProps) {
     },
   };
   const navigate = useNavigate();
+  const rounds_info = !!job?.rounds;
   return (
     <div className="">
       {/* Header */}
@@ -304,113 +305,109 @@ export function JobDetails({ job, onBack }: JobDetailsProps) {
             <div className="lg:col-span-2 space-y-8">
               {/* Interview Process - TOP PRIORITY */}
               <motion.div variants={itemVariants}>
-                <Card className="border-0 shadow-lg">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <div className="p-2 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark rounded-lg">
-                        <Users className="w-6 h-6 text-white" />
-                      </div>
-                      Interview Process
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="relative">
-                      {/* Timeline Line */}
-                      <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-brand-blue-light to-brand-blue-dark opacity-30"></div>
+                {rounds_info && (
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader className="pb-4">
+                      <CardTitle className="flex items-center gap-3 text-2xl">
+                        <div className="p-2 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark rounded-lg">
+                          <Users className="w-6 h-6 text-white" />
+                        </div>
+                        Interview Process
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="relative">
+                        {/* Timeline Line */}
+                        <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-brand-blue-light to-brand-blue-dark opacity-30"></div>
+                        <div className="space-y-6">
+                          {job.rounds.map((round, index) => (
+                            <motion.div
+                              key={round.roundNumber}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="relative flex gap-4 group"
+                            >
+                              {/* Round Number Circle */}
+                              <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-200">
+                                {round.roundNumber}
+                              </div>
 
-                      <div className="space-y-6">
-                        {job.rounds.map((round, index) => (
-                          <motion.div
-                            key={round.roundNumber}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="relative flex gap-4 group"
-                          >
-                            {/* Round Number Circle */}
-                            <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-200">
-                              {round.roundNumber}
-                            </div>
-
-                            {/* Round Content */}
-                            <div className="flex-1 bg-gray-50 rounded-xl p-4 group-hover:bg-white group-hover:shadow-md transition-all duration-200">
-                              <h3 className="font-bold text-lg text-gray-900 mb-2">
-                                {round.roundName}
-                              </h3>
-                              <p className="text-gray-600 leading-relaxed">
-                                {round.description}
-                              </p>
-                            </div>
-                          </motion.div>
-                        ))}
+                              {/* Round Content */}
+                              <div className="flex-1 bg-gray-50 rounded-xl p-4 group-hover:bg-white group-hover:shadow-md transition-all duration-200">
+                                <h3 className="font-bold text-lg text-gray-900 mb-2">
+                                  {round.roundName}
+                                </h3>
+                                <p className="text-gray-600 leading-relaxed">
+                                  {round.description}
+                                </p>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                )}
               </motion.div>
 
               {/* Eligibility Criteria - TOP PRIORITY */}
-              <motion.div variants={itemVariants}>
-                <Card className="border-0 shadow-lg">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
-                        <GraduationCap className="w-6 h-6 text-white" />
-                      </div>
-                      Eligibility Criteria
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {job.allowedBranches.length > 0 ||
-                    job.allowedPassingYears.length > 0 ? (
-                      <div className="space-y-6">
-                        {job.allowedBranches.length > 0 && (
-                          <div>
-                            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                              Allowed Branches
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {job.allowedBranches.map((branch: string) => (
-                                <Badge
-                                  key={branch}
-                                  className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 px-3 py-1.5 text-sm font-medium"
-                                >
-                                  {branch}
-                                </Badge>
-                              ))}
-                            </div>
+              {job.allowedBranches.length > 0 ||
+                (job.allowedPassingYears.length > 0 && (
+                  <motion.div variants={itemVariants}>
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader className="pb-4">
+                        <CardTitle className="flex items-center gap-3 text-2xl">
+                          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                            <GraduationCap className="w-6 h-6 text-white" />
                           </div>
-                        )}
+                          Eligibility Criteria
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-6">
+                          {job.allowedBranches.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                Allowed Branches
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {job.allowedBranches.map((branch: string) => (
+                                  <Badge
+                                    key={branch}
+                                    className="bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 px-3 py-1.5 text-sm font-medium"
+                                  >
+                                    {branch}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
-                        {job.allowedPassingYears.length > 0 && (
-                          <div>
-                            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              Passing Years
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {job.allowedPassingYears.map((year: string) => (
-                                <Badge
-                                  key={year}
-                                  className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100 px-3 py-1.5 text-sm font-medium"
-                                >
-                                  {year}
-                                </Badge>
-                              ))}
+                          {job.allowedPassingYears.length > 0 && (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                Passing Years
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {job.allowedPassingYears.map((year: string) => (
+                                  <Badge
+                                    key={year}
+                                    className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100 px-3 py-1.5 text-sm font-medium"
+                                  >
+                                    {year}
+                                  </Badge>
+                                ))}
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                        <p>No specific eligibility criteria mentioned</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
 
               {/* Skills Required - MEDIUM PRIORITY */}
               <motion.div variants={itemVariants}>

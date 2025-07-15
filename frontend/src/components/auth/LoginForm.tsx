@@ -28,16 +28,18 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const new_data = { ...data};
+      const new_data = { ...data };
       const res = await userLogin(new_data);
       console.log(res);
       toast({
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
-      const { token, ...userDetails } = res;
-      loginToken(token, userDetails);
-      navigate("/");
+      console.log("login data", res);
+      const userId = res?.user?.id;
+      const { token } = res;
+      loginToken(token, userId);
+      navigate("/jobs");
     } catch (err) {
       if (err.response.status == 403) {
         toast({

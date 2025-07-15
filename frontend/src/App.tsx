@@ -7,6 +7,7 @@ import SideNav from "./components/SideNav";
 import LandingPage from "./pages/Home";
 import Profile from "./pages/Profile";
 import Jobs from "./pages/Jobs";
+import AppliedJobs from "./components/jobs/AppliedJobs";
 
 export default function App() {
   const { isLoggedIn } = useAuthStore();
@@ -19,6 +20,10 @@ export default function App() {
         ? [
             {
               index: true,
+              path: "/",
+              element: <Jobs />,
+            },
+            {
               path: "jobs",
               element: <Jobs />,
             },
@@ -29,6 +34,10 @@ export default function App() {
             {
               path: "profile",
               element: <Profile />,
+            },
+            {
+              path: "applied-jobs",
+              element: <AppliedJobs />,
             },
           ]
         : [],
