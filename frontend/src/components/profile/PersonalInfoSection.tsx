@@ -18,13 +18,11 @@ import { ProfileData } from "@/types/profileTypes";
 interface PersonalInfoSectionProps {
   profile: ProfileData;
   isEditing: boolean;
-  showAnimation: boolean;
 }
 
 const PersonalInfoSection = ({
   profile,
   isEditing,
-  showAnimation,
 }: PersonalInfoSectionProps) => {
   const { currentStep, setCurrentStep, setTempPersonalInfo, tempPersonalInfo } =
     useProfileStore();
@@ -132,14 +130,13 @@ const PersonalInfoSection = ({
       className="space-y-5 md:px-3 px-0 "
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: showAnimation ? 1.5 : 0 }}
+      // transition={{ duration: 0.6, delay: showAnimation ? 1.5 : 0 }}
     >
       {/* Profile Picture Section */}
       <div className="flex flex-col items-center justify-center space-y-4">
         <ProfilePictureUpload
           profilePicture={profile.profilePicture}
           isEditing={isEditing}
-          showAnimation={showAnimation}
         />
         {/* Verified Badge */}
         <Badge

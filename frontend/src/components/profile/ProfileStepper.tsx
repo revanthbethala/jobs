@@ -67,7 +67,7 @@ const ProfileStepper = ({
             className="relative z-10 "
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: index * 0.2 }}
+            // transition={{ delay: index * 0.2 }}
           >
             <motion.button
               onClick={() => isClickable && onStepClick(step.id)}
@@ -84,11 +84,11 @@ const ProfileStepper = ({
                 isClickable && "hover:scale-125 cursor-pointer",
                 !isClickable && "cursor-default"
               )}
-              whileHover={isClickable ? { scale: 1.25, y: -2 } : {}}
-              whileTap={isClickable ? { scale: 1.05 } : {}}
+              whileHover={isClickable ? { scale: 1.1, y: -2 } : {}}
+              whileTap={isClickable ? { scale: 1.15 } : {}}
               transition={{
                 boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-                default: { duration: 0.3 },
+                default: { ease: "easeIn" },
               }}
             >
               {isEditing && isCompleted ? (

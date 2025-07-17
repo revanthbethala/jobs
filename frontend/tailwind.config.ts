@@ -20,6 +20,7 @@ export default {
     },
     extend: {
       colors: {
+        pending: "hsl(var(--pending))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -70,7 +71,7 @@ export default {
           white: "#FFFFFF",
         },
       },
- 
+
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

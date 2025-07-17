@@ -63,11 +63,11 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full sm:w-96 bg-white shadow-2xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full  bg-white sm:w-96  z-50 overflow-y-auto"
           >
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
+              <div className="sticky top-0  border-b border-gray-200 p-6 z-10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark rounded-lg">
@@ -87,7 +87,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
               {/* Filter Content */}
               <div className="flex-1 p-6 space-y-6">
                 {/* Application Status */}
-                <div className="space-y-3">
+                {/* <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <div className="w-2 h-2 bg-brand-blue-light rounded-full"></div>
                     Application Status
@@ -118,7 +118,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
 
                 {/* Salary Range */}
                 <div className="space-y-3">
@@ -183,7 +183,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                 </div>
 
                 {/* Eligibility Filter */}
-                <div className="space-y-3">
+                {/* <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
                     Eligibility
@@ -201,7 +201,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                       <SelectItem value="experienced">Experienced Only</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                </div> */}
 
                 {/* Active Filters Display */}
                 {Object.values(filters).some(Boolean) && (
@@ -232,7 +232,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
               </div>
 
               {/* Footer */}
-              <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 space-y-3">
+              <div className="sticky bottom-0  border-t border-gray-200 p-6 space-y-3">
                 <Button
                   onClick={handleClearFilters}
                   variant="outline"

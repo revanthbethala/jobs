@@ -20,7 +20,6 @@ interface ProfilePictureUploadProps {
 const ProfilePictureUpload = ({
   profilePicture,
   isEditing,
-  showAnimation,
 }: ProfilePictureUploadProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -97,7 +96,7 @@ const ProfilePictureUpload = ({
     <div className="flex flex-col items-center space-y-4">
       <motion.div
         className="relative"
-        initial={showAnimation ? { scale: 0.8, opacity: 0 } : false}
+        // initial={showAnimation ? { scale: 0.8, opacity: 0 } : false}
         animate={{ scale: 1, opacity: 1 }}
         transition={{
           duration: 1.5,

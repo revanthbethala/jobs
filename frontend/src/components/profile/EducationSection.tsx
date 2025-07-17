@@ -216,34 +216,32 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                     <div className="space-y-2">
                       <Label className="flex items-center space-x-1">
                         <Award className="w-4 h-4" />
-                        <span>Education Level *</span>
+                        <span>Education Level</span>
+                        <span className="text-red-600">*</span>
                       </Label>
-                      {isEditing ? (
-                        <Select
-                          value={watch(`education.${index}.educationalLevel`)}
-                          onValueChange={(value) =>
-                            setValue(`education.${index}.educationalLevel`, value)
-                          }
+                      <Select
+                        disabled={!isEditing}
+                        value={watch(`education.${index}.educationalLevel`)}
+                        onValueChange={(value) =>
+                          setValue(`education.${index}.educationalLevel`, value)
+                        }
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            errors.education?.[index]?.educationalLevel &&
+                              "border-destructive focus:ring-destructive"
+                          )}
                         >
-                          <SelectTrigger
-                            className={cn(
-                              errors.education?.[index]?.educationalLevel &&
-                                "border-destructive focus:ring-destructive"
-                            )}
-                          >
-                            <SelectValue placeholder="Select level" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {educationLevels.map((level) => (
-                              <SelectItem key={level} value={level}>
-                                {level}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <div className="field-readonly">{field.educationalLevel}</div>
-                      )}
+                          <SelectValue placeholder="Select level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {educationLevels.map((level) => (
+                            <SelectItem key={level} value={level}>
+                              {level}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {errors.education?.[index]?.educationalLevel && (
                         <p className="text-sm text-destructive">
                           {errors.education[index]?.educationalLevel?.message}
@@ -259,6 +257,7 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                       <Input
                         {...register(`education.${index}.institution`)}
                         placeholder="Enter institution"
+                        disabled={!isEditing}
                         className={cn(
                           errors.education?.[index]?.institution &&
                             "border-destructive focus-visible:ring-destructive"
@@ -279,7 +278,10 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                         watch(`education.${index}.educationalLevel`)
                       ]?.length ? (
                         <Select
-                          value={watch(`education.${index}.specialization`) || ""}
+                          disabled={!isEditing}
+                          value={
+                            watch(`education.${index}.specialization`) || ""
+                          }
                           onValueChange={(value) =>
                             setValue(`education.${index}.specialization`, value)
                           }
@@ -308,7 +310,8 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                       <Label>Board / University *</Label>
                       <Input
                         {...register(`education.${index}.boardOrUniversity`)}
-                        placeholder="e.g., JNTUH"
+                        placeholder="JNTUH"
+                        disabled={!isEditing}
                         className={cn(
                           errors.education?.[index]?.boardOrUniversity &&
                             "border-destructive focus-visible:ring-destructive"
@@ -328,6 +331,7 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                       <Input
                         type="number"
                         placeholder="e.g., 85"
+                        disabled={!isEditing}
                         {...register(`education.${index}.percentage`, {
                           valueAsNumber: true,
                         })}
@@ -348,6 +352,7 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                       <Input
                         type="number"
                         placeholder="e.g., 2023"
+                        disabled={!isEditing}
                         {...register(`education.${index}.passedOutYear`, {
                           valueAsNumber: true,
                         })}
@@ -368,6 +373,7 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                     <div className="space-y-2">
                       <Label>Location *</Label>
                       <Input
+                        disabled={!isEditing}
                         {...register(`education.${index}.location`)}
                         placeholder="e.g., Hyderabad"
                         className={cn(
@@ -386,6 +392,7 @@ const EducationSection = ({ profile, isEditing }: EducationSectionProps) => {
                       <Label>Active Backlogs</Label>
                       <Input
                         type="number"
+                        disabled={!isEditing}
                         min={0}
                         {...register(`education.${index}.noOfActiveBacklogs`, {
                           valueAsNumber: true,

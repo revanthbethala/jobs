@@ -47,12 +47,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import { applyJob } from "@/services/jobServices";
 import { toast } from "@/hooks/use-toast";
-import { useAuthStore } from "@/store/authStore";
-import { updateProfile } from "@/services/api";
+import { cn } from "@/lib/utils";
 
 interface JobDetailsProps {
   job: Job;
   onBack: () => void;
+  applicationMeta?: {
+    status: string;
+  };
 }
 
 function getIncompleteFields(profile: ProfileData): number {
@@ -97,7 +99,8 @@ function getIncompleteFields(profile: ProfileData): number {
   return incompleteFields.length;
 }
 
-export function JobDetails({ job, onBack }: JobDetailsProps) {
+export function JobDetails({ job, onBack, applicationMeta }: JobDetailsProps) {
+  console.log(applicationMeta);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const isLongDescription = job.jobDescription.length > 300;
   const { profile, fetchProfile } = useProfileStore();
@@ -288,12 +291,23 @@ export function JobDetails({ job, onBack }: JobDetailsProps) {
                     <div className="text-right">
                       <p className="text-xl font-bold ">{job.salary}</p>
                     </div>
-                    <Button
-                      onClick={handleSubmit}
-                      className="bg-brand-blue-light hover:bg-brand-blue-dark transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                    >
-                      Apply Now
-                    </Button>
+                    {applicationMeta?.status ? (
+                      <Button
+                        className={cn(
+                          applicationMeta?.status && "bg-pending hover:bg-pending/80",
+                          "py-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        )}
+                      >
+                        {applicationMeta?.status}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleSubmit}
+                        className="bg-brand-blue-light hover:bg-brand-blue-dark transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      >
+                        Apply Now
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

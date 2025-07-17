@@ -13,6 +13,17 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const SideNav = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -123,9 +134,7 @@ const SideNav = () => {
                     cn(
                       "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
                       "hover:bg-gray-100 hover:text-gray-900",
-                      isActive
-                        ? "bg-blue-50 text-blue-700 border-r-2 border-blue-600"
-                        : "text-gray-600",
+                      isActive ? "bg-blue-50 text-blue-700 " : "text-gray-600",
                       isCollapsed && !isMobile ? "justify-center px-2" : ""
                     )
                   }
@@ -166,17 +175,41 @@ const SideNav = () => {
             </div>
           )} */}
 
-          <Button
-            variant="ghost"
-            onClick={handleLogout}
-            className={cn(
-              "w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors",
-              isCollapsed && !isMobile ? "px-2" : "px-3"
-            )}
-          >
-            <LogOut className="h-4 w-4 flex-shrink-0" />
-            {(!isCollapsed || isMobile) && <span className="ml-3">Logout</span>}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-100 transition-colors",
+                  isCollapsed && !isMobile ? "px-2" : "px-3"
+                )}
+              >
+                <LogOut className="h-4 w-4 flex-shrink-0" />
+                {(!isCollapsed || isMobile) && (
+                  <span className="ml-3">Logout</span>
+                )}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Are you sure you want to log out?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will end your session and redirect you to home
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-600"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </aside>
 
@@ -219,6 +252,3 @@ const SideNav = () => {
 };
 
 export default SideNav;
-
-
-

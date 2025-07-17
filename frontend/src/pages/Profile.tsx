@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Edit, Save, X, User, Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 import PersonalInfoSection from "@/components/profile/PersonalInfoSection";
@@ -32,16 +30,11 @@ const Profile: React.FC<ProfileProps> = ({
     setCurrentStep,
   } = useProfileStore();
 
-  const [showInitialAnimation, setShowInitialAnimation] = useState(true);
 
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setShowInitialAnimation(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     // Ensure edit mode is true when forced
@@ -67,7 +60,7 @@ const Profile: React.FC<ProfileProps> = ({
           <PersonalInfoSection
             profile={profile}
             isEditing={isEditMode}
-            showAnimation={showInitialAnimation}
+            // showAnimation={showInitialAnimation}
           />
         );
       case 1:
@@ -81,41 +74,8 @@ const Profile: React.FC<ProfileProps> = ({
 
   if (isLoading && !profile) {
     return (
-      <div className="min-h-screen bg-gradient-subtle p-4 md:p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-            <div className="flex items-center gap-3">
-              <Skeleton className="w-8 h-8 rounded-full" />
-              <Skeleton className="w-32 h-8" />
-            </div>
-            <Skeleton className="w-24 h-10" />
-          </div>
-
-          <div className="flex justify-center mb-8">
-            <Skeleton className="w-32 h-32 rounded-full" />
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-8 mb-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex flex-col items-center">
-                <Skeleton className="w-12 h-12 rounded-full" />
-                <Skeleton className="w-16 h-4 mt-2" />
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-4">
-                <Skeleton className="w-32 h-6" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Skeleton className="w-full h-10" />
-                  <Skeleton className="w-full h-10" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="h-screen flex items-center justify-center">
+        <Loader2 size={30} className="animate-spin text-blue-600 "/>
       </div>
     );
   }
@@ -142,7 +102,7 @@ const Profile: React.FC<ProfileProps> = ({
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        // transition={{ duration: 0.5 }}
       >
         <div className="max-w-3xl mx-auto px-4 md:px-4 py-4">
           <div className="flex flex-wrap gap-4 justify-between items-center">
@@ -197,7 +157,7 @@ const Profile: React.FC<ProfileProps> = ({
           layout
           transition={{ duration: 0.3 }}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence >
             <motion.div
               key={currentStep}
               initial={{ opacity: 0, x: 20 }}

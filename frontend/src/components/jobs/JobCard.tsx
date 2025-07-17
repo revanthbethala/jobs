@@ -90,18 +90,18 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm text-gray-700 line-clamp-2">
+            {/* <p className="text-sm text-gray-700 line-clamp-2">
               {job.jobDescription}
-            </p>
+            </p> */}
             <div className="flex flex-wrap gap-1">
-              {job.skillsRequired.slice(0, 3).map((skill) => (
+              {job.skillsRequired.slice(0, 4).map((skill) => (
                 <Badge key={skill} variant="outline" className="text-xs">
                   {skill}
                 </Badge>
               ))}
-              {job.skillsRequired.length > 3 && (
+              {job.skillsRequired.length > 4 && (
                 <Badge variant="outline" className="text-xs">
-                  +{job.skillsRequired.length - 3} more
+                  +{job.skillsRequired.length - 4} more
                 </Badge>
               )}
             </div>

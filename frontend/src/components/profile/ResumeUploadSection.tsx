@@ -31,6 +31,7 @@ const ResumeUploadSection = () => {
     updateProfile,
     setEditing,
     forceEditing,
+    fetchProfile
   } = useProfileStore();
 
   const handleFileSelect = async (
@@ -132,6 +133,7 @@ const ResumeUploadSection = () => {
     // } else {
     setCurrentStep(0);
     setEditing(false);
+  fetchProfile()
   };
 
   return (
