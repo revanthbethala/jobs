@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Control, useController } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Upload, X, Image } from "lucide-react";
-
+import { toast } from "@/components/ui/use-toast";
 interface FileInputProps {
   label: string;
   error?: string;
@@ -28,7 +28,16 @@ export const FileInput: React.FC<FileInputProps> = ({
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      field.onChange(file);
+      if (file.size <= 3 * 1024 * 1024) {
+        field.onChange(file);
+      } else {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 3MB.",
+          variant: "destructive",
+        });
+        fileInputRef.current!.value = "";
+      }
     }
   };
 
@@ -43,7 +52,15 @@ export const FileInput: React.FC<FileInputProps> = ({
     event.preventDefault();
     const file = event.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      field.onChange(file);
+      if (file.size <= 3 * 1024 * 1024) {
+        field.onChange(file);
+      } else {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 3MB.",
+          variant: "destructive",
+        });
+      }
     }
   };
 

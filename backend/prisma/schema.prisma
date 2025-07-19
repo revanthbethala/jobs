@@ -25,17 +25,19 @@ model User {
   otp        String?   @db.VarChar(10)
   otpExpiry  DateTime?
 
-  firstName   String? @db.VarChar(255)
-  lastName    String? @db.VarChar(255)
-  phoneNumber String? @db.VarChar(20)
-  address     String? @db.VarChar(255)
-  fatherName  String? @db.VarChar(255)
-  motherName  String? @db.VarChar(255)
-  city        String? @db.VarChar(100)
-  state       String? @db.VarChar(100)
-  country     String? @db.VarChar(100)
-  profilePic  String? @db.VarChar(500)
-  resume      String? @db.VarChar(500)
+  firstName   String?   @db.VarChar(255)
+  lastName    String?   @db.VarChar(255)
+  collegeId   String?   @db.VarChar(100)
+  dateOfBirth DateTime?
+  phoneNumber String?   @db.VarChar(20)
+  address     String?   @db.VarChar(255)
+  fatherName  String?   @db.VarChar(255)
+  motherName  String?   @db.VarChar(255)
+  city        String?   @db.VarChar(100)
+  state       String?   @db.VarChar(100)
+  country     String?   @db.VarChar(100)
+  profilePic  String?   @db.VarChar(500)
+  resume      String?   @db.VarChar(500)
 
   role Role @default(USER)
 

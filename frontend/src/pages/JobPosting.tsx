@@ -110,9 +110,15 @@ const buildFormData = (data: JobFormData): FormData => {
   }
 
   // Handle interview rounds - send as JSON string for backend parsing
-  if (interviewRounds && interviewRounds.length > 0) {
-    formData.append("rounds", interviewRounds.join(","));
-  }
+  const interviewRoundsArray = Array.isArray(interviewRounds)
+    ? interviewRounds.map((round) => ({
+        roundNumber: round.roundNumber,
+        roundName: round.roundName,
+        description: round.description,
+      }))
+    : [];
+    formData.append("rounds", JSON.stringify(interviewRoundsArray));
+
   // Handle skillsRequired - send as JSON string for backend parsing
   if (skillsRequired && skillsRequired.length > 0) {
     formData.append("skillsRequired", skillsRequired.join(","));
@@ -134,7 +140,7 @@ const buildFormData = (data: JobFormData): FormData => {
     if (value === null || value === undefined) return;
     formData.append(key, String(value));
   });
-
+console.log("Form Data:", formData);
   return formData;
 };
 
