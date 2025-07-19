@@ -1,8 +1,20 @@
-import AppliedJobs from "@/components/jobs/AppliedJobs";
-import { AppliedJob, Job, JobFilters } from "@/types/jobTypes";
+import { JobFormData } from "@/schemas/jobsSchema";
+import { AppliedJob, InterviewRound, Job, JobFilters } from "@/types/jobTypes";
 import { create } from "zustand";
 
 interface JobStore {
+  // Form
+  formData: JobFormData;
+  updateField: <K extends keyof JobFormData>(
+    field: K,
+    value: JobFormData[K]
+  ) => void;
+  addInterviewRound: () => void;
+  removeInterviewRound: (id: string) => void;
+  updateInterviewRound: (id: string, updates: Partial<InterviewRound>) => void;
+  resetForm: () => void;
+
+  // Jobs
   jobs: Job[];
   filteredJobs: Job[];
   filters: JobFilters;
@@ -10,7 +22,6 @@ interface JobStore {
   error: string | null;
   selectedJob: Job | null;
   appliedJob: AppliedJob | null;
-  // Actions
   setJobs: (jobs: Job[]) => void;
   setFilters: (filters: Partial<JobFilters>) => void;
   clearFilters: () => void;
@@ -21,16 +32,85 @@ interface JobStore {
   applyFilters: () => void;
 }
 
+// ---------------- Initial Data ----------------
+const initialFormData: JobFormData = {
+  jobTitle: "",
+  jobDescription: "",
+  skillsRequired: [],
+  location: "",
+  salary: "",
+  experience: "",
+  jobRole: "",
+  jobType: "",
+  companyName: "",
+  companyWebsite: "",
+  companyLogo: null,
+  companyEmail: "",
+  companyPhone: "",
+  allowedBranches: [],
+  allowedPassingYears: [],
+  lastDateToApply: null,
+  interviewRounds: [],
+};
+
 const initialFilters: JobFilters = {
   searchTitle: "",
-  status: "", // Replace companyName with status
+  status: "",
   salaryRange: "",
   experience: "",
   postedDate: "",
   eligibility: "",
 };
 
+// ---------------- Store ----------------
 export const useJobStore = create<JobStore>((set, get) => ({
+  // Form
+  formData: initialFormData,
+
+  updateField: (field, value) =>
+    set((state) => ({
+      formData: { ...state.formData, [field]: value },
+    })),
+
+  addInterviewRound: () =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        interviewRounds: [
+          ...state.formData.interviewRounds,
+          {
+            id: Date.now().toString(),
+            roundNumber: state.formData.interviewRounds.length + 1,
+            roundName: "",
+            description: "",
+          },
+        ],
+      },
+    })),
+
+  removeInterviewRound: (id) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        interviewRounds: state.formData.interviewRounds
+          .filter((round) => round.id !== id)
+          .map((round, index) => ({ ...round, roundNumber: index + 1 })),
+      },
+    })),
+
+  updateInterviewRound: (id, updates) =>
+    set((state) => ({
+      formData: {
+        ...state.formData,
+        interviewRounds: state.formData.interviewRounds.map((round) =>
+          round.id === id ? { ...round, ...updates } : round
+        ),
+      },
+    })),
+
+  resetForm: () => set({ formData: initialFormData }),
+
+  // Jobs
   jobs: [],
   filteredJobs: [],
   filters: initialFilters,
@@ -57,39 +137,33 @@ export const useJobStore = create<JobStore>((set, get) => ({
   },
 
   setSelectedJob: (job) => set({ selectedJob: job }),
+  setAppliedJob: (appliedJob) => set({ appliedJob }),
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
-  setAppliedJob: (appliedJob) => set({ appliedJob: appliedJob }),
+
   applyFilters: () => {
     const { jobs, filters } = get();
     let filtered = [...jobs];
 
-    // Search by job title
     if (filters.searchTitle) {
       filtered = filtered.filter((job) =>
         job.jobTitle.toLowerCase().includes(filters.searchTitle.toLowerCase())
       );
     }
 
-    // Filter by status (this would typically come from user application data)
     if (filters.status) {
-      // For demo purposes, we'll randomly assign statuses
-      // In real implementation, this would filter based on user's application status
-      filtered = filtered.filter((job) => {
-        const statuses = ["pending", "accepted", "rejected"];
+      const statuses = ["pending", "accepted", "rejected"];
+      filtered = filtered.filter(() => {
         const randomStatus =
           statuses[Math.floor(Math.random() * statuses.length)];
         return filters.status === "all" || randomStatus === filters.status;
       });
     }
 
-    // Rest of the filtering logic remains the same...
-    // Filter by salary range
     if (filters.salaryRange) {
       filtered = filtered.filter((job) => {
-        console.log(job);
         const salary = job.salary.replace(/[₹,\s]/g, "").split("-")[0];
-        const salaryNum = Number.parseInt(salary);
+        const salaryNum = parseInt(salary);
         switch (filters.salaryRange) {
           case "0-5":
             return salaryNum <= 500000;
@@ -105,7 +179,6 @@ export const useJobStore = create<JobStore>((set, get) => ({
       });
     }
 
-    // Filter by experience
     if (filters.experience) {
       filtered = filtered.filter((job) => {
         const exp = job.experience.toLowerCase();
@@ -119,27 +192,19 @@ export const useJobStore = create<JobStore>((set, get) => ({
           case "3-5":
             return exp.includes("3") || exp.includes("4") || exp.includes("5");
           case "5+":
-            return (
-              exp.includes("5+") ||
-              exp.includes("6") ||
-              exp.includes("7") ||
-              exp.includes("8") ||
-              exp.includes("9")
-            );
+            return ["5", "6", "7", "8", "9"].some((e) => exp.includes(e));
           default:
             return true;
         }
       });
     }
 
-    // Filter by posted date
     if (filters.postedDate) {
       const now = new Date();
       filtered = filtered.filter((job) => {
         const postedDate = new Date(job.postedDate);
         const diffTime = Math.abs(now.getTime() - postedDate.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
         switch (filters.postedDate) {
           case "7":
             return diffDays <= 7;

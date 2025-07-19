@@ -1,3 +1,5 @@
+import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
+
 export interface Job {
   id: string;
   jobTitle: string;
@@ -42,3 +44,53 @@ export interface JobFilters {
   postedDate: string;
   eligibility: string;
 }
+
+export interface InterviewRound {
+  id: string;
+  roundNumber: number;
+  roundName: string;
+  description: string;
+}
+
+export interface JobFormData {
+  jobTitle: string;
+  jobDescription: string;
+  jobSector: string;
+  customSector:string
+  skillsRequired: string[];
+  location: string;
+  salary: string;
+  experience: string;
+  jobRole: string;
+  jobType: string;
+  companyName: string;
+  companyWebsite: string;
+  companyLogo: File | null;
+  companyEmail: string;
+  companyPhone: string;
+  allowedBranches: string[];
+  allowedPassingYears: string[];
+  lastDateToApply: Date | null;
+  interviewRounds: InterviewRound[];
+}
+
+export interface AppliedJob {
+  jobId: string;
+  appliedAt: string;
+  status: string;
+}
+
+// Props shared by all form sections in JobPosting page
+export interface SectionBaseProps {
+  register: UseFormRegister<JobFormData>;
+  control: Control<JobFormData>;
+  errors: FieldErrors<JobFormData>;
+}
+
+export interface JobDetailsSectionProps extends SectionBaseProps {
+  showCustomSector: boolean;
+}
+
+export type CompanyInformationSectionProps = SectionBaseProps;
+export type EligibilityCriteriaSectionProps = SectionBaseProps;
+export type ApplicationDeadlineSectionProps = SectionBaseProps;

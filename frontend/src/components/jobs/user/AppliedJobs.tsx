@@ -1,10 +1,7 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUserApplications } from "@/services/jobServices";
 import { useJobStore } from "@/store/jobStore";
-import { JobDetails } from "./JobDetails";
 import type { AppliedJob } from "@/types/jobTypes";
 import {
   Table,
@@ -18,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import JobDetails from "./JobDetails";
 
 function AppliedJobs() {
   const [applications, setApplications] = useState<AppliedJob[]>([]);
@@ -100,7 +98,8 @@ function AppliedJobs() {
                 <TableCell>
                   <Badge
                     className={cn(
-                      app.status.toLowerCase() === "pending" && "bg-pending hover:bg-pending/90 text-gray-100"
+                      app.status.toLowerCase() === "pending" &&
+                        "bg-pending hover:bg-pending/90 text-gray-100"
                     )}
                     variant={
                       app.status === "selected"

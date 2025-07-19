@@ -19,7 +19,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoggedIn: boolean;
   userId: string | null;
-
+  role: string | null;
   setUserType: (type: UserType) => void;
   setCurrentStep: (step: AuthStep) => void;
   setEmail: (email: string) => void;
@@ -28,15 +28,15 @@ interface AuthState {
   setAuthenticated: (status: boolean) => void;
   setLoggedIn: (status: boolean) => void;
   setUserId: (userId: string) => void;
-
-  loginToken: (token: string, userId: string) => void;
+  setRole: (role: string) => void;
+  loginToken: (token: string, role: string) => void;
   logOut: () => void;
   reset: () => void;
 }
 
 // Get token and userId from cookies
 const storedToken = Cookies.get("token") || "";
-const storedUserId = Cookies.get("userId") || null;
+const storedRole = Cookies.get("role") || null;
 
 export const useAuthStore = create<AuthState>((set) => ({
   userType: "user",
@@ -46,7 +46,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: storedToken,
   isAuthenticated: !!storedToken,
   isLoggedIn: !!storedToken,
-  userId: storedUserId,
+  userId: "",
+  role: storedRole,
 
   setUserType: (type) => set({ userType: type }),
   setCurrentStep: (step) => set({ currentStep: step }),
@@ -56,15 +57,15 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuthenticated: (status) => set({ isAuthenticated: status }),
   setLoggedIn: (status) => set({ isLoggedIn: status }),
   setUserId: (userId) => set({ userId }),
-
-  loginToken: (token, userId) => {
+  setRole: (role) => set({ role }),
+  loginToken: (token, role) => {
     Cookies.set("token", token);
-    Cookies.set("userId", userId);
+    Cookies.set("role", role);
     set({
       token,
       isLoggedIn: true,
       isAuthenticated: true,
-      userId,
+      role: role,
     });
   },
 
@@ -77,7 +78,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       isAuthenticated: false,
       email: "",
       username: "",
-      userId: null,
+      role: "",
     });
   },
 
@@ -88,6 +89,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       email: "",
       username: "",
       token: "",
+      role: "",
       isAuthenticated: false,
       isLoggedIn: false,
       userId: null,

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Briefcase } from "lucide-react";
-import { TopFilterBar } from "@/components/jobs/TopFilterBar";
-import FilterSidebar from "@/components/jobs/FilterSideBar";
-import { JobSkeleton } from "@/components/jobs/JobSkeleton";
-import JobCard from "@/components/jobs/JobCard";
+import { TopFilterBar } from "@/components/jobs/user/TopFilterBar";
+import FilterSidebar from "@/components/jobs/user/FilterSideBar";
+import { JobSkeleton } from "@/components/jobs/user/JobSkeleton";
+import JobCard from "@/components/jobs/user/JobCard";
 import { useJobStore } from "@/store/jobStore";
-import { JobDetails } from "@/components/jobs/JobDetails";
 import { useQuery } from "@tanstack/react-query";
 import { getAllJobs } from "@/services/jobServices";
+import JobDetails from "@/components/jobs/user/JobDetails";
 
 export default function Jobs() {
   const { filteredJobs, selectedJob, jobs, setJobs, setSelectedJob } =

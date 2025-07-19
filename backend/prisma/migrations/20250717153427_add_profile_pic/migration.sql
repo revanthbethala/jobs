@@ -8,3 +8,6 @@
 -- AlterTable
 ALTER TABLE "Education" DROP COLUMN "schoolOrCollege",
 ADD COLUMN     "institution" VARCHAR(255) NOT NULL;
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "gender" VARCHAR(100);

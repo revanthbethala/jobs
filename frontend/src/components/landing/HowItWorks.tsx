@@ -1,34 +1,37 @@
-
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { motion, Variants } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 const HowItWorks = () => {
   const steps = [
     {
       number: "01",
       title: "Create Your Profile",
-      description: "Build a comprehensive profile showcasing your skills, experience, and career goals.",
-      icon: "👤"
+      description:
+        "Build a comprehensive profile showcasing your skills, experience, and career goals.",
+      icon: "👤",
     },
     {
       number: "02",
       title: "Get Matched",
-      description: "Our AI algorithm finds relevant job opportunities that align with your profile and preferences.",
-      icon: "🔍"
+      description:
+        "Our AI algorithm finds relevant job opportunities that align with your profile and preferences.",
+      icon: "🔍",
     },
     {
       number: "03",
       title: "Apply & Interview",
-      description: "Apply to matched positions and ace your interviews with our preparation tools.",
-      icon: "📝"
+      description:
+        "Apply to matched positions and ace your interviews with our preparation tools.",
+      icon: "📝",
     },
     {
       number: "04",
       title: "Land Your Dream Job",
-      description: "Negotiate offers and start your new career journey with confidence and support.",
-      icon: "🎉"
-    }
+      description:
+        "Negotiate offers and start your new career journey with confidence and support.",
+      icon: "🎉",
+    },
   ];
 
   const containerVariants = {
@@ -37,21 +40,21 @@ const HowItWorks = () => {
       opacity: 1,
       transition: {
         delayChildren: 0.2,
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
 
-  const stepVariants = {
+  const stepVariants: Variants = {
     hidden: { y: 50, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
@@ -64,14 +67,18 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <Badge variant="outline" className="mb-4 text-brand-blue-dark border-brand-blue-dark">
+          <Badge
+            variant="outline"
+            className="mb-4 text-brand-blue-dark border-brand-blue-dark"
+          >
             How It Works
           </Badge>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-gray-dark mb-6">
             Your Path to Career Success
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Follow our simple 4-step process to find and land your dream job with JobQuest.
+            Follow our simple 4-step process to find and land your dream job
+            with JobQuest.
           </p>
         </motion.div>
 
@@ -86,7 +93,7 @@ const HowItWorks = () => {
           >
             {/* Connection Line - positioned to align with step icons */}
             <div className="absolute top-10 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-blue-dark to-brand-blue-light z-0"></div>
-            
+
             <div className="grid grid-cols-4 gap-8 relative z-10">
               {steps.map((step, index) => (
                 <motion.div
@@ -101,8 +108,8 @@ const HowItWorks = () => {
                     >
                       <span className="text-2xl">{step.icon}</span>
                     </motion.div>
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="absolute -top-2 -right-2 bg-white text-brand-blue-dark border-2 border-brand-blue-dark font-bold"
                     >
                       {step.number}
@@ -143,8 +150,8 @@ const HowItWorks = () => {
                     >
                       <span className="text-xl">{step.icon}</span>
                     </motion.div>
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="absolute -top-2 -right-2 bg-white text-brand-blue-dark border-2 border-brand-blue-dark font-bold text-xs"
                     >
                       {step.number}
@@ -177,7 +184,8 @@ const HowItWorks = () => {
               Ready to Get Started?
             </h3>
             <p className="text-gray-600 mb-6">
-              Join thousands of professionals who have transformed their careers with JobQuest.
+              Join thousands of professionals who have transformed their careers
+              with JobQuest.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}

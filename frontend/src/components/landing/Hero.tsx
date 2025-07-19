@@ -1,5 +1,6 @@
 import { motion, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const containerVariants: Variants = {
@@ -12,7 +13,7 @@ const Hero = () => {
       },
     },
   };
-
+  const navigate = useNavigate();
   const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -73,6 +74,7 @@ const Hero = () => {
             <Button
               size="lg"
               className="bg-white text-brand-blue-dark hover:bg-gray-100 font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+              onClick={() => navigate("/auth")}
             >
               Start Your Search
             </Button>

@@ -99,7 +99,7 @@ function getIncompleteFields(profile: ProfileData): number {
   return incompleteFields.length;
 }
 
-export function JobDetails({ job, onBack, applicationMeta }: JobDetailsProps) {
+export default function JobDetails({ job, onBack, applicationMeta }: JobDetailsProps) {
   console.log(applicationMeta);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const isLongDescription = job.jobDescription.length > 300;

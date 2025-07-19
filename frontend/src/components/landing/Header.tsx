@@ -42,9 +42,10 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
   const navItems = [
-    { name: "Home", href: !isLoggedIn ? "#home" : "/" },
-    { name: "Dashboard", href: "#about" },
-    { name: "Jobs", href: "#services" },
+    { name: "Home", href: "#home" },
+    { name: "About", href: "#about" },
+    { name: "Services", href: "#services" },
+    // { name: "Jobs", href: "#services" },
   ];
 
   const menuVariants: Variants = {
@@ -109,22 +110,18 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navItems.map((item, index) => (
-              <MotionNavLink
+              <a
+                href={item.href}
                 key={item.name}
-                to={item.href}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                // to={item.href}
                 className={` ${
                   isScrolled
                     ? "text-gray-900 hover:text-brand-blue-light"
                     : "text-white hover:text-brand-blue-light"
                 }`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
               >
                 {item.name}
-              </MotionNavLink>
+              </a>
             ))}
           </nav>
 
@@ -137,7 +134,7 @@ const Header = () => {
               className="hidden md:flex items-center gap-5"
             >
               <Button
-                variant={isScrolled ? "ghost" : "ghost"}
+                variant="ghost"
                 className={`hover:bg-white/10 ${
                   isScrolled
                     ? "text-gray-900 hover:text-brand-blue-light"

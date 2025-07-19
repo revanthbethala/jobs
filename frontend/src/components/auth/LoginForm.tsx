@@ -36,9 +36,9 @@ export const LoginForm = () => {
         description: "Welcome back to JobQuest.",
       });
       console.log("login data", res);
-      const userId = res?.user?.id;
+      const role = res?.user?.role;
       const { token } = res;
-      loginToken(token, userId);
+      loginToken(token, role);
       navigate("/jobs");
     } catch (err) {
       if (err.response.status == 403) {

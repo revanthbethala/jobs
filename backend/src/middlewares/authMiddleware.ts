@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
 
 import { RequestHandler } from "express";
@@ -12,15 +12,15 @@ if (!JWT_SECRET) {
 export const protect: RequestHandler = (req, res, next) => {
   try {
     let token = req.headers.authorization?.split(" ")[1];
-
+    
     if (!token) {
       token = req.cookies?.auth_token;
     }
-
+    
     if (!token) {
-      res.status(401).json({
+      res.status(401).json({ 
         message: "Access denied. No token provided.",
-        requiresLogin: true,
+        requiresLogin: true 
       });
       return;
     }
@@ -31,26 +31,26 @@ export const protect: RequestHandler = (req, res, next) => {
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      res.clearCookie("auth_token", {
+      res.clearCookie('auth_token', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
       });
-
-      res.status(401).json({
+      
+      res.status(401).json({ 
         message: "Token expired. Please login again.",
         requiresLogin: true,
-        tokenExpired: true,
+        tokenExpired: true
       });
     } else if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({
+      res.status(401).json({ 
         message: "Invalid token. Please login again.",
-        requiresLogin: true,
+        requiresLogin: true
       });
     } else {
-      res.status(401).json({
+      res.status(401).json({ 
         message: "Authentication failed",
-        requiresLogin: true,
+        requiresLogin: true
       });
     }
     return;

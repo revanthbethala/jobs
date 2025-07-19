@@ -8,6 +8,7 @@ import {
   getJobById,
   updateJob,
 } from "../controllers/jobController";
+import { upload } from "../middlewares/multer";
 
 const router = express.Router();
 
@@ -21,7 +22,13 @@ router.get("/", asyncHandler(getAllJobs));
 router.get("/:id", asyncHandler(getJobById));
 
 router.post("/", protect, isAdmin, asyncHandler(createJob));
-router.put("/:id", protect, isAdmin, asyncHandler(updateJob));
+router.put(
+  "/:id",
+  protect,
+  isAdmin,
+  upload.single("companyLogo"),
+  asyncHandler(updateJob)
+);
 router.delete("/:id", protect, isAdmin, asyncHandler(deleteJob));
 
 export default router;
