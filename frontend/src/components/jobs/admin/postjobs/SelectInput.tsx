@@ -11,7 +11,7 @@ interface SelectOption {
 
 interface SelectInputProps {
   label: string;
-  options: SelectOption[];
+  options: ReadonlyArray<SelectOption>;
   placeholder?: string;
   error?: string;
   registration: UseFormRegisterReturn;

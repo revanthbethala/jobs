@@ -59,3 +59,20 @@ export const getUserApplications = async () => {
     throw err;
   }
 };
+
+export const postJob = async (data) => {
+  try {
+    const token = useAuthStore.getState().token;
+    console.log("Data in postJob:", JSON.stringify(data, null, 2));
+    const res = await axios.post(`${backend_url}/api/jobs`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};

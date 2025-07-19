@@ -19,7 +19,7 @@ interface SelectOption {
 
 interface MultiSelectInputProps {
   label: string;
-  options: SelectOption[];
+  options: ReadonlyArray<SelectOption>;
   placeholder?: string;
   error?: string;
   name: string;
@@ -31,6 +31,7 @@ interface MultiSelectInputProps {
 export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
   label,
   options,
+
   placeholder = "Select options",
   error,
   name,

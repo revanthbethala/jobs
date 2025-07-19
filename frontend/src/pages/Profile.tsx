@@ -9,6 +9,7 @@ import EducationSection from "@/components/profile/EducationSection";
 import ResumeUploadSection from "@/components/profile/ResumeUploadSection";
 import ProfileStepper from "@/components/profile/ProfileStepper";
 import { useProfileStore } from "@/store/profileStore";
+import { useAuthStore } from "@/store/authStore";
 
 interface ProfileProps {
   forceEditing?: boolean;
@@ -30,11 +31,9 @@ const Profile: React.FC<ProfileProps> = ({
     setCurrentStep,
   } = useProfileStore();
 
-
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
-
 
   useEffect(() => {
     // Ensure edit mode is true when forced
@@ -75,7 +74,7 @@ const Profile: React.FC<ProfileProps> = ({
   if (isLoading && !profile) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Loader2 size={30} className="animate-spin text-blue-600 "/>
+        <Loader2 size={30} className="animate-spin text-blue-600 " />
       </div>
     );
   }
@@ -157,7 +156,7 @@ const Profile: React.FC<ProfileProps> = ({
           layout
           transition={{ duration: 0.3 }}
         >
-          <AnimatePresence >
+          <AnimatePresence>
             <motion.div
               key={currentStep}
               initial={{ opacity: 0, x: 20 }}

@@ -35,8 +35,9 @@ import { MultiSelectInput } from "@/components/jobs/admin/postjobs/MultiSelectIn
 import { DateInput } from "@/components/jobs/admin/postjobs/DateInput";
 import InterviewRounds from "@/components/jobs/admin/postjobs/InterviewRounds";
 import { FileInput } from "@/components/jobs/admin/postjobs/FileInput";
+import { postJob } from "@/services/jobServices";
 
-// Memoized constants to prevent recreation on every render
+// Constants - moved to top level to prevent recreation
 const JOB_ROLE_OPTIONS = [
   { value: "developer", label: "Software Developer" },
   { value: "designer", label: "UI/UX Designer" },
@@ -46,7 +47,7 @@ const JOB_ROLE_OPTIONS = [
   { value: "devops", label: "DevOps Engineer" },
   { value: "data-scientist", label: "Data Scientist" },
   { value: "product-manager", label: "Product Manager" },
-];
+] as const;
 
 const JOB_TYPE_OPTIONS = [
   { value: "full-time", label: "Full-Time" },
@@ -54,7 +55,7 @@ const JOB_TYPE_OPTIONS = [
   { value: "internship", label: "Internship" },
   { value: "contract", label: "Contract" },
   { value: "freelance", label: "Freelance" },
-];
+] as const;
 
 const BRANCH_OPTIONS = [
   { value: "CSE", label: "CSE" },
@@ -66,7 +67,7 @@ const BRANCH_OPTIONS = [
   { value: "EEE", label: "EEE" },
   { value: "ECE", label: "ECE" },
   { value: "CSE-R", label: "CSE-R" },
-];
+] as const;
 
 const JOB_SECTOR_OPTIONS = [
   { value: "Sales", label: "Sales" },
@@ -76,7 +77,7 @@ const JOB_SECTOR_OPTIONS = [
   { value: "DevOps", label: "DevOps" },
   { value: "Software Development", label: "Software Development" },
   { value: "Other", label: "Other" },
-];
+] as const;
 
 const PASSING_YEAR_OPTIONS = [
   { value: "2024", label: "2024" },
@@ -85,8 +86,59 @@ const PASSING_YEAR_OPTIONS = [
   { value: "2021", label: "2021" },
   { value: "2020", label: "2020" },
   { value: "2019", label: "2019" },
-];
+] as const;
+const buildFormData = (data: JobFormData): FormData => {
+  const {
+    interviewRounds,
+    companyLogo,
+    lastDateToApply,
+    skillsRequired,
+    allowedBranches,
+    allowedPassingYears,
+    ...rest
+  } = data;
+  const formData = new FormData();
 
+  // Handle file upload
+  if (companyLogo instanceof File) {
+    formData.append("companyLogo", companyLogo);
+  }
+
+  // Handle date
+  if (lastDateToApply) {
+    formData.append("lastDateToApply", lastDateToApply.toISOString());
+  }
+
+  // Handle interview rounds - send as JSON string for backend parsing
+  if (interviewRounds && interviewRounds.length > 0) {
+    formData.append("rounds", interviewRounds.join(","));
+  }
+  // Handle skillsRequired - send as JSON string for backend parsing
+  if (skillsRequired && skillsRequired.length > 0) {
+    formData.append("skillsRequired", skillsRequired.join(","));
+  }
+
+  // Handle allowedBranches – send each item separately
+
+  if (allowedBranches && allowedBranches.length > 0) {
+    formData.append("allowedBranches", allowedBranches.join(","));
+  }
+
+  // Handle allowedPassingYears – send each year separately
+  if (allowedPassingYears && allowedPassingYears.length > 0) {
+    formData.append("allowedPassingYears", allowedPassingYears.join(","));
+  }
+
+  // Handle regular fields
+  Object.entries(rest).forEach(([key, value]) => {
+    if (value === null || value === undefined) return;
+    formData.append(key, String(value));
+  });
+
+  return formData;
+};
+
+// Memoized Components
 const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
   ({ register, control, errors, showCustomSector }) => (
     <Card className="animate-fade-in-up">
@@ -173,7 +225,6 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
           />
         </div>
 
-        {/* Conditional Custom Sector Input */}
         {showCustomSector && (
           <TextInput
             label="Custom Sector"
@@ -297,12 +348,13 @@ const ApplicationDeadlineSection: React.FC<ApplicationDeadlineSectionProps> =
     </Card>
   ));
 
-// Add display names for better debugging
+// Set display names for debugging
 JobDetailsSection.displayName = "JobDetailsSection";
 CompanyInformationSection.displayName = "CompanyInformationSection";
 EligibilityCriteriaSection.displayName = "EligibilityCriteriaSection";
 ApplicationDeadlineSection.displayName = "ApplicationDeadlineSection";
 
+// Main Component
 export const JobPostingForm = () => {
   const { formData, updateField, resetForm } = useJobStore();
   const { toast } = useToast();
@@ -317,42 +369,44 @@ export const JobPostingForm = () => {
   } = useForm<JobFormData>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: formData,
-    mode: "onChange", // Change to onSubmit or onBlur to reduce validation calls
+    mode: "onSubmit",
   });
 
-  // Only watch the specific field we need, not the entire form
-  const watchedJobSector = watch("jobSector");
+  // Watch only the specific field needed
+  const jobSector = watch("jobSector");
 
-  // Memoize the conditional rendering logic
-  const showCustomSector = useMemo(
-    () => watchedJobSector === "Other",
-    [watchedJobSector]
-  );
+  // Memoize conditional rendering logic
+  const showCustomSector = useMemo(() => jobSector === "Other", [jobSector]);
 
-  // Memoize the submit handler to prevent recreation on every render
+  // Memoized submit handler
   const onSubmit = useCallback(
     async (data: JobFormData) => {
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        console.log("Form submitted:", data);
+        const formData = buildFormData(data);
+        console.log(`Data before request: {JSON.stringify(formData, null, 2)}`);
+        const response = await postJob(formData);
         toast({
           title: "Success!",
           description: "Job posting has been created successfully.",
         });
+        console.log(response);
+        // reset();
+        // resetForm();
       } catch (error) {
+        console.error("Error creating job posting:", error);
         toast({
           title: "Error",
-          description: "Failed to create job posting. Please try again.",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Failed to create job posting. Please try again.",
           variant: "destructive",
         });
       }
     },
-    [toast]
+    [toast, reset, resetForm]
   );
 
-  // Memoize the reset handler
   const handleReset = useCallback(() => {
     reset();
     resetForm();
@@ -362,8 +416,8 @@ export const JobPostingForm = () => {
     });
   }, [reset, resetForm, toast]);
 
-  // Memoize the form configuration object
-  const formConfig = useMemo(
+  // Memoized form props to prevent unnecessary re-renders
+  const sectionProps = useMemo(
     () => ({
       register,
       control,
@@ -375,41 +429,36 @@ export const JobPostingForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-8 animate-fade-in-up">
+        <header className="text-center mb-8 animate-fade-in-up">
           <h1 className="text-4xl font-bold text-foreground mb-2">
             Create Job Posting
           </h1>
           <p className="text-lg text-muted-foreground">
             Fill out the details below to create a comprehensive job posting
           </p>
-        </div>
+        </header>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          {/* Job Details Section */}
           <JobDetailsSection
-            {...formConfig}
+            {...sectionProps}
             showCustomSector={showCustomSector}
           />
 
-          {/* Company Information Section */}
-          <CompanyInformationSection {...formConfig} />
+          <CompanyInformationSection {...sectionProps} />
 
-          {/* Eligibility Criteria Section */}
-          <EligibilityCriteriaSection {...formConfig} />
+          <EligibilityCriteriaSection {...sectionProps} />
 
-          {/* Application Deadline Section */}
-          <ApplicationDeadlineSection {...formConfig} />
+          <ApplicationDeadlineSection {...sectionProps} />
 
-          {/* Interview Rounds Section */}
           <InterviewRounds control={control} errors={errors} />
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-end animate-fade-in-up">
+          <footer className="flex flex-col sm:flex-row gap-4 justify-end animate-fade-in-up">
             <Button
               type="button"
               variant="outline"
               onClick={handleReset}
               className="flex items-center gap-2"
+              disabled={isSubmitting}
             >
               <RotateCcw className="w-4 h-4" />
               Reset Form
@@ -422,7 +471,7 @@ export const JobPostingForm = () => {
               <Send className="w-4 h-4" />
               {isSubmitting ? "Creating..." : "Create Job Posting"}
             </Button>
-          </div>
+          </footer>
         </form>
       </div>
     </div>

@@ -19,8 +19,7 @@ const InterviewRounds = ({control, errors}) => {
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "interviewRounds",
-  });
+    name: "interviewRounds",});
 
   const handleAddRound = () => {
     const newRound = {
@@ -96,7 +95,7 @@ const InterviewRounds = ({control, errors}) => {
                 <CardContent className="space-y-4">
                   <input
                     type="hidden"
-                    {...control.register(`interviewRounds.${index}.id`)}
+                    {...control.register(`interviewRounds.${index}.id`)} 
                   />
                   <input
                     type="hidden"

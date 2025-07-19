@@ -8,6 +8,7 @@ import {
   Menu,
   X,
   ChevronLeft,
+  Pen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
@@ -24,6 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import path from "path";
 
 const SideNav = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -31,6 +33,7 @@ const SideNav = () => {
   const navigate = useNavigate();
   const { logOut } = useAuthStore();
   const isMobile = useIsMobile();
+  const { role } = useAuthStore();
 
   // Handle responsive behavior
   useEffect(() => {
@@ -62,9 +65,20 @@ const SideNav = () => {
   };
 
   const navItems = [
-    { name: "Profile", path: "/profile", icon: User },
-    { name: "Jobs", path: "/jobs", icon: Briefcase },
-    { name: "Applied Jobs", path: "/applied-jobs", icon: FileText },
+    { name: "Profile", path: "/profile", icon: User, roles: ["USER"] },
+    { name: "Jobs", path: "/jobs", icon: Briefcase, roles: ["USER", "ADMIN"] },
+    {
+      name: "Applied Jobs",
+      path: "/applied-jobs",
+      icon: FileText,
+      roles: ["USER"],
+    },
+    {
+      name:"Post Jobs",
+      path: "/post-jobs",
+      icon: Pen,
+      roles: ["ADMIN"]
+    }
   ];
 
   const sidebarWidth = isCollapsed && !isMobile ? "w-16" : "w-64";
@@ -125,33 +139,37 @@ const SideNav = () => {
           {/* Navigation */}
           <nav className="flex-1 p-3 space-y-1">
             <div className="space-y-1">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    cn(
-                      "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
-                      "hover:bg-gray-100 hover:text-gray-900",
-                      isActive ? "bg-blue-50 text-blue-700 " : "text-gray-600",
-                      isCollapsed && !isMobile ? "justify-center px-2" : ""
-                    )
-                  }
-                >
-                  <item.icon className="h-5 w-5 flex-shrink-0" />
-                  {(!isCollapsed || isMobile) && (
-                    <span className="ml-3 truncate">{item.name}</span>
-                  )}
+              {navItems
+                .filter((item) => item.roles.includes(role))
+                .map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={closeMobileSidebar}
+                    className={({ isActive }) =>
+                      cn(
+                        "group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200",
+                        "hover:bg-gray-100 hover:text-gray-900",
+                        isActive
+                          ? "bg-blue-50 text-blue-700 "
+                          : "text-gray-600",
+                        isCollapsed && !isMobile ? "justify-center px-2" : ""
+                      )
+                    }
+                  >
+                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                    {(!isCollapsed || isMobile) && (
+                      <span className="ml-3 truncate">{item.name}</span>
+                    )}
 
-                  {/* Tooltip for collapsed state */}
-                  {isCollapsed && !isMobile && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                      {item.name}
-                    </div>
-                  )}
-                </NavLink>
-              ))}
+                    {/* Tooltip for collapsed state */}
+                    {isCollapsed && !isMobile && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                        {item.name}
+                      </div>
+                    )}
+                  </NavLink>
+                ))}
             </div>
           </nav>
         </div>

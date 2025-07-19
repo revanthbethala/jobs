@@ -26,6 +26,7 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
+  console.log(job);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -40,7 +41,7 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="relative w-12 h-12 flex-shrink-0">
                 <img
-                  src={job.companyLogo || "/placeholder.svg?height=48&width=48"}
+                  src={`${import.meta.env.VITE_BACKEND_URL}${job.companyLogo} `}
                   alt="logo"
                   className="rounded-lg object-cover"
                   // onError={(e) => {

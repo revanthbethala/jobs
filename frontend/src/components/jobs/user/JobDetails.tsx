@@ -99,7 +99,11 @@ function getIncompleteFields(profile: ProfileData): number {
   return incompleteFields.length;
 }
 
-export default function JobDetails({ job, onBack, applicationMeta }: JobDetailsProps) {
+export default function JobDetails({
+  job,
+  onBack,
+  applicationMeta,
+}: JobDetailsProps) {
   console.log(applicationMeta);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const isLongDescription = job.jobDescription.length > 300;
@@ -246,10 +250,9 @@ export default function JobDetails({ job, onBack, applicationMeta }: JobDetailsP
                   <div className="flex items-start gap-4 flex-1">
                     <div className="relative">
                       <img
-                        src={
-                          job.companyLogo ||
-                          "/placeholder.svg?height=80&width=80"
-                        }
+                        src={`${import.meta.env.VITE_BACKEND_URL}${
+                          job.companyLogo
+                        } `}
                         alt="logo"
                         className="w-20 h-20 rounded-xl object-cover shadow-md"
                       />
@@ -294,7 +297,8 @@ export default function JobDetails({ job, onBack, applicationMeta }: JobDetailsP
                     {applicationMeta?.status ? (
                       <Button
                         className={cn(
-                          applicationMeta?.status && "bg-pending hover:bg-pending/80",
+                          applicationMeta?.status &&
+                            "bg-pending hover:bg-pending/80",
                           "py-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         )}
                       >
