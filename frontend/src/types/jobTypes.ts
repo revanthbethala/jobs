@@ -56,7 +56,7 @@ export interface JobFormData {
   jobTitle: string;
   jobDescription: string;
   jobSector: string;
-  customSector:string
+  customSector: string;
   skillsRequired: string[];
   location: string;
   salary: string;
@@ -85,6 +85,7 @@ export interface SectionBaseProps {
   register: UseFormRegister<JobFormData>;
   control: Control<JobFormData>;
   errors: FieldErrors<JobFormData>;
+  logoUrl?: string; // Optional URL for the company logo
 }
 
 export interface JobDetailsSectionProps extends SectionBaseProps {

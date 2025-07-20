@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Job } from "@/types/jobTypes";
+import { useNavigate } from "react-router-dom";
 
 interface JobCardProps {
   job: Job;
@@ -26,6 +27,7 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
+  const navigate = useNavigate();
   console.log(job);
   return (
     <motion.div
@@ -44,10 +46,6 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
                   src={`${import.meta.env.VITE_BACKEND_URL}${job.companyLogo} `}
                   alt="logo"
                   className="rounded-lg object-cover"
-                  // onError={(e) => {
-                  //   const target = e.target as HTMLImageElement;
-                  //   target.src = "/placeholder.svg?height=48&width=48";
-                  // }}
                 />
               </div>
               <div className="min-w-0 flex-1">
@@ -111,7 +109,7 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
 
         <CardFooter className="pt-3">
           <Button
-            onClick={() => onViewDetails(job)}
+            onClick={() => navigate(`/job/${job.id}`)}
             className="w-full bg-brand-blue-light hover:bg-brand-blue-dark transition-colors"
           >
             View Details

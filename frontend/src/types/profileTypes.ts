@@ -1,32 +1,30 @@
-export interface ProfileData {
-  id: string;
-  isVerified: boolean;
+export interface PersonalInfo {
+  username: string;
+  collegeId: string;
+  email: string;
+  gender: string;
   firstName: string;
   lastName: string;
-  email: string;
+  dateOfBirth: string;
   phoneNumber: string;
-  gender: string;
-  username: string;
-  role: "USER" | "ADMIN";
+  address: string;
   fatherName: string;
   motherName: string;
-  address: string;
   city: string;
   state: string;
   country: string;
-  profilePicture: string;
-  resume: string;
-  education: EducationItem[];
+  profilePic: File | null;
+  role: string;
 }
 
-export interface EducationItem {
-  id?: string;
-  educationalLevel?: string;
+export interface Education {
+  id: string;
+  educationalLevel: string;
   institution: string;
-  specialization?: string;
-  board: string;
-  percentage?: string;
-  passedOutYear: string;
+  specialization: string;
+  boardOrUniversity: string;
+  percentage: string;
+  passedOutYear: number;
   location: string;
-  activeBacklogs: number;
+  noOfActiveBacklogs: number;
 }

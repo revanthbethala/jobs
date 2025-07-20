@@ -94,7 +94,7 @@ const Header = () => {
                 isScrolled ? "text-gray-900" : "text-white"
               }`}
             >
-              Skill
+              Job
               <span
                 className={`${
                   isScrolled
@@ -102,7 +102,7 @@ const Header = () => {
                     : "text-brand-blue-light"
                 }`}
               >
-                ora
+                Quest
               </span>
             </h1>
           </motion.div>

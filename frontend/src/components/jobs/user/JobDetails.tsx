@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ArrowLeft,
   Briefcase,
@@ -14,16 +12,15 @@ import {
   Mail,
   Phone,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, set } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
-import { Job } from "@/types/jobTypes";
-import { useProfileStore } from "@/store/profileStore";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +30,6 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { EducationItem, ProfileData } from "@/types/profileTypes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,20 +40,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useNavigate } from "react-router-dom";
-import { applyJob } from "@/services/jobServices";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  applyJob,
+  getJobById,
+  getUserApplications,
+} from "@/services/jobServices";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
-interface JobDetailsProps {
-  job: Job;
-  onBack: () => void;
-  applicationMeta?: {
-    status: string;
-  };
-}
-
-function getIncompleteFields(profile: ProfileData): number {
+function getIncompleteFields(profile): number {
   const incompleteFields: string[] = [];
 
   for (const key in profile) {
@@ -85,7 +78,7 @@ function getIncompleteFields(profile: ProfileData): number {
           "location",
         ];
 
-        value.forEach((edu: EducationItem, index: number) => {
+        value.forEach((edu, index: number) => {
           requiredEduFields.forEach((field) => {
             if (!edu[field] && edu[field] !== 0) {
               incompleteFields.push(`education[${index}].${field}`);
@@ -99,38 +92,70 @@ function getIncompleteFields(profile: ProfileData): number {
   return incompleteFields.length;
 }
 
-export default function JobDetails({
-  job,
-  onBack,
-  applicationMeta,
-}: JobDetailsProps) {
-  console.log(applicationMeta);
+export default function JobDetails() {
+  const { jobId } = useParams();
+  const navigate = useNavigate();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const isLongDescription = job.jobDescription.length > 300;
-  const { profile, fetchProfile } = useProfileStore();
-  const [userId, setUserId] = useState("");
+  // const { profile, fetchProfile } = useProfileStore();
   const [showAlert, setShowAlert] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const handleSubmit = async () => {
-    console.log("before fetch", profile);
-    if (!profile) {
-      console.log("Fetching profile");
-      await fetchProfile();
-    }
-    const updatedProfile = useProfileStore.getState().profile;
-    console.log(updatedProfile);
-    setUserId(updatedProfile?.id);
+  const [isLoading, setIsLoading] = useState(false);
+  const [jobStatus, setJobStatus] = useState<string | null>(null);
+  // const applicationMeta = { status: "Pending" }; // Placeholder for application status
+  // Fetching user applications
 
-    const incompleteCount = getIncompleteFields(updatedProfile);
-    if (incompleteCount > 0) {
-      setShowAlert(true);
-    } else {
-      setShowConfirmation(true);
-    }
+  const {
+    data: applicationsData,
+    isLoading: applicationLoading,
+    error: applicationError,
+  } = useQuery({
+    queryKey: ["userApplications"],
+    queryFn: getUserApplications,
+  });
+
+  // const applicationMeta = { status: "Pending" };
+  const applications = applicationsData?.applications || [];
+  const {
+    data: job,
+    isLoading: isJobLoading,
+    error: jobError,
+    isError,
+  } = useQuery({
+    queryKey: ["jobDetails"],
+    queryFn: () => getJobById(jobId!),
+  });
+  if (isError && applicationError) {
+    console.error("Error fetching job details:", jobError);
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-red-500">Failed to load job details.</p>
+      </div>
+    );
+  }
+  console.log("Job Details:", applications);
+  if (applications?.length > 0)
+    applications.map((app) => app.jobId == job.id && setJobStatus(app.status));
+
+  const handleSubmit = async () => {
+    // if (!profile) {
+    //   await fetchProfile();
+    // }
+    // const updatedProfile = useProfileStore.getState().profile;
+    //   console.log(updatedProfile);
+    //   setUserId(updatedProfile?.id);
+    //   const incompleteCount = getIncompleteFields(updatedProfile);
+    //   if (incompleteCount > 0) {
+    //     setShowAlert(true);
+    //   } else {
+    //     setShowConfirmation(true);
+    //   }
+    console.log("U clicked Apply Now");
   };
   const handleApply = async () => {
     try {
-      const res = await applyJob(job?.id, userId);
+      setIsLoading(true);
+      const res = await applyJob(job?.id);
+      setIsLoading(false);
     } catch (err) {
       const err_msg = err?.response?.data?.message;
       toast({
@@ -158,8 +183,15 @@ export default function JobDetails({
       transition: { duration: 0.5, ease: "easeOut" },
     },
   };
-  const navigate = useNavigate();
   const rounds_info = !!job?.rounds;
+
+  if (isJobLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="animate-spin h-10 w-10 text-blue-500" />
+      </div>
+    );
+  }
   return (
     <div className="">
       {/* Header */}
@@ -225,7 +257,7 @@ export default function JobDetails({
       >
         <div className="container mx-auto px-4 py-4">
           <Button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             variant="ghost"
             className="hover:bg-gray-100"
           >
@@ -294,22 +326,30 @@ export default function JobDetails({
                     <div className="text-right">
                       <p className="text-xl font-bold ">{job.salary}</p>
                     </div>
-                    {applicationMeta?.status ? (
+                    {jobStatus ? (
                       <Button
                         className={cn(
-                          applicationMeta?.status &&
-                            "bg-pending hover:bg-pending/80",
+                          jobStatus && "bg-pending hover:bg-pending/80",
                           "py-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         )}
                       >
-                        {applicationMeta?.status}
+                        {jobStatus}
                       </Button>
                     ) : (
                       <Button
                         onClick={handleSubmit}
                         className="bg-brand-blue-light hover:bg-brand-blue-dark transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                       >
-                        Apply Now
+                        {isLoading ? (
+                          <span>
+                            <span className="animate-spin bg-white">
+                              <Loader2 size={10} />
+                            </span>
+                            Applying...
+                          </span>
+                        ) : (
+                          "Apply Now"
+                        )}
                       </Button>
                     )}
                   </div>
@@ -466,7 +506,8 @@ export default function JobDetails({
                   <CardContent>
                     <div className="prose prose-gray max-w-none">
                       <AnimatePresence mode="wait">
-                        {isLongDescription && !isDescriptionExpanded ? (
+                        {job?.Description?.length > 300 &&
+                        !isDescriptionExpanded ? (
                           <motion.div
                             key="collapsed"
                             initial={{ opacity: 0 }}
@@ -495,7 +536,7 @@ export default function JobDetails({
                             <p className="text-gray-700 leading-relaxed">
                               {job.jobDescription}
                             </p>
-                            {isLongDescription && (
+                            {job.Description > 300 && (
                               <Button
                                 variant="ghost"
                                 onClick={() => setIsDescriptionExpanded(false)}

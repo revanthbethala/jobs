@@ -181,42 +181,72 @@ const deleteFile = (relativeFilePath: string) => {
 
 export const updateJob = async (req: Request, res: Response) => {
   const jobId = req.params.id;
-  const dataToUpdate = req.body;
+  const {
+    jobTitle,
+    jobDescription,
+    skillsRequired,
+    location,
+    salary,
+    experience,
+    jobRole,
+    jobType,
+    companyName,
+    companyWebsite,
+    companyEmail,
+    companyPhone,
+    lastDateToApply,
+    allowedBranches,
+    allowedPassingYears,
+    rounds,
+  } = req.body;
 
   try {
     const existingJob = await prisma.job.findUnique({ where: { id: jobId } });
-
     if (!existingJob) {
       return res.status(404).json({ message: 'Job not found' });
     }
 
+    // Parse inputs
+    const parsedSkillsRequired = Array.isArray(skillsRequired)
+      ? skillsRequired
+      : skillsRequired
+        ? skillsRequired.split(',').map((skill: string) => skill.trim())
+        : [];
+
+    const parsedAllowedBranches = Array.isArray(allowedBranches)
+      ? allowedBranches
+      : allowedBranches
+        ? allowedBranches.split(',').map((branch: string) => branch.trim())
+        : [];
+
+    const parsedAllowedPassingYears = Array.isArray(allowedPassingYears)
+      ? allowedPassingYears.map((year: string | number) => Number(year))
+      : allowedPassingYears
+        ? allowedPassingYears.split(',').map((year: string) => Number(year.trim()))
+        : [];
+
+    const parsedRounds =
+      typeof rounds === 'string' ? JSON.parse(rounds) : Array.isArray(rounds) ? rounds : [];
+
+    console.log('Parsed Rounds:', parsedRounds);
+
     const updatedData: any = {
-      ...(dataToUpdate.jobTitle && { jobTitle: dataToUpdate.jobTitle }),
-      ...(dataToUpdate.jobDescription && {
-        jobDescription: dataToUpdate.jobDescription,
-      }),
-      ...(dataToUpdate.skillsRequired && {
-        skillsRequired: dataToUpdate.skillsRequired,
-      }),
-      ...(dataToUpdate.location && { location: dataToUpdate.location }),
-      ...(dataToUpdate.salary && { salary: dataToUpdate.salary }),
-      ...(dataToUpdate.experience && { experience: dataToUpdate.experience }),
-      ...(dataToUpdate.jobRole && { jobRole: dataToUpdate.jobRole }),
-      ...(dataToUpdate.jobType && { jobType: dataToUpdate.jobType }),
-      ...(dataToUpdate.companyName && {
-        companyName: dataToUpdate.companyName,
-      }),
-      ...(dataToUpdate.companyWebsite && {
-        companyWebsite: dataToUpdate.companyWebsite,
-      }),
-      ...(dataToUpdate.companyEmail && {
-        companyEmail: dataToUpdate.companyEmail,
-      }),
-      ...(dataToUpdate.companyPhone && {
-        companyPhone: dataToUpdate.companyPhone,
-      }),
-      ...(dataToUpdate.lastDateToApply && {
-        lastDateToApply: new Date(dataToUpdate.lastDateToApply),
+      ...(jobTitle && { jobTitle }),
+      ...(jobDescription && { jobDescription }),
+      ...(parsedSkillsRequired.length && { skillsRequired: parsedSkillsRequired }),
+      ...(location && { location }),
+      ...(salary && { salary }),
+      ...(experience && { experience }),
+      ...(jobRole && { jobRole }),
+      ...(jobType && { jobType }),
+      ...(companyName && { companyName }),
+      ...(companyWebsite && { companyWebsite }),
+      ...(companyEmail && { companyEmail }),
+      ...(companyPhone && { companyPhone }),
+      ...(lastDateToApply && { lastDateToApply: new Date(lastDateToApply) }),
+      ...(parsedAllowedBranches.length && { allowedBranches: parsedAllowedBranches }),
+      ...(parsedAllowedPassingYears.length && {
+        allowedPassingYears: parsedAllowedPassingYears,
       }),
     };
 
@@ -228,8 +258,15 @@ export const updateJob = async (req: Request, res: Response) => {
       updatedData.companyLogo = `/uploads/${file.filename}`;
     }
 
-    if (Array.isArray(dataToUpdate.rounds)) {
-      for (const round of dataToUpdate.rounds) {
+    // Update job
+    await prisma.job.update({
+      where: { id: jobId },
+      data: updatedData,
+    });
+
+    // Update or create rounds
+    if (Array.isArray(parsedRounds)) {
+      for (const round of parsedRounds) {
         const { roundNumber, roundName, description } = round;
 
         const existingRound = await prisma.round.findFirst({

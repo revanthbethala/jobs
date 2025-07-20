@@ -161,7 +161,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<Respon
     const userId = (req as any).user?.id as string;
 
     const { password, otp, otpExpiry, education, ...safeData } = req.body;
-
+    console.log("Request body:", req.body);
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
     };

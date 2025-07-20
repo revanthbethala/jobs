@@ -1,5 +1,4 @@
 import { useAuthStore } from "@/store/authStore";
-import { ProfileData } from "@/types/profileTypes";
 import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL + "/api/users"; // Ensure this is set in your .env
@@ -29,24 +28,17 @@ export const getProfile = async () => {
 };
 
 // ✅ Update user profile
-export const updateProfile = async (
-  data: Partial<ProfileData>
-): Promise<ProfileData> => {
+export const updateProfile = async (data) => {
   try {
     const token = useAuthStore.getState().token;
     if (!token) throw new Error("No authentication token");
-
-    const response = await fetch(`${API_BASE}/update-profile`, {
-      method: "PUT",
-      headers: getAuthHeaders(token),
-      body: JSON.stringify(data),
+    const response = await axios.put(`${API_BASE}/update-profile`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data", // Use multipart/form-data for file uploads
+      },
     });
-
-    if (!response.ok) {
-      throw new Error("Failed to update profile");
-    }
-
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error updating profile:", error);
     throw error;

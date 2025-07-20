@@ -23,13 +23,11 @@ export const getJobById = async (job_id: string) => {
   }
 };
 
-export const applyJob = async (jobId, userId) => {
-  console.log(userId);
+export const applyJob = async (jobId) => {
   const token = useAuthStore.getState().token;
   try {
     const res = await axios.post(
       `${backend_url}/api/applications/apply/${jobId}`,
-      { userId },
       {
         headers: {
           "Content-Type": "application/json",
@@ -63,10 +61,41 @@ export const getUserApplications = async () => {
 export const postJob = async (data) => {
   try {
     const token = useAuthStore.getState().token;
-    console.log("Data in postJob:", JSON.stringify(data, null, 2));
     const res = await axios.post(`${backend_url}/api/jobs`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const updateJob = async (data, jobId) => {
+  try {
+    const token = useAuthStore.getState().token;
+    const res = await axios.put(`${backend_url}/api/jobs/${jobId}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const deleteJob = async (jobId: string) => {
+  const token = useAuthStore.getState().token;
+  try {
+    const res = await axios.delete(`${backend_url}/api/jobs/${jobId}`, {
+      headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });

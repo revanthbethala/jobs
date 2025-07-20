@@ -13,20 +13,20 @@ function ProtectedRoute({
   const { token, isLoggedIn, role } = useAuthStore();
   const location = useLocation();
 
-  if (!token) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Checking login...
-      </div>
-    );
-  }
+  // if (!token) {
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       Checking login...
+  //     </div>
+  //   );
+  // }
 
   if (!isLoggedIn) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/auth" />;
   }
 
   if (!allowedRoles.includes(role)) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;

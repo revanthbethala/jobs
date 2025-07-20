@@ -1,4 +1,4 @@
-import { useMemo, useCallback, memo } from "react";
+import { useMemo, useCallback, memo, useEffect } from "react";
 import {
   useForm,
   Control,
@@ -35,58 +35,18 @@ import { MultiSelectInput } from "@/components/jobs/admin/postjobs/MultiSelectIn
 import { DateInput } from "@/components/jobs/admin/postjobs/DateInput";
 import InterviewRounds from "@/components/jobs/admin/postjobs/InterviewRounds";
 import { FileInput } from "@/components/jobs/admin/postjobs/FileInput";
-import { postJob } from "@/services/jobServices";
-
+import { getJobById, postJob, updateJob } from "@/services/jobServices";
+import {
+  JOB_ROLE_OPTIONS,
+  JOB_TYPE_OPTIONS,
+  JOB_SECTOR_OPTIONS,
+  BRANCH_OPTIONS,
+  PASSING_YEAR_OPTIONS,
+} from "@/lib/constants";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 // Constants - moved to top level to prevent recreation
-const JOB_ROLE_OPTIONS = [
-  { value: "developer", label: "Software Developer" },
-  { value: "designer", label: "UI/UX Designer" },
-  { value: "manager", label: "Project Manager" },
-  { value: "analyst", label: "Business Analyst" },
-  { value: "tester", label: "QA Tester" },
-  { value: "devops", label: "DevOps Engineer" },
-  { value: "data-scientist", label: "Data Scientist" },
-  { value: "product-manager", label: "Product Manager" },
-] as const;
 
-const JOB_TYPE_OPTIONS = [
-  { value: "full-time", label: "Full-Time" },
-  { value: "part-time", label: "Part-Time" },
-  { value: "internship", label: "Internship" },
-  { value: "contract", label: "Contract" },
-  { value: "freelance", label: "Freelance" },
-] as const;
-
-const BRANCH_OPTIONS = [
-  { value: "CSE", label: "CSE" },
-  { value: "CSE-DATA SCIENCE", label: "CSE-DATA SCIENCE" },
-  { value: "AIML", label: "AIML" },
-  { value: "CSE-AIML", label: "CSE-AIML" },
-  { value: "IT", label: "IT" },
-  { value: "MECH", label: "MECH" },
-  { value: "EEE", label: "EEE" },
-  { value: "ECE", label: "ECE" },
-  { value: "CSE-R", label: "CSE-R" },
-] as const;
-
-const JOB_SECTOR_OPTIONS = [
-  { value: "Sales", label: "Sales" },
-  { value: "IT", label: "IT" },
-  { value: "Cloud Computing", label: "Cloud Computing" },
-  { value: "Salesforce", label: "Salesforce" },
-  { value: "DevOps", label: "DevOps" },
-  { value: "Software Development", label: "Software Development" },
-  { value: "Other", label: "Other" },
-] as const;
-
-const PASSING_YEAR_OPTIONS = [
-  { value: "2024", label: "2024" },
-  { value: "2023", label: "2023" },
-  { value: "2022", label: "2022" },
-  { value: "2021", label: "2021" },
-  { value: "2020", label: "2020" },
-  { value: "2019", label: "2019" },
-] as const;
 const buildFormData = (data: JobFormData): FormData => {
   const {
     interviewRounds,
@@ -117,7 +77,7 @@ const buildFormData = (data: JobFormData): FormData => {
         description: round.description,
       }))
     : [];
-    formData.append("rounds", JSON.stringify(interviewRoundsArray));
+  formData.append("rounds", JSON.stringify(interviewRoundsArray));
 
   // Handle skillsRequired - send as JSON string for backend parsing
   if (skillsRequired && skillsRequired.length > 0) {
@@ -140,7 +100,6 @@ const buildFormData = (data: JobFormData): FormData => {
     if (value === null || value === undefined) return;
     formData.append(key, String(value));
   });
-console.log("Form Data:", formData);
   return formData;
 };
 
@@ -246,7 +205,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
 );
 
 const CompanyInformationSection: React.FC<CompanyInformationSectionProps> =
-  memo(({ register, control, errors }) => (
+  memo(({ register, control, errors, logoUrl }) => (
     <Card className="animate-fade-in-up">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
@@ -276,6 +235,7 @@ const CompanyInformationSection: React.FC<CompanyInformationSectionProps> =
           label="Company Logo"
           name="companyLogo"
           control={control}
+          previewUrl={logoUrl} // Assuming this is the base URL for your uploads
           error={errors.companyLogo?.message}
           accept="image/*"
         />
@@ -362,9 +322,20 @@ ApplicationDeadlineSection.displayName = "ApplicationDeadlineSection";
 
 // Main Component
 export const JobPostingForm = () => {
-  const { formData, updateField, resetForm } = useJobStore();
-  const { toast } = useToast();
+  const { jobId } = useParams();
+  const { data: jobData, isLoading,refetch } = useQuery({
+    queryKey: ["job", jobId],
+    queryFn: () => getJobById(jobId),
+    enabled: !!jobId,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity, // data never becomes stale
+  });
 
+  const { formData, resetForm } = useJobStore();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -377,7 +348,20 @@ export const JobPostingForm = () => {
     defaultValues: formData,
     mode: "onSubmit",
   });
-
+  useEffect(() => {
+    if (jobData) {
+      reset({
+        ...jobData,
+        lastDateToApply: jobData.lastDateToApply
+          ? new Date(jobData.lastDateToApply)
+          : undefined,
+        allowedBranches: jobData.allowedBranches || [],
+        allowedPassingYears: (jobData.allowedPassingYears || []).map(String),
+        skillsRequired: jobData.skillsRequired || [],
+        interviewRounds: jobData.rounds || [],
+      });
+    }
+  }, [jobData, reset]);
   // Watch only the specific field needed
   const jobSector = watch("jobSector");
 
@@ -389,15 +373,27 @@ export const JobPostingForm = () => {
     async (data: JobFormData) => {
       try {
         const formData = buildFormData(data);
-        console.log(`Data before request: {JSON.stringify(formData, null, 2)}`);
-        const response = await postJob(formData);
-        toast({
-          title: "Success!",
-          description: "Job posting has been created successfully.",
-        });
-        console.log(response);
-        // reset();
-        // resetForm();
+        if (jobId) {
+          console.log("hello update");
+          const response = await updateJob(formData, jobId);
+          toast({
+            title: "Success!",
+            description: "Job has been updated successfully.",
+          });
+          console.log("Update response:", response);
+          refetch()
+        } else {
+          console.log("Hello post");
+          // const response = await postJob(formData);
+          // toast({
+          //   title: "Success!",
+          //   description: "Job posting has been created successfully.",
+          // });
+          // console.log("Post response:", response);
+        }
+        // navigate("/posted-jobs");
+        reset();
+        resetForm();
       } catch (error) {
         console.error("Error creating job posting:", error);
         toast({
@@ -450,7 +446,14 @@ export const JobPostingForm = () => {
             showCustomSector={showCustomSector}
           />
 
-          <CompanyInformationSection {...sectionProps} />
+          <CompanyInformationSection
+            {...sectionProps}
+            logoUrl={
+              jobData?.companyLogo
+                ? `${import.meta.env.VITE_BACKEND_URL}${jobData.companyLogo}`
+                : undefined
+            }
+          />
 
           <EligibilityCriteriaSection {...sectionProps} />
 
@@ -475,7 +478,13 @@ export const JobPostingForm = () => {
               className="flex items-center gap-2 gradient-bg"
             >
               <Send className="w-4 h-4" />
-              {isSubmitting ? "Creating..." : "Create Job Posting"}
+              {isSubmitting
+                ? jobId
+                  ? "Updating..."
+                  : "Creating..."
+                : jobId
+                ? "Update Job"
+                : "Create Job Posting"}
             </Button>
           </footer>
         </form>

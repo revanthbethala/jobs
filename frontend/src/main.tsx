@@ -15,9 +15,11 @@ import { JobPostingForm } from "./pages/JobPosting";
 // import JobPosting from "./pages/JobPosting";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import PostedJobs from "./components/jobs/admin/PostedJobs";
+import JobDetails from "./components/jobs/user/JobDetails";
 const queryClient = new QueryClient();
 const isLoggedIn = useAuthStore.getState().isLoggedIn;
-console.log(isLoggedIn)
+console.log(isLoggedIn);
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,10 +44,34 @@ const router = createBrowserRouter([
         element: <Jobs />,
       },
       {
-        path: "post-jobs",
+        path: "job/:jobId",
+        element: (
+          <ProtectedRoute>
+            <JobDetails />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "post-job",
         element: (
           <ProtectedRoute allowedRoles={["ADMIN"]}>
             <JobPostingForm />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "update-job/:jobId",
+        element: (
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <JobPostingForm />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "posted-jobs",
+        element: (
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <PostedJobs />
           </ProtectedRoute>
         ),
       },
@@ -54,6 +80,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute allowedRoles={["USER"]}>
             <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "posted-jobs",
+        element: (
+          <ProtectedRoute allowedRoles={["ADMIN"]}>
+            <PostedJobs />
           </ProtectedRoute>
         ),
       },

@@ -15,12 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import JobDetails from "./JobDetails";
+import { useNavigate } from "react-router-dom";
 
 function AppliedJobs() {
   const [applications, setApplications] = useState<AppliedJob[]>([]);
-  const { setAppliedJob, appliedJob } = useJobStore();
-
+  const navigate = useNavigate();
   const { data, isLoading, error } = useQuery({
     queryKey: ["userApplications"],
     queryFn: getUserApplications,
@@ -32,32 +31,11 @@ function AppliedJobs() {
     }
   }, [data]);
 
-  const handleViewDetails = (application: AppliedJob) => {
-    setAppliedJob(application);
-  };
-
-  const handleBackToList = () => {
-    setAppliedJob(null);
-  };
-
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
   if (error)
     return (
       <p className="text-center mt-10 text-red-600">Something went wrong.</p>
     );
-
-  if (appliedJob) {
-    return (
-      <JobDetails
-        job={appliedJob.job}
-        applicationMeta={{
-          status: appliedJob.status,
-        }}
-        onBack={handleBackToList}
-      />
-    );
-  }
-
   return (
     <div className="p-4">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">
@@ -115,7 +93,7 @@ function AppliedJobs() {
                 <TableCell className="text-right">
                   <Button
                     variant="outline"
-                    onClick={() => handleViewDetails(app)}
+                    onClick={() => navigate(`job/${app.job.id}`)}
                   >
                     View Details
                   </Button>

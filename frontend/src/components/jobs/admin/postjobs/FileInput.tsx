@@ -1,8 +1,9 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Control, useController } from "react-hook-form";
-import { cn } from "@/lib/utils";
-import { Upload, X, Image } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+
 interface FileInputProps {
   label: string;
   error?: string;
@@ -11,6 +12,7 @@ interface FileInputProps {
   accept?: string;
   className?: string;
   required?: boolean;
+  previewUrl?: string; // from backend
 }
 
 export const FileInput: React.FC<FileInputProps> = ({
@@ -21,14 +23,29 @@ export const FileInput: React.FC<FileInputProps> = ({
   accept = "image/*",
   className,
   required = false,
+  previewUrl,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { field } = useController({ name, control });
+
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [showPreviewUrl, setShowPreviewUrl] = useState(!!previewUrl);
+  const [removedPreviewOnce, setRemovedPreviewOnce] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [objectUrl]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size <= 3 * 1024 * 1024) {
+        const newUrl = URL.createObjectURL(file);
+        setObjectUrl(newUrl);
+        setShowPreviewUrl(false);
+        setRemovedPreviewOnce(true);
         field.onChange(file);
       } else {
         toast({
@@ -42,9 +59,19 @@ export const FileInput: React.FC<FileInputProps> = ({
   };
 
   const handleRemoveFile = () => {
+    fileInputRef.current!.value = "";
     field.onChange(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+      setObjectUrl(null);
+    }
+
+    // If we previously removed previewUrl, don't show it again
+    if (previewUrl && !removedPreviewOnce) {
+      setShowPreviewUrl(true);
+    } else {
+      setShowPreviewUrl(false);
     }
   };
 
@@ -53,6 +80,10 @@ export const FileInput: React.FC<FileInputProps> = ({
     const file = event.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
       if (file.size <= 3 * 1024 * 1024) {
+        const newUrl = URL.createObjectURL(file);
+        setObjectUrl(newUrl);
+        setShowPreviewUrl(false);
+        setRemovedPreviewOnce(true);
         field.onChange(file);
       } else {
         toast({
@@ -68,6 +99,12 @@ export const FileInput: React.FC<FileInputProps> = ({
     event.preventDefault();
   };
 
+  const currentPreview = (() => {
+    if (field.value instanceof File && objectUrl) return objectUrl;
+    if (showPreviewUrl && previewUrl) return previewUrl;
+    return null;
+  })();
+
   return (
     <div className={cn("space-y-2 animate-fade-in-up", className)}>
       <label className="text-sm font-medium text-foreground">
@@ -75,53 +112,43 @@ export const FileInput: React.FC<FileInputProps> = ({
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
 
-      <div
-        onClick={() => fileInputRef.current?.click()}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        className={cn(
-          "w-full p-6 rounded-lg border-2 border-dashed border-input bg-background",
-          "hover:border-primary transition-colors duration-200 cursor-pointer",
-          "flex flex-col items-center justify-center text-center",
-          error && "border-destructive"
-        )}
-      >
-        {field.value ? (
-          <div className="relative">
-            <div className="flex items-center gap-3 p-3 bg-accent rounded-lg">
-              <Image className="w-6 h-6 text-primary" />
-              <div className="text-left">
-                <p className="text-sm font-medium text-foreground">
-                  {field.value.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {(field.value.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemoveFile();
-                }}
-                className="p-1 hover:bg-destructive/10 rounded-full transition-colors"
-              >
-                <X className="w-4 h-4 text-destructive" />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-            <p className="text-sm font-medium text-foreground">
-              Click to upload or drag and drop
-            </p>
-            <p className="text-xs text-muted-foreground">
-              PNG, JPG, GIF up to 10MB
-            </p>
-          </>
-        )}
-      </div>
+      {currentPreview ? (
+        <div className="relative w-32 h-32 rounded overflow-hidden border group">
+          <img
+            src={currentPreview}
+            alt="Preview"
+            className="w-full h-full object-cover rounded"
+          />
+          <button
+            type="button"
+            onClick={handleRemoveFile}
+            className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1 hover:bg-destructive/80 transition"
+            title="Remove image"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          className={cn(
+            "w-full p-6 rounded-lg border-2 border-dashed border-input bg-background",
+            "hover:border-primary transition-colors duration-200 cursor-pointer",
+            "flex flex-col items-center justify-center text-center",
+            error && "border-destructive"
+          )}
+        >
+          <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+          <p className="text-sm font-medium text-foreground">
+            Click to upload or drag and drop
+          </p>
+          <p className="text-xs text-muted-foreground">
+            PNG, JPG, GIF up to 3MB
+          </p>
+        </div>
+      )}
 
       <input
         ref={fileInputRef}

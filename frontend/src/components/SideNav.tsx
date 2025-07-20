@@ -66,6 +66,13 @@ const SideNav = () => {
 
   const navItems = [
     { name: "Profile", path: "/profile", icon: User, roles: ["USER"] },
+    {
+      name: "Posted Jobs",
+      path: "/posted-jobs",
+      icon: Briefcase,
+      roles: ["ADMIN"],
+    },
+
     { name: "Jobs", path: "/jobs", icon: Briefcase, roles: ["USER", "ADMIN"] },
     {
       name: "Applied Jobs",
@@ -74,11 +81,11 @@ const SideNav = () => {
       roles: ["USER"],
     },
     {
-      name:"Post Jobs",
-      path: "/post-jobs",
+      name: "Post Jobs",
+      path: "/post-job",
       icon: Pen,
-      roles: ["ADMIN"]
-    }
+      roles: ["ADMIN"],
+    },
   ];
 
   const sidebarWidth = isCollapsed && !isMobile ? "w-16" : "w-64";

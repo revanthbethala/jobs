@@ -25,9 +25,15 @@ export const getProfile = async () => {
   }
 };
 
-export const updateProfile = async (data: unknown) => {
+export const updateProfile = async (data) => {
   try {
     const token = getAuthToken();
+    for (const [key, value] of data.entries()) {
+      if (value instanceof File) {
+        console.log(`${key}:`, value.name, value.size, value.type);
+      }
+      // console.log(`${key}:`, value, typeof value);
+    }
     const res = await axios.put(`${backend_url}/update-profile`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
