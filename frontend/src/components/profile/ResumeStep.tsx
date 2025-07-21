@@ -7,7 +7,7 @@ import { Upload, FileText, CheckCircle, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useProfileStore } from "@/store/profileStore";
 import { resumeSchema } from "@/schemas/profileSchema";
-import { updateProfile } from "@/services/api";
+import { updateProfile } from "@/services/profileService";
 
 export function ResumeStep() {
   const {

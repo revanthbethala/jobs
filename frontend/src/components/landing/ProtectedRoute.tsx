@@ -1,32 +1,24 @@
 import { useAuthStore } from "@/store/authStore";
 import { Navigate, useLocation } from "react-router-dom";
 
-type ProtectedRouteType = {
+type ProtectedRouteProps = {
   children: React.ReactNode;
-  allowedRoles?: string[]; // e.g., ["admin"], ["user"], ["admin", "user"]
+  allowedRoles?: string[]; // e.g., ["USER"], ["ADMIN"], ["USER", "ADMIN"]
 };
 
 function ProtectedRoute({
   children,
   allowedRoles = ["USER", "ADMIN"],
-}: ProtectedRouteType) {
+}: ProtectedRouteProps) {
   const { token, isLoggedIn, role } = useAuthStore();
   const location = useLocation();
 
-  // if (!token) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen">
-  //       Checking login...
-  //     </div>
-  //   );
-  // }
-
-  if (!isLoggedIn) {
-    return <Navigate to="/auth" />;
+  if (!isLoggedIn || !token) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   if (!allowedRoles.includes(role)) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
