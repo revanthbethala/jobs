@@ -25,9 +25,12 @@ export const getJobById = async (job_id: string) => {
 
 export const applyJob = async (jobId) => {
   const token = useAuthStore.getState().token;
+  console.log(`Applying to job with ID: ${jobId}`);
+  console.log(`Token: ${token}`);
   try {
     const res = await axios.post(
       `${backend_url}/api/applications/apply/${jobId}`,
+      {jobId},
       {
         headers: {
           "Content-Type": "application/json",
@@ -51,6 +54,25 @@ export const getUserApplications = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const getJobApplications = async (jobId: string) => {
+  const token = useAuthStore.getState().token;
+  try {
+    const res = await axios.get(
+      `${backend_url}/api/applications/job/${jobId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return res.data;
   } catch (err) {
     console.log(err);

@@ -33,7 +33,7 @@ export default function Home() {
                 className={currentView === "form" ? "bg-brand-blue-light" : ""}
               >
                 <FileText className="w-4 h-4 mr-2" />
-                Create Profile
+                Update Profile
               </Button>
               <Button
                 variant={currentView === "profile" ? "default" : "outline"}

@@ -1,5 +1,8 @@
-import { Education, PersonalInfo } from "@/types/profileTypes";
+// store/profileStore.ts
 import { create } from "zustand";
+import { PersonalInfo, Education } from "@/types/profileTypes";
+import { QueryClient } from "@tanstack/react-query";
+import { getProfile } from "@/services/profileService";
 
 interface FormStore {
   currentStep: number;
@@ -16,15 +19,17 @@ interface FormStore {
   updateEducationEntry: (id: string, data: Partial<Education>) => void;
   setResume: (file: File | null) => void;
   resetForm: () => void;
+
+  // ✅ TanStack query-backed action
+  getProfileFromAPI: () => Promise<void>;
 }
 
-// Create store WITHOUT persistence to avoid File serialization issues
 export const useProfileStore = create<FormStore>((set, get) => ({
   currentStep: 1,
   tempPersonalInfo: {
-    username: "john_doe",
-    collegeId: "COL123456",
-    email: "john.doe@example.com",
+    username: "revanthbethala",
+    collegeId: "22kn1a4405",
+    email: "revanthbethala@gmail.com",
     gender: "",
     firstName: "",
     lastName: "",
@@ -44,20 +49,16 @@ export const useProfileStore = create<FormStore>((set, get) => ({
 
   setCurrentStep: (step) => set({ currentStep: step }),
 
-  // Fixed updatePersonalInfo to handle File objects properly
   updatePersonalInfo: (data) =>
     set((state) => {
       const newPersonalInfo = { ...state.tempPersonalInfo };
 
-      // Handle each property individually to preserve File objects
       Object.keys(data).forEach((key) => {
         const value = data[key as keyof PersonalInfo];
         if (key === "profilePic" && value instanceof File) {
-          // Preserve File object directly
           newPersonalInfo.profilePic = value;
         } else {
-          // Handle other properties normally
-          (newPersonalInfo )[key] = value;
+          newPersonalInfo[key] = value;
         }
       });
 
@@ -83,16 +84,15 @@ export const useProfileStore = create<FormStore>((set, get) => ({
       ),
     })),
 
-  // Simple setter for resume file
   setResume: (file) => set({ tempResume: file }),
 
   resetForm: () =>
     set({
       currentStep: 1,
       tempPersonalInfo: {
-        username: "john_doe",
-        collegeId: "COL123456",
-        email: "john.doe@example.com",
+        username: "",
+        collegeId: "",
+        email: "",
         gender: "",
         firstName: "",
         lastName: "",
@@ -110,4 +110,27 @@ export const useProfileStore = create<FormStore>((set, get) => ({
       tempEducation: [],
       tempResume: null,
     }),
+
+  // ✅ Call API and update store
+  getProfileFromAPI: async () => {
+    try {
+      const data = await getProfile();
+      const profileData = data?.user;
+      console.log("Fetched profile:", profileData);
+
+      const { personalInfo, education } = profileData;
+
+      if (personalInfo) {
+        set({ tempPersonalInfo: personalInfo });
+      }
+
+      if (education) {
+        set({ tempEducation: education });
+      }
+
+      // Note: resume can't be serialized if it's a File
+    } catch (err) {
+      console.error("Error getting profile from API:", err);
+    }
+  },
 }));

@@ -6,6 +6,7 @@ import {
   deleteJob,
   getAllJobs,
   getJobById,
+  getJobsByAdmin,
   updateJob,
 } from '../controllers/jobController';
 import { upload } from '../middlewares/multer';
@@ -19,6 +20,7 @@ const asyncHandler =
 
 router.get('/', asyncHandler(getAllJobs));
 router.get('/:id', asyncHandler(getJobById));
+router.get('/:adminId/jobs', protect,isAdmin,asyncHandler(getJobsByAdmin));
 
 router.post('/', protect, isAdmin, upload.single('companyLogo'), asyncHandler(createJob));
 router.put('/:id', protect, isAdmin, upload.single('companyLogo'), asyncHandler(updateJob));

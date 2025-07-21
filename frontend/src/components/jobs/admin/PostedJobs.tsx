@@ -64,9 +64,6 @@ export default function MyJobsTable() {
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const navigate = useNavigate();
-  const handleView = (jobId: string) => {
-    console.log("Viewing job:", jobId);
-  };
 
   const handleDelete = async (jobId: string) => {
     try {
@@ -143,7 +140,6 @@ export default function MyJobsTable() {
       const bDate = new Date(b.postedDate).getTime();
       return sortOrder === "asc" ? aDate - bDate : bDate - aDate;
     });
-  console.log(data);
 
   return (
     <motion.div
@@ -184,7 +180,7 @@ export default function MyJobsTable() {
                   <ArrowUpAZ className="w-4 h-4" />
                 )}
               </TableHead>
-
+              <TableHead>Applications</TableHead>
               <TableHead>View Details</TableHead>
               <TableHead>Update Jobs</TableHead>
               <TableHead>Delete Jobs</TableHead>
@@ -206,12 +202,20 @@ export default function MyJobsTable() {
                   {format(new Date(job.postedDate), "MMM dd, yyyy")}
                 </TableCell>
                 <TableCell>
+                  <Button onClick={() => navigate(`/applications/${job.id}`)}>
+                    Manage Applications
+                  </Button>
+                </TableCell>
+                <TableCell>
                   <Button
                     size="icon"
                     variant="ghost"
-                    onClick={() => handleView(job.id)}
+                    onClick={() => navigate(`/job/${job.id}`)}
                   >
-                    <Eye className="w-4 h-4" />
+                    <span>
+                      View Details
+                      <Eye className="w-4 h-4" />
+                    </span>
                   </Button>
                 </TableCell>
                 <TableCell>

@@ -22,6 +22,7 @@ import { personalInfoSchema } from "@/schemas/profileSchema";
 export function PersonalInfoStep() {
   const { tempPersonalInfo, updatePersonalInfo, setCurrentStep } =
     useProfileStore();
+    console.log("Temp personal info:", tempPersonalInfo);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

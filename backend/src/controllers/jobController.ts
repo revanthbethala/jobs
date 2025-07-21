@@ -9,6 +9,7 @@ import { sendJobPostedEmail } from '../utils/email';
 
 export const createJob = async (req: Request, res: Response) => {
   try {
+    const adminId = (req as any)?.user?.id;
     const {
       jobTitle,
       jobDescription,
@@ -67,6 +68,7 @@ export const createJob = async (req: Request, res: Response) => {
         companyWebsite,
         companyEmail,
         companyPhone,
+        createdById: adminId,
         allowedBranches: parsedAllowedBranches,
         allowedPassingYears: parsedAllowedPassingYears,
         lastDateToApply: lastDateToApply ? new Date(lastDateToApply) : null,
@@ -312,5 +314,26 @@ export const deleteJob = async (req: Request, res: Response) => {
     res.json({ message: 'Job deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Failed to delete job', error: err });
+  }
+};
+export const getJobsByAdmin = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const adminId = req.params.adminId;
+
+    const jobs = await prisma.job.findMany({
+      where: { createdById: adminId },
+      orderBy: { postedDate: 'desc' },
+      include: {
+        rounds: true,
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Jobs fetched',
+      jobs,
+    });
+  } catch (error) {
+    console.error('Error fetching jobs by admin:', error);
+    return res.status(500).json({ message: 'Failed to fetch jobs.', error });
   }
 };

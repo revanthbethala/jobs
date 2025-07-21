@@ -28,7 +28,6 @@ interface JobCardProps {
 
 export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
   const navigate = useNavigate();
-  console.log(job);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,6 +44,7 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
                 <img
                   src={`${import.meta.env.VITE_BACKEND_URL}${job.companyLogo} `}
                   alt="logo"
+                  loading="lazy"
                   className="rounded-lg object-cover"
                 />
               </div>

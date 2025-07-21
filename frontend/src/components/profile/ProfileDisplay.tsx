@@ -1,11 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { User, Mail, Phone, MapPin, Calendar, GraduationCap, Edit, FileText, Download, Eye } from "lucide-react"
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  GraduationCap,
+  Edit,
+  FileText,
+  Download,
+  Eye,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "@/services/profileService";
 
 // Mock data for demonstration with resume
 const mockProfile = {
@@ -66,20 +79,24 @@ const mockProfile = {
     uploadDate: "2024-01-15",
     fileSize: "2.1 MB",
   },
-}
+};
 
 interface ProfileDisplayProps {
-  onEditProfile?: () => void
+  onEditProfile?: () => void;
 }
 
 export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
-  const [activeTab, setActiveTab] = useState("personal")
-
+  const [activeTab, setActiveTab] = useState("personal");
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["profile"],
+    queryFn: getProfile,
+  });
+  console.log("Profile data:", data);
   const handleEditProfile = () => {
     if (onEditProfile) {
-      onEditProfile()
+      onEditProfile();
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -91,8 +108,12 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-brand-blue-dark mb-2">User Profile</h1>
-          <p className="text-gray-600">Complete profile overview with education and documents</p>
+          <h1 className="text-4xl font-bold text-brand-blue-dark mb-2">
+            User Profile
+          </h1>
+          <p className="text-gray-600">
+            Complete profile overview with education and documents
+          </p>
         </motion.div>
 
         {/* Profile Header Card */}
@@ -114,11 +135,17 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                 </div>
                 <div className="text-center lg:text-left flex-1">
                   <h2 className="text-4xl font-bold text-brand-blue-dark mb-2">
-                    {mockProfile.personalInfo.firstName} {mockProfile.personalInfo.lastName}
+                    {mockProfile.personalInfo.firstName}{" "}
+                    {mockProfile.personalInfo.lastName}
                   </h2>
-                  <p className="text-gray-600 text-xl mb-3">@{mockProfile.personalInfo.username}</p>
+                  <p className="text-gray-600 text-xl mb-3">
+                    @{mockProfile.personalInfo.username}
+                  </p>
                   <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-4">
-                    <Badge variant="secondary" className="bg-brand-blue-light text-white px-4 py-2 text-sm">
+                    <Badge
+                      variant="secondary"
+                      className="bg-brand-blue-light text-white px-4 py-2 text-sm"
+                    >
                       {mockProfile.personalInfo.role}
                     </Badge>
                     <Badge variant="outline" className="px-4 py-2 text-sm">
@@ -141,12 +168,16 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                     <div className="flex items-center space-x-2">
                       <MapPin className="w-4 h-4" />
                       <span>
-                        {mockProfile.personalInfo.city}, {mockProfile.personalInfo.state}
+                        {mockProfile.personalInfo.city},{" "}
+                        {mockProfile.personalInfo.state}
                       </span>
                     </div>
                   </div>
                 </div>
-                <Button onClick={handleEditProfile} className="bg-brand-blue-light hover:bg-brand-blue-dark px-6 py-3">
+                <Button
+                  onClick={handleEditProfile}
+                  className="bg-brand-blue-light hover:bg-brand-blue-dark px-6 py-3"
+                >
                   <Edit className="w-4 h-4 mr-2" />
                   Edit Profile
                 </Button>
@@ -166,7 +197,11 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
             <Button
               variant={activeTab === "personal" ? "default" : "ghost"}
               onClick={() => setActiveTab("personal")}
-              className={`px-6 py-3 ${activeTab === "personal" ? "bg-brand-blue-light text-white shadow-md" : "hover:bg-gray-100"}`}
+              className={`px-6 py-3 ${
+                activeTab === "personal"
+                  ? "bg-brand-blue-light text-white shadow-md"
+                  : "hover:bg-gray-100"
+              }`}
             >
               <User className="w-4 h-4 mr-2" />
               Personal Info
@@ -174,7 +209,11 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
             <Button
               variant={activeTab === "education" ? "default" : "ghost"}
               onClick={() => setActiveTab("education")}
-              className={`px-6 py-3 ${activeTab === "education" ? "bg-brand-blue-light text-white shadow-md" : "hover:bg-gray-100"}`}
+              className={`px-6 py-3 ${
+                activeTab === "education"
+                  ? "bg-brand-blue-light text-white shadow-md"
+                  : "hover:bg-gray-100"
+              }`}
             >
               <GraduationCap className="w-4 h-4 mr-2" />
               Education
@@ -182,7 +221,11 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
             <Button
               variant={activeTab === "documents" ? "default" : "ghost"}
               onClick={() => setActiveTab("documents")}
-              className={`px-6 py-3 ${activeTab === "documents" ? "bg-brand-blue-light text-white shadow-md" : "hover:bg-gray-100"}`}
+              className={`px-6 py-3 ${
+                activeTab === "documents"
+                  ? "bg-brand-blue-light text-white shadow-md"
+                  : "hover:bg-gray-100"
+              }`}
             >
               <FileText className="w-4 h-4 mr-2" />
               Documents
@@ -212,14 +255,18 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                     <Mail className="w-5 h-5 text-brand-blue-light" />
                     <div>
                       <p className="text-sm text-gray-500">Email Address</p>
-                      <p className="font-medium">{mockProfile.personalInfo.email}</p>
+                      <p className="font-medium">
+                        {mockProfile.personalInfo.email}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
                     <Phone className="w-5 h-5 text-brand-blue-light" />
                     <div>
                       <p className="text-sm text-gray-500">Phone Number</p>
-                      <p className="font-medium">{mockProfile.personalInfo.phoneNumber}</p>
+                      <p className="font-medium">
+                        {mockProfile.personalInfo.phoneNumber}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
@@ -227,7 +274,8 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
                       <p className="font-medium">
-                        {mockProfile.personalInfo.city}, {mockProfile.personalInfo.state},{" "}
+                        {mockProfile.personalInfo.city},{" "}
+                        {mockProfile.personalInfo.state},{" "}
                         {mockProfile.personalInfo.country}
                       </p>
                     </div>
@@ -237,7 +285,9 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                     <div>
                       <p className="text-sm text-gray-500">Date of Birth</p>
                       <p className="font-medium">
-                        {new Date(mockProfile.personalInfo.dateOfBirth).toLocaleDateString()}
+                        {new Date(
+                          mockProfile.personalInfo.dateOfBirth
+                        ).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
@@ -256,16 +306,22 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                   <div className="grid grid-cols-2 gap-6">
                     <div className="p-3 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-500 mb-1">Gender</p>
-                      <p className="font-medium text-lg">{mockProfile.personalInfo.gender}</p>
+                      <p className="font-medium text-lg">
+                        {mockProfile.personalInfo.gender}
+                      </p>
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg">
                       <p className="text-sm text-gray-500 mb-1">College ID</p>
-                      <p className="font-medium text-lg">{mockProfile.personalInfo.collegeId}</p>
+                      <p className="font-medium text-lg">
+                        {mockProfile.personalInfo.collegeId}
+                      </p>
                     </div>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <p className="text-sm text-gray-500 mb-2">Full Address</p>
-                    <p className="font-medium leading-relaxed">{mockProfile.personalInfo.address}</p>
+                    <p className="font-medium leading-relaxed">
+                      {mockProfile.personalInfo.address}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -273,17 +329,27 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
               {/* Family Information */}
               <Card className="lg:col-span-2 shadow-lg">
                 <CardHeader className="bg-gradient-to-r from-brand-blue-light/10 to-brand-blue-dark/10">
-                  <CardTitle className="text-brand-blue-dark">Family Information</CardTitle>
+                  <CardTitle className="text-brand-blue-dark">
+                    Family Information
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-500 mb-2">Father's Name</p>
-                      <p className="font-medium text-xl">{mockProfile.personalInfo.fatherName}</p>
+                      <p className="text-sm text-gray-500 mb-2">
+                        Father's Name
+                      </p>
+                      <p className="font-medium text-xl">
+                        {mockProfile.personalInfo.fatherName}
+                      </p>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-500 mb-2">Mother's Name</p>
-                      <p className="font-medium text-xl">{mockProfile.personalInfo.motherName}</p>
+                      <p className="text-sm text-gray-500 mb-2">
+                        Mother's Name
+                      </p>
+                      <p className="font-medium text-xl">
+                        {mockProfile.personalInfo.motherName}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -294,8 +360,12 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
           {activeTab === "education" && (
             <div className="space-y-8">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-brand-blue-dark mb-2">Educational Journey</h2>
-                <p className="text-gray-600">Complete academic background and achievements</p>
+                <h2 className="text-2xl font-bold text-brand-blue-dark mb-2">
+                  Educational Journey
+                </h2>
+                <p className="text-gray-600">
+                  Complete academic background and achievements
+                </p>
               </div>
 
               {mockProfile.education.map((edu, index) => (
@@ -313,40 +383,65 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                             <GraduationCap className="w-6 h-6 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-brand-blue-dark">{edu.educationalLevel}</h3>
-                            <p className="text-sm text-gray-600">{edu.institution}</p>
+                            <h3 className="text-xl font-bold text-brand-blue-dark">
+                              {edu.educationalLevel}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {edu.institution}
+                            </p>
                           </div>
                         </CardTitle>
                         <div className="text-right">
-                          <Badge variant="outline" className="text-lg px-4 py-2">
+                          <Badge
+                            variant="outline"
+                            className="text-lg px-4 py-2"
+                          >
                             {edu.passedOutYear}
                           </Badge>
-                          <p className="text-sm text-gray-500 mt-1">Graduated</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Graduated
+                          </p>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="p-4 bg-gray-50 rounded-lg">
-                          <p className="text-sm text-gray-500 mb-2">Institution</p>
-                          <p className="font-medium text-lg">{edu.institution}</p>
+                          <p className="text-sm text-gray-500 mb-2">
+                            Institution
+                          </p>
+                          <p className="font-medium text-lg">
+                            {edu.institution}
+                          </p>
                         </div>
 
                         {edu.specialization && (
                           <div className="p-4 bg-gray-50 rounded-lg">
-                            <p className="text-sm text-gray-500 mb-2">Specialization</p>
-                            <p className="font-medium text-lg">{edu.specialization}</p>
+                            <p className="text-sm text-gray-500 mb-2">
+                              Specialization
+                            </p>
+                            <p className="font-medium text-lg">
+                              {edu.specialization}
+                            </p>
                           </div>
                         )}
 
                         <div className="p-4 bg-gray-50 rounded-lg">
-                          <p className="text-sm text-gray-500 mb-2">Board/University</p>
-                          <p className="font-medium text-lg">{edu.boardOrUniversity}</p>
+                          <p className="text-sm text-gray-500 mb-2">
+                            Board/University
+                          </p>
+                          <p className="font-medium text-lg">
+                            {edu.boardOrUniversity}
+                          </p>
                         </div>
 
                         <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                          <p className="text-sm text-green-600 mb-2">Performance</p>
-                          <p className="font-bold text-xl text-green-700">{edu.percentage}</p>
+                          <p className="text-sm text-green-600 mb-2">
+                            Performance
+                          </p>
+                          <p className="font-bold text-xl text-green-700">
+                            {edu.percentage}
+                          </p>
                         </div>
 
                         <div className="p-4 bg-gray-50 rounded-lg">
@@ -355,17 +450,31 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                         </div>
 
                         <div
-                          className={`p-4 rounded-lg border ${edu.noOfActiveBacklogs === 0 ? "bg-green-50 border-green-200" : "bg-orange-50 border-orange-200"}`}
+                          className={`p-4 rounded-lg border ${
+                            edu.noOfActiveBacklogs === 0
+                              ? "bg-green-50 border-green-200"
+                              : "bg-orange-50 border-orange-200"
+                          }`}
                         >
                           <p
-                            className={`text-sm mb-2 ${edu.noOfActiveBacklogs === 0 ? "text-green-600" : "text-orange-600"}`}
+                            className={`text-sm mb-2 ${
+                              edu.noOfActiveBacklogs === 0
+                                ? "text-green-600"
+                                : "text-orange-600"
+                            }`}
                           >
                             Active Backlogs
                           </p>
                           <p
-                            className={`font-bold text-xl ${edu.noOfActiveBacklogs === 0 ? "text-green-700" : "text-orange-700"}`}
+                            className={`font-bold text-xl ${
+                              edu.noOfActiveBacklogs === 0
+                                ? "text-green-700"
+                                : "text-orange-700"
+                            }`}
                           >
-                            {edu.noOfActiveBacklogs === 0 ? "No Backlogs" : edu.noOfActiveBacklogs}
+                            {edu.noOfActiveBacklogs === 0
+                              ? "No Backlogs"
+                              : edu.noOfActiveBacklogs}
                           </p>
                         </div>
                       </div>
@@ -377,23 +486,35 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
               {/* Education Summary */}
               <Card className="shadow-lg bg-gradient-to-r from-brand-blue-light/5 to-brand-blue-dark/5">
                 <CardHeader>
-                  <CardTitle className="text-center text-brand-blue-dark">Education Summary</CardTitle>
+                  <CardTitle className="text-center text-brand-blue-dark">
+                    Education Summary
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                     <div className="p-4">
-                      <p className="text-3xl font-bold text-brand-blue-light">{mockProfile.education.length}</p>
+                      <p className="text-3xl font-bold text-brand-blue-light">
+                        {mockProfile.education.length}
+                      </p>
                       <p className="text-gray-600">Total Qualifications</p>
                     </div>
                     <div className="p-4">
                       <p className="text-3xl font-bold text-green-600">
-                        {mockProfile.education.filter((edu) => edu.noOfActiveBacklogs === 0).length}
+                        {
+                          mockProfile.education.filter(
+                            (edu) => edu.noOfActiveBacklogs === 0
+                          ).length
+                        }
                       </p>
                       <p className="text-gray-600">Clear Records</p>
                     </div>
                     <div className="p-4">
                       <p className="text-3xl font-bold text-brand-blue-dark">
-                        {Math.max(...mockProfile.education.map((edu) => edu.passedOutYear))}
+                        {Math.max(
+                          ...mockProfile.education.map(
+                            (edu) => edu.passedOutYear
+                          )
+                        )}
                       </p>
                       <p className="text-gray-600">Latest Graduation</p>
                     </div>
@@ -406,7 +527,9 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
           {activeTab === "documents" && (
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-brand-blue-dark mb-2">Documents & Files</h2>
+                <h2 className="text-2xl font-bold text-brand-blue-dark mb-2">
+                  Documents & Files
+                </h2>
                 <p className="text-gray-600">Uploaded documents and resume</p>
               </div>
 
@@ -425,16 +548,24 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                         <FileText className="w-8 h-8 text-red-600" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{mockProfile.resume.fileName}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {mockProfile.resume.fileName}
+                        </h3>
                         <p className="text-sm text-gray-500">
-                          Uploaded on {new Date(mockProfile.resume.uploadDate).toLocaleDateString()} •{" "}
-                          {mockProfile.resume.fileSize}
+                          Uploaded on{" "}
+                          {new Date(
+                            mockProfile.resume.uploadDate
+                          ).toLocaleDateString()}{" "}
+                          • {mockProfile.resume.fileSize}
                         </p>
                         <div className="flex items-center space-x-4 mt-2">
                           <Badge variant="outline" className="text-xs">
                             PDF Document
                           </Badge>
-                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-green-100 text-green-800"
+                          >
                             Verified
                           </Badge>
                         </div>
@@ -469,13 +600,20 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
                         <User className="w-8 h-8 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">Profile Picture</h3>
-                        <p className="text-sm text-gray-500">Uploaded on {new Date().toLocaleDateString()} • 1.2 MB</p>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Profile Picture
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Uploaded on {new Date().toLocaleDateString()} • 1.2 MB
+                        </p>
                         <div className="flex items-center space-x-4 mt-2">
                           <Badge variant="outline" className="text-xs">
                             Image File
                           </Badge>
-                          <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-green-100 text-green-800"
+                          >
                             Active
                           </Badge>
                         </div>
@@ -498,19 +636,29 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
               {/* Document Statistics */}
               <Card className="shadow-lg mt-8 bg-gradient-to-r from-brand-blue-light/5 to-brand-blue-dark/5">
                 <CardHeader>
-                  <CardTitle className="text-center text-brand-blue-dark">Document Summary</CardTitle>
+                  <CardTitle className="text-center text-brand-blue-dark">
+                    Document Summary
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
                     <div className="p-6">
-                      <p className="text-4xl font-bold text-brand-blue-light mb-2">2</p>
+                      <p className="text-4xl font-bold text-brand-blue-light mb-2">
+                        2
+                      </p>
                       <p className="text-gray-600">Total Documents</p>
-                      <p className="text-sm text-gray-500 mt-1">Resume + Profile Picture</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Resume + Profile Picture
+                      </p>
                     </div>
                     <div className="p-6">
-                      <p className="text-4xl font-bold text-green-600 mb-2">100%</p>
+                      <p className="text-4xl font-bold text-green-600 mb-2">
+                        100%
+                      </p>
                       <p className="text-gray-600">Profile Complete</p>
-                      <p className="text-sm text-gray-500 mt-1">All required documents uploaded</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        All required documents uploaded
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -520,5 +668,5 @@ export function ProfileDisplay({ onEditProfile }: ProfileDisplayProps) {
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

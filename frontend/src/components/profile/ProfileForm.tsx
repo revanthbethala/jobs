@@ -5,11 +5,16 @@ import { PersonalInfoStep } from "./PersonalInfoStep";
 import { EducationStep } from "./EducationStep";
 import { ResumeStep } from "./ResumeStep";
 import { AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import { useProfileStore } from "@/store/profileStore";
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "@/services/profileService";
 
 export default function ProfileForm() {
-  const { currentStep } = useProfileStore();
-
+  const { currentStep, getProfileFromAPI } = useProfileStore();
+  useEffect(() => {
+    getProfileFromAPI();
+  }, []);
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -24,7 +29,7 @@ export default function ProfileForm() {
   };
 
   return (
-    <div className="min-h-screen  p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-brand-blue-dark mb-2">

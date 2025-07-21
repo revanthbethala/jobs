@@ -384,14 +384,14 @@ export const JobPostingForm = () => {
           refetch()
         } else {
           console.log("Hello post");
-          // const response = await postJob(formData);
-          // toast({
-          //   title: "Success!",
-          //   description: "Job posting has been created successfully.",
-          // });
-          // console.log("Post response:", response);
+          const response = await postJob(formData);
+          toast({
+            title: "Success!",
+            description: "Job posting has been created successfully.",
+          });
+          console.log("Post response:", response);
         }
-        // navigate("/posted-jobs");
+        navigate("/posted-jobs");
         reset();
         resetForm();
       } catch (error) {

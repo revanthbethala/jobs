@@ -15,12 +15,12 @@ import {
   Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { formatDistanceToNow, set } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +49,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/store/authStore";
 
 function getIncompleteFields(profile): number {
   const incompleteFields: string[] = [];
@@ -91,18 +92,18 @@ function getIncompleteFields(profile): number {
 
   return incompleteFields.length;
 }
-
+const role = useAuthStore.getState().role;
+console.log("Role", role);
 export default function JobDetails() {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  // const { profile, fetchProfile } = useProfileStore();
   const [showAlert, setShowAlert] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [jobStatus, setJobStatus] = useState<string | null>(null);
-  // const applicationMeta = { status: "Pending" }; // Placeholder for application status
-  // Fetching user applications
+
+  // const { profile, fetchProfile } = useProfileStore();
 
   const {
     data: applicationsData,
@@ -111,10 +112,10 @@ export default function JobDetails() {
   } = useQuery({
     queryKey: ["userApplications"],
     queryFn: getUserApplications,
+    refetchOnMount: false,
   });
-
+  console.log("application data", applicationsData);
   // const applicationMeta = { status: "Pending" };
-  const applications = applicationsData?.applications || [];
   const {
     data: job,
     isLoading: isJobLoading,
@@ -124,7 +125,20 @@ export default function JobDetails() {
     queryKey: ["jobDetails"],
     queryFn: () => getJobById(jobId!),
   });
-  if (isError && applicationError) {
+  useEffect(() => {
+    if (!applicationsData?.applications) return;
+
+    const matched = applicationsData.applications.find(
+      (app) => app.jobId === jobId
+    );
+
+    if (matched) {
+      setJobStatus(matched.status);
+      console.log("Job Status:", matched.status);
+    }
+  }, [jobId, applicationsData]);
+
+  if (isError) {
     console.error("Error fetching job details:", jobError);
     return (
       <div className="flex items-center justify-center h-screen">
@@ -132,10 +146,6 @@ export default function JobDetails() {
       </div>
     );
   }
-  console.log("Job Details:", applications);
-  if (applications?.length > 0)
-    applications.map((app) => app.jobId == job.id && setJobStatus(app.status));
-
   const handleSubmit = async () => {
     // if (!profile) {
     //   await fetchProfile();
@@ -149,13 +159,16 @@ export default function JobDetails() {
     //   } else {
     //     setShowConfirmation(true);
     //   }
+    setShowConfirmation(true);
     console.log("U clicked Apply Now");
   };
   const handleApply = async () => {
     try {
       setIsLoading(true);
       const res = await applyJob(job?.id);
+      console.log("Apply Job Response:", res);
       setIsLoading(false);
+      setJobStatus("Pending");
     } catch (err) {
       const err_msg = err?.response?.data?.message;
       toast({
@@ -183,7 +196,6 @@ export default function JobDetails() {
       transition: { duration: 0.5, ease: "easeOut" },
     },
   };
-  const rounds_info = !!job?.rounds;
 
   if (isJobLoading) {
     return (
@@ -193,8 +205,7 @@ export default function JobDetails() {
     );
   }
   return (
-    <div className="">
-      {/* Header */}
+    <div>
       {/* ALERT FOR INCOMPLETE PROFILE */}
       <div className="w-fit h-fit">
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
@@ -245,7 +256,13 @@ export default function JobDetails() {
               className="bg-green-600 text-white hover:bg-green-700"
               onClick={handleApply}
             >
-              Yes, Apply
+              {isLoading ? (
+                <span className="flex gap-1">
+                  <Loader2 className="animate-spin h-4 w-4 mr-2" /> Applying
+                </span>
+              ) : (
+                "Apply Now"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -317,40 +334,37 @@ export default function JobDetails() {
                         </span>
                         <span className="font-medium">
                           Apply by{" "}
-                          {new Date(job.lastDateToApply).toLocaleDateString()}
+                          {format(new Date(job.lastDateToApply), "dd MMM YYY")}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex flex-col gap-3">
                     <div className="text-right">
-                      <p className="text-xl font-bold ">{job.salary}</p>
+                      <p className="text-xl font-bold capitalize ">
+                        Salary: {job.salary}
+                      </p>
                     </div>
-                    {jobStatus ? (
-                      <Button
-                        className={cn(
-                          jobStatus && "bg-pending hover:bg-pending/80",
-                          "py-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        )}
-                      >
-                        {jobStatus}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleSubmit}
-                        className="bg-brand-blue-light hover:bg-brand-blue-dark transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                      >
-                        {isLoading ? (
-                          <span>
-                            <span className="animate-spin bg-white">
-                              <Loader2 size={10} />
-                            </span>
-                            Applying...
-                          </span>
+                    {role === "USER" && (
+                      <span>
+                        {jobStatus ? (
+                          <Button
+                            className={cn(
+                              jobStatus && "bg-pending hover:bg-pending/80",
+                              "py-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                            )}
+                          >
+                            Application Status: {jobStatus}
+                          </Button>
                         ) : (
-                          "Apply Now"
+                          <Button
+                            onClick={handleSubmit}
+                            className="bg-brand-blue-light hover:bg-brand-blue-dark transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                          >
+                            Apply Now
+                          </Button>
                         )}
-                      </Button>
+                      </span>
                     )}
                   </div>
                 </div>
@@ -362,53 +376,7 @@ export default function JobDetails() {
             {/* Main Content - Left Column */}
             <div className="lg:col-span-2 space-y-8">
               {/* Interview Process - TOP PRIORITY */}
-              <motion.div variants={itemVariants}>
-                {rounds_info && (
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center gap-3 text-2xl">
-                        <div className="p-2 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark rounded-lg">
-                          <Users className="w-6 h-6 text-white" />
-                        </div>
-                        Interview Process
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="relative">
-                        {/* Timeline Line */}
-                        <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-brand-blue-light to-brand-blue-dark opacity-30"></div>
-                        <div className="space-y-6">
-                          {job.rounds.map((round, index) => (
-                            <motion.div
-                              key={round.roundNumber}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.1 }}
-                              className="relative flex gap-4 group"
-                            >
-                              {/* Round Number Circle */}
-                              <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-200">
-                                {round.roundNumber}
-                              </div>
-
-                              {/* Round Content */}
-                              <div className="flex-1 bg-gray-50 rounded-xl p-4 group-hover:bg-white group-hover:shadow-md transition-all duration-200">
-                                <h3 className="font-bold text-lg text-gray-900 mb-2">
-                                  {round.roundName}
-                                </h3>
-                                <p className="text-gray-600 leading-relaxed">
-                                  {round.description}
-                                </p>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </motion.div>
-
+              <InterviewRounds job={job} itemVariants={itemVariants} />
               {/* Eligibility Criteria - TOP PRIORITY */}
               {(job.allowedBranches.length > 0 ||
                 job.allowedPassingYears.length > 0) && (
@@ -626,5 +594,58 @@ export default function JobDetails() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+function InterviewRounds({ job, itemVariants }) {
+  const rounds_info = !!job?.rounds;
+  console.log("Calling interview rounds", job);
+  return (
+    <motion.div variants={itemVariants}>
+      {rounds_info && (
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-3 text-2xl">
+              <div className="p-2 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark rounded-lg">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              Interview Process
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              {/* Timeline Line */}
+              <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-brand-blue-light to-brand-blue-dark opacity-30"></div>
+              <div className="space-y-6">
+                {job.rounds.map((round, index) => (
+                  <motion.div
+                    key={round.roundNumber}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="relative flex gap-4 group"
+                  >
+                    {/* Round Number Circle */}
+                    <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-200">
+                      {round.roundNumber}
+                    </div>
+
+                    {/* Round Content */}
+                    <div className="flex-1 bg-gray-50 rounded-xl p-4 group-hover:bg-white group-hover:shadow-md transition-all duration-200">
+                      <h3 className="font-bold text-lg text-gray-900 mb-2">
+                        {round.roundName}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {round.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </motion.div>
   );
 }

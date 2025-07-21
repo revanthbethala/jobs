@@ -44,6 +44,7 @@ model User {
   education    Education[]
   applications JobApplication[]
   roundResults Results[]
+  jobsCreated  Job[]
 }
 
 model Education {
@@ -86,6 +87,9 @@ model Job {
 
   allowedBranches     String[] @default([])
   allowedPassingYears Int[]    @default([])
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }
 
 enum Role {
