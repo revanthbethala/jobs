@@ -11,10 +11,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/services/profileService";
 
 export default function ProfileForm() {
-  const { currentStep, getProfileFromAPI } = useProfileStore();
+  const { currentStep, hydrateProfile } = useProfileStore();
   useEffect(() => {
-    getProfileFromAPI();
+    hydrateProfile();
   }, []);
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:

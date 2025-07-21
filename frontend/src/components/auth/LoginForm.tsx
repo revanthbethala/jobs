@@ -88,7 +88,7 @@ export const LoginForm = () => {
             <Input
               id="username"
               type="text"
-              placeholder="Enter your email or username"
+              placeholder="Enter your username"
               className="pl-10 border-gray-300 focus:outline-none focus:border-brand-blue-light focus:ring-brand-blue-light"
               {...register("username")}
             />

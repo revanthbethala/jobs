@@ -37,8 +37,9 @@ export const AdminLoginForm = () => {
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
-      const { token, ...userDetails } = res;
-      loginToken(token, userDetails);
+      const role = res?.user?.role;
+      const { token } = res;
+      loginToken(token, role);
       navigate("/");
     } catch (err) {
       if (err.response.status == 403) {
@@ -89,15 +90,17 @@ export const AdminLoginForm = () => {
               <Mail className="h-5 w-5 text-gray-400" />
             </div>
             <Input
-              id="email"
-              type="email"
+              id="username"
+              type="text"
               placeholder="Enter your admin email"
               className="pl-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
-              {...register("email")}
+              {...register("username")}
             />
           </div>
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+          {errors.username && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.username.message}
+            </p>
           )}
         </motion.div>
 

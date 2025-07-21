@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const currentYear = new Date().getFullYear();
+
 export const personalInfoSchema = z.object({
   username: z.string().min(1, "Username is required"),
   collegeId: z.string().min(1, "College ID is required"),
@@ -15,7 +17,6 @@ export const personalInfoSchema = z.object({
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
   country: z.string().min(1, "Country is required"),
-  role: z.string().min(1, "Role is required"),
 });
 
 export const educationSchema = z.object({
@@ -24,13 +25,21 @@ export const educationSchema = z.object({
   institution: z.string().min(1, "Institution is required"),
   specialization: z.string(),
   boardOrUniversity: z.string().min(1, "Board/University is required"),
-  percentage: z.string().min(1, "Percentage is required"),
+  percentage: z
+    .number({ invalid_type_error: "Percentage must be a number" })
+    .int()
+    .min(0, "Percentage must be positive")
+    .max(100, "Percentage cannot exceed 100"),
   passedOutYear: z
-    .number()
+    .number({ invalid_type_error: "Year must be a number" })
+    .int()
     .min(1900, "Invalid year")
-    .max(new Date().getFullYear(), "Year cannot be in the future"),
+    .max(currentYear + 5, `Year cannot be more than ${currentYear + 5}`),
   location: z.string().min(1, "Location is required"),
-  noOfActiveBacklogs: z.number().min(0, "Backlogs cannot be negative"),
+  noOfActiveBacklogs: z
+    .number({ invalid_type_error: "Backlogs must be a number" })
+    .int()
+    .min(0, "Backlogs cannot be negative"),
 });
 
 export const educationArraySchema = z

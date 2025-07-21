@@ -14,15 +14,19 @@ export function ResumeStep() {
     tempResume,
     setResume,
     setCurrentStep,
+    resumeUrl,
     tempPersonalInfo,
     tempEducation,
-    resetForm,
   } = useProfileStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  console.log(resumeUrl, "resumeUrl in ResumeStep");
+  const handleDeleteResume = () => {
+    setResume(null);
+    setErrors({});
+  };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -124,21 +128,21 @@ export function ResumeStep() {
         });
       });
 
-      // // Log form data for debugging
-      // console.log("Form Data:");
-      // for (const [key, value] of formData.entries()) {
-      //   if (value instanceof File) {
-      //     console.log(`${key}:`, value.name, value.size, value.type);
-      //   }
-      //   // console.log(`${key}:`, value, typeof value);
-      // }
+      // Log form data for debugging
+      console.log("Form Data:");
+      for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}:`, value.name, value.size, value.type);
+        }
+        // console.log(`${key}:`, value, typeof value);
+      }
 
       const res = await updateProfile(formData);
       console.log("✅ Profile updated successfully:", res);
 
       setIsSubmitted(true);
-      resetForm(); // Clear the form after successful submission
-      setTimeout(() => setIsSubmitted(false), 3000);
+      // resetForm(); // Clear the form after successful submission
+      // setTimeout(() => setIsSubmitted(false), 3000);
     } catch (error) {
       console.error("❌ Submission error:", error);
       const fieldErrors: Record<string, string> = {};
@@ -154,7 +158,6 @@ export function ResumeStep() {
   const handleBack = () => {
     setCurrentStep(2);
   };
-
   if (isSubmitted) {
     return (
       <motion.div
@@ -168,8 +171,9 @@ export function ResumeStep() {
           Profile Submitted Successfully!
         </h2>
         <p className="text-gray-600 text-center">
-          Your profile has been created and submitted for review.
+          Your profile has been updated successfully
         </p>
+        <Button >View Profile</Button>
       </motion.div>
     );
   }
@@ -181,15 +185,31 @@ export function ResumeStep() {
       exit={{ opacity: 0, x: -20 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="w-full max-w-2xl mx-auto">
+      <Card className="w-full max-w-[90%] sm:max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-brand-blue-dark flex items-center space-x-2">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-brand-blue-dark flex items-center space-x-2 justify-center sm:justify-start text-center">
             <FileText className="w-6 h-6" />
             <span>Resume Upload</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+          {/* Resume View Button */}
+          {resumeUrl && (
+            <div className="text-center">
+              <Button size="sm">
+                <a
+                  href={import.meta.env.VITE_BACKEND_URL + resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View Uploaded Resume
+                </a>
+              </Button>
+            </div>
+          )}
+
+          {/* Upload Section */}
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center">
             {tempResume ? (
               <div className="space-y-4">
                 <FileText className="w-12 h-12 mx-auto text-brand-blue-light" />
@@ -201,18 +221,28 @@ export function ResumeStep() {
                     {(tempResume.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  Change Resume
-                </Button>
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full sm:w-auto"
+                  >
+                    Change Resume
+                  </Button>
+                  <Button
+                    onClick={handleDeleteResume}
+                    variant="destructive"
+                    className="w-full sm:w-auto"
+                  >
+                    Delete Resume
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <Upload className="w-12 h-12 mx-auto text-gray-400" />
                 <div>
-                  <p className="text-lg font-medium text-gray-700">
+                  <p className="text-base sm:text-lg font-medium text-gray-700">
                     Upload your resume
                   </p>
                   <p className="text-sm text-gray-500">
@@ -239,41 +269,43 @@ export function ResumeStep() {
             className="hidden"
           />
 
+          {/* Validation Error */}
           {errors.resume && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-700 text-sm">{errors.resume}</p>
             </div>
           )}
 
+          {/* Submission Summary */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-800 mb-2">
+            <h4 className="font-medium text-blue-800 mb-2 text-center sm:text-left">
               Submission Summary
             </h4>
-            <ul className="text-blue-700 text-sm space-y-1">
-              <li>• Personal information completed</li>
+            <ul className="text-blue-700 text-sm space-y-1 list-disc list-inside sm:pl-2">
+              <li>Personal information completed</li>
               <li>
-                • {tempEducation.length} education{" "}
+                {tempEducation.length} education{" "}
                 {tempEducation.length === 1 ? "entry" : "entries"} added
               </li>
-              <li>• {tempResume ? "Resume uploaded" : "Resume pending"}</li>
-              {tempPersonalInfo.profilePic && (
-                <li>• Profile picture uploaded</li>
-              )}
+              <li>{tempResume ? "Resume uploaded" : "Resume pending"}</li>
+              {tempPersonalInfo.profilePic && <li>Profile picture uploaded</li>}
             </ul>
           </div>
 
-          <div className="flex justify-between">
+          {/* Footer Buttons */}
+          <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Button
               variant="outline"
               onClick={handleBack}
               disabled={isSubmitting}
+              className="w-full sm:w-auto"
             >
               Back
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={!tempResume || isSubmitting}
-              className="bg-brand-blue-light hover:bg-brand-blue-dark"
+              className="w-full sm:w-auto bg-brand-blue-light hover:bg-brand-blue-dark"
             >
               {isSubmitting ? (
                 <>

@@ -12,10 +12,7 @@ export const loginEmailSchema = z.object({
     .email("Please enter a valid email address"),
 });
 export const adminLoginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
+  username: z.string().min(1, "username is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 

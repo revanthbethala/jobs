@@ -3,13 +3,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { User, FileText } from "lucide-react";
 import ProfileForm from "@/components/profile/ProfileForm";
-import { ProfileDisplay } from "@/components/profile/ProfileDisplay";
+import ProfileDisplay from "@/components/profile/ProfileDisplay";
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<"form" | "profile">("form");
 
   const handleEditProfile = () => {
-    setCurrentView("form");
+    setCurrentView("profile");
   };
 
   return (

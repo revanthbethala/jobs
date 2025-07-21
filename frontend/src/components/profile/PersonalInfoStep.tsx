@@ -20,11 +20,11 @@ import { useProfileStore } from "@/store/profileStore";
 import { personalInfoSchema } from "@/schemas/profileSchema";
 
 export function PersonalInfoStep() {
-  const { tempPersonalInfo, updatePersonalInfo, setCurrentStep } =
+  const { tempPersonalInfo, updatePersonalInfo, profileUrl, setCurrentStep } =
     useProfileStore();
-    console.log("Temp personal info:", tempPersonalInfo);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [showProfilePic, setShowProfilePic] = useState<boolean>(!profileUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (field: string, value: string) => {
@@ -66,7 +66,14 @@ export function PersonalInfoStep() {
       }
     }
   };
-
+  const handleDeletePic = () => {
+    updatePersonalInfo({ profilePic: null });
+    setProfilePreview(null);
+    if (profileUrl) setShowProfilePic(true);
+    if (errors.profilePic) {
+      setErrors((prev) => ({ ...prev, profilePic: "" }));
+    }
+  };
   const handleNext = () => {
     try {
       personalInfoSchema.parse(tempPersonalInfo);
@@ -97,27 +104,49 @@ export function PersonalInfoStep() {
           {/* Profile Picture */}
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              {profilePreview ? (
+              {showProfilePic ? (
                 <img
-                  src={profilePreview || "/placeholder.svg"}
-                  alt="Profile preview"
+                  src={import.meta.env.VITE_BACKEND_URL + profileUrl}
+                  alt="profile"
                   className="w-24 h-24 rounded-full object-cover border-4 border-brand-blue-light"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-gray-300">
-                  <User className="w-8 h-8 text-gray-500" />
-                </div>
+                <span>
+                  {profilePreview ? (
+                    <img
+                      src={profilePreview || "/placeholder.svg"}
+                      alt="Profile preview"
+                      className="w-24 h-24 rounded-full object-cover border-4 border-brand-blue-light"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-gray-300">
+                      <User className="w-8 h-8 text-gray-500" />
+                    </div>
+                  )}
+                </span>
               )}
             </div>
             <Button
               type="button"
               variant="outline"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                fileInputRef.current?.click();
+                setShowProfilePic(false);
+              }}
               className="flex items-center space-x-2"
             >
               <Upload className="w-4 h-4" />
               <span>Upload Profile Picture</span>
             </Button>
+            {/* {tempPersonalInfo.profilePic && (
+              <Button
+                onClick={handleDeletePic}
+                className="text-sm "
+                variant="destructive"
+              >
+                Remove Profile Pic
+              </Button>
+            )} */}
             <input
               ref={fileInputRef}
               type="file"
@@ -150,16 +179,6 @@ export function PersonalInfoStep() {
                 id="email"
                 type="email"
                 value={tempPersonalInfo.email || ""}
-                disabled
-                className="bg-gray-100"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Input
-                id="role"
-                value={tempPersonalInfo.role || ""}
                 disabled
                 className="bg-gray-100"
               />
