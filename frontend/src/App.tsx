@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { Toaster } from "@/components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
+import JobRounds from "./components/jobs/admin/JobRounds";
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -80,6 +81,16 @@ export default function App() {
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <JobPostingForm />
+              </ProtectedRoute>
+            </Suspense>
+          ),
+        },
+        {
+          path: "job-rounds/:jobId" ,
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <JobRounds />
               </ProtectedRoute>
             </Suspense>
           ),

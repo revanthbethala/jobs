@@ -8,8 +8,11 @@ import { motion } from "framer-motion";
 import { useProfileStore } from "@/store/profileStore";
 import { resumeSchema } from "@/schemas/profileSchema";
 import { updateProfile } from "@/services/profileService";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function ResumeStep() {
+  const navigate = useNavigate();
   const {
     tempResume,
     setResume,
@@ -112,7 +115,9 @@ export default function ResumeStep() {
       console.log("✅ Profile updated successfully:", res);
 
       setIsSubmitted(true);
+      toast.success("Profile updated successfully!");
       setTimeout(() => setIsSubmitted(false), 3000);
+      navigate("/profile");
       setCurrentStep(1);
     } catch (error) {
       console.error("❌ Submission error:", error);

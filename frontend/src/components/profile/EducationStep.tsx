@@ -117,7 +117,7 @@ export default function EducationStep() {
                   key={field.id}
                   className="border-l-4 border-l-brand-blue-light bg-white"
                 >
-                  <CardHeader className="pb-2 flex justify-between items-center">
+                  <CardHeader className="pb-2 flex justify-between items-center ">
                     <h3 className="text-lg font-semibold text-brand-blue-dark">
                       Education Entry {index + 1}
                     </h3>

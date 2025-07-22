@@ -181,6 +181,7 @@ export default function MyJobsTable() {
                 )}
               </TableHead>
               <TableHead>Applications</TableHead>
+              <TableHead>Interview Rounds</TableHead>
               <TableHead>View Details</TableHead>
               <TableHead>Update Jobs</TableHead>
               <TableHead>Delete Jobs</TableHead>
@@ -202,20 +203,27 @@ export default function MyJobsTable() {
                   {format(new Date(job.postedDate), "MMM dd, yyyy")}
                 </TableCell>
                 <TableCell>
-                  <Button onClick={() => navigate(`/applications/${job.id}`)}>
-                    Manage Applications
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate(`/applications/${job.id}`)}
+                  >
+                    Applicants
                   </Button>
                 </TableCell>
                 <TableCell>
                   <Button
-                    size="icon"
-                    variant="ghost"
+                    variant="outline"
+                    onClick={() => navigate(`/job-rounds/${job.id}`)}
+                  >
+                    Rounds info
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outline"
                     onClick={() => navigate(`/job/${job.id}`)}
                   >
-                    <span>
-                      View Details
-                      <Eye className="w-4 h-4" />
-                    </span>
+                    Details
                   </Button>
                 </TableCell>
                 <TableCell>
