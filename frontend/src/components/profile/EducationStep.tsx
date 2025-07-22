@@ -24,7 +24,7 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export function EducationStep() {
+export default function EducationStep() {
   const { tempEducation, updateEducation, setCurrentStep } = useProfileStore();
 
   const form = useForm<FormValues>({
@@ -78,7 +78,7 @@ export function EducationStep() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card className="w-full max-w-6xl mx-auto">
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <CardTitle className="text-2xl font-bold flex items-center gap-2 text-brand-blue-dark">
                 <GraduationCap className="w-6 h-6" />
                 <span>Education Information</span>
@@ -106,7 +106,7 @@ export function EducationStep() {
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 px-4 sm:px-6 lg:px-8 pb-8">
             {fields.map((field, index) => {
               const level = watch(`education.${index}.educationalLevel`);
               const specs =
@@ -115,7 +115,7 @@ export function EducationStep() {
               return (
                 <Card
                   key={field.id}
-                  className="border-l-4 border-l-brand-blue-light"
+                  className="border-l-4 border-l-brand-blue-light bg-white"
                 >
                   <CardHeader className="pb-2 flex justify-between items-center">
                     <h3 className="text-lg font-semibold text-brand-blue-dark">
@@ -134,9 +134,9 @@ export function EducationStep() {
                     )}
                   </CardHeader>
 
-                  <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Educational Level */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Educational Level</Label>
                       <Select
                         value={level}
@@ -166,7 +166,7 @@ export function EducationStep() {
                     </div>
 
                     {/* Institution */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Institution</Label>
                       <Input
                         {...register(`education.${index}.institution`)}
@@ -180,7 +180,7 @@ export function EducationStep() {
                     </div>
 
                     {/* Specialization */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Specialization</Label>
                       <Select
                         disabled={!level || specs.length === 0}
@@ -211,7 +211,7 @@ export function EducationStep() {
                     </div>
 
                     {/* Board/University */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Board/University</Label>
                       <Input
                         {...register(`education.${index}.boardOrUniversity`)}
@@ -224,7 +224,7 @@ export function EducationStep() {
                     </div>
 
                     {/* Percentage */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Percentage</Label>
                       <Input
                         type="number"
@@ -240,7 +240,7 @@ export function EducationStep() {
                     </div>
 
                     {/* Passed Out Year */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Passed Out Year</Label>
                       <Input
                         type="number"
@@ -256,7 +256,7 @@ export function EducationStep() {
                     </div>
 
                     {/* Location */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Location</Label>
                       <Input {...register(`education.${index}.location`)} />
                       {errors.education?.[index]?.location && (
@@ -267,17 +267,23 @@ export function EducationStep() {
                     </div>
 
                     {/* No. of Active Backlogs */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 w-full">
                       <Label>Active Backlogs</Label>
                       <Input
                         type="number"
-                        {...register(`education.${index}.noOfActiveBacklogs`, {
-                          valueAsNumber: true,
-                        })}
+                        {...register(
+                          `education.${index}.noOfActiveBacklogs`,
+                          {
+                            valueAsNumber: true,
+                          }
+                        )}
                       />
                       {errors.education?.[index]?.noOfActiveBacklogs && (
                         <p className="text-red-600 text-sm">
-                          {errors.education[index].noOfActiveBacklogs?.message}
+                          {
+                            errors.education[index].noOfActiveBacklogs
+                              ?.message
+                          }
                         </p>
                       )}
                     </div>
@@ -286,7 +292,8 @@ export function EducationStep() {
               );
             })}
 
-            <div className="flex justify-between pt-6">
+            {/* Navigation Buttons */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
               <Button type="button" variant="outline" onClick={handleBack}>
                 Back
               </Button>

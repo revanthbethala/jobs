@@ -40,16 +40,16 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="relative w-12 h-12 flex-shrink-0">
+              {/* <div className="relative w-12 h-12 flex-shrink-0">
                 <img
                   src={`${import.meta.env.VITE_BACKEND_URL}${job.companyLogo} `}
                   alt="logo"
                   loading="lazy"
                   className="rounded-lg object-cover"
                 />
-              </div>
+              </div> */}
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-lg text-gray-900 truncate">
+                <h3 className="font-semibold text-lg capitalize text-gray-900 truncate">
                   {job.jobTitle}
                 </h3>
                 <div className="flex items-center gap-1 text-gray-600 mt-1">

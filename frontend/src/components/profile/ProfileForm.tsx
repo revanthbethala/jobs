@@ -1,20 +1,15 @@
-"use client";
-
-import { StepIndicator } from "./step-indicator";
-import { PersonalInfoStep } from "./PersonalInfoStep";
-import { EducationStep } from "./EducationStep";
-import { ResumeStep } from "./ResumeStep";
 import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
 import { useProfileStore } from "@/store/profileStore";
-import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "@/services/profileService";
+const PersonalInfoStep = lazy(() => import("./PersonalInfoStep"));
+const EducationStep = lazy(() => import("./EducationStep"));
+const ResumeStep = lazy(() => import("./ResumeStep"));
 
 export default function ProfileForm() {
   const { currentStep, hydrateProfile } = useProfileStore();
   useEffect(() => {
     hydrateProfile();
-  }, []);
+  }, [hydrateProfile]);
 
   const renderStep = () => {
     switch (currentStep) {
@@ -41,7 +36,7 @@ export default function ProfileForm() {
           </p>
         </div>
 
-        <StepIndicator currentStep={currentStep} totalSteps={3} />
+        {/* <StepIndicator currentStep={currentStep} totalSteps={3} /> */}
 
         <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
       </div>

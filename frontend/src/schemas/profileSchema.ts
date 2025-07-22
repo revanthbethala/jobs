@@ -48,15 +48,17 @@ export const educationArraySchema = z
 
 export const resumeSchema = z.object({
   resume: z
-    .instanceof(File, { message: "Resume is required" })
+    .instanceof(File)
     .refine(
       (file) => file.type === "application/pdf",
       "Resume must be a PDF file"
     )
     .refine(
-      (file) => file.size <= 3 * 1024 * 1024,
-      "Resume must be less than 3MB"
-    ),
+      (file) => file.size <= 1 * 1024 * 1024,
+      "Resume must be less than 1MB"
+    )
+    .optional()
+    .nullable(),
 });
 
 export const profilePicSchema = z
@@ -66,7 +68,7 @@ export const profilePicSchema = z
     "Profile picture must be an image"
   )
   .refine(
-    (file) => file.size <= 2 * 1024 * 1024,
-    "Profile picture must be less than 2MB"
+    (file) => file.size <= 150 * 1024,
+    "Profile picture must be less than 150KB"
   )
   .optional();

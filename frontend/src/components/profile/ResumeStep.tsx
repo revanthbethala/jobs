@@ -9,7 +9,7 @@ import { useProfileStore } from "@/store/profileStore";
 import { resumeSchema } from "@/schemas/profileSchema";
 import { updateProfile } from "@/services/profileService";
 
-export function ResumeStep() {
+export default function ResumeStep() {
   const {
     tempResume,
     setResume,
@@ -22,7 +22,9 @@ export function ResumeStep() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  console.log(resumeUrl, "resumeUrl in ResumeStep");
+  const [resumePreview, setResumePreview] = useState<boolean | null>(
+    !!resumeUrl
+  );
   const handleDeleteResume = () => {
     setResume(null);
     setErrors({});
@@ -45,37 +47,6 @@ export function ResumeStep() {
   };
 
   const handleSubmit = async () => {
-    // console.log("=== FILE DEBUG START ===");
-    // console.log("tempPersonalInfo.profilePic:", tempPersonalInfo.profilePic);
-    // console.log(
-    //   "tempPersonalInfo.profilePic instanceof File:",
-    //   tempPersonalInfo.profilePic instanceof File
-    // );
-    // console.log("tempResume:", tempResume);
-    // console.log("tempResume instanceof File:", tempResume instanceof File);
-
-    // if (tempPersonalInfo.profilePic) {
-    //   console.log("ProfilePic details:", {
-    //     name: tempPersonalInfo.profilePic.name,
-    //     size: tempPersonalInfo.profilePic.size,
-    //     type: tempPersonalInfo.profilePic.type,
-    //     lastModified: tempPersonalInfo.profilePic.lastModified,
-    //   });
-    // }
-
-    // if (tempResume) {
-    //   console.log("Resume details:", {
-    //     name: tempResume.name,
-    //     size: tempResume.size,
-    //     type: tempResume.type,
-    //     lastModified: tempResume.lastModified,
-    //   });
-    // }
-    // console.log("=== FILE DEBUG END ===");
-    if (!tempResume) {
-      setErrors({ resume: "Resume is required" });
-      return;
-    }
     try {
       resumeSchema.parse({ resume: tempResume });
       setIsSubmitting(true);
@@ -141,8 +112,8 @@ export function ResumeStep() {
       console.log("✅ Profile updated successfully:", res);
 
       setIsSubmitted(true);
-      // resetForm(); // Clear the form after successful submission
-      // setTimeout(() => setIsSubmitted(false), 3000);
+      setTimeout(() => setIsSubmitted(false), 3000);
+      setCurrentStep(1);
     } catch (error) {
       console.error("❌ Submission error:", error);
       const fieldErrors: Record<string, string> = {};
@@ -173,7 +144,7 @@ export function ResumeStep() {
         <p className="text-gray-600 text-center">
           Your profile has been updated successfully
         </p>
-        <Button >View Profile</Button>
+        <Button>View Profile</Button>
       </motion.div>
     );
   }
@@ -194,7 +165,7 @@ export function ResumeStep() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Resume View Button */}
-          {resumeUrl && (
+          {resumePreview ? (
             <div className="text-center">
               <Button size="sm">
                 <a
@@ -205,92 +176,67 @@ export function ResumeStep() {
                   View Uploaded Resume
                 </a>
               </Button>
+              <Button
+                variant="outline"
+                className="flex gap-2"
+                onClick={() => setResumePreview(false)}
+              >
+                <Upload /> Upload Resume
+              </Button>
             </div>
-          )}
-
-          {/* Upload Section */}
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center">
-            {tempResume ? (
-              <div className="space-y-4">
-                <FileText className="w-12 h-12 mx-auto text-brand-blue-light" />
-                <div>
-                  <p className="font-medium text-brand-blue-dark">
-                    {tempResume.name}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {(tempResume.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-8 text-center">
+              {tempResume ? (
+                <div className="space-y-4">
+                  <FileText className="w-12 h-12 mx-auto text-brand-blue-light" />
+                  <div>
+                    <p className="font-medium text-brand-blue-dark">
+                      {tempResume.name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {(tempResume.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full sm:w-auto"
+                    >
+                      Change Resume
+                    </Button>
+                    <Button
+                      onClick={handleDeleteResume}
+                      variant="destructive"
+                      className="w-full sm:w-auto"
+                    >
+                      Delete Resume
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4">
+              ) : (
+                <div className="space-y-4">
+                  <Upload className="w-12 h-12 mx-auto text-gray-400" />
+                  <div>
+                    <p className="text-base sm:text-lg font-medium text-gray-700">
+                      Upload your resume
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      PDF files only, max 3MB
+                    </p>
+                  </div>
                   <Button
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full sm:w-auto"
+                    className="border-brand-blue-light text-brand-blue-light hover:bg-brand-blue-light hover:text-white"
                   >
-                    Change Resume
-                  </Button>
-                  <Button
-                    onClick={handleDeleteResume}
-                    variant="destructive"
-                    className="w-full sm:w-auto"
-                  >
-                    Delete Resume
+                    <Upload className="w-4 h-4 mr-2" />
+                    Choose File
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Upload className="w-12 h-12 mx-auto text-gray-400" />
-                <div>
-                  <p className="text-base sm:text-lg font-medium text-gray-700">
-                    Upload your resume
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    PDF files only, max 3MB
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-brand-blue-light text-brand-blue-light hover:bg-brand-blue-light hover:text-white"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Choose File
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-
-          {/* Validation Error */}
-          {errors.resume && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-700 text-sm">{errors.resume}</p>
+              )}
             </div>
           )}
-
-          {/* Submission Summary */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-800 mb-2 text-center sm:text-left">
-              Submission Summary
-            </h4>
-            <ul className="text-blue-700 text-sm space-y-1 list-disc list-inside sm:pl-2">
-              <li>Personal information completed</li>
-              <li>
-                {tempEducation.length} education{" "}
-                {tempEducation.length === 1 ? "entry" : "entries"} added
-              </li>
-              <li>{tempResume ? "Resume uploaded" : "Resume pending"}</li>
-              {tempPersonalInfo.profilePic && <li>Profile picture uploaded</li>}
-            </ul>
-          </div>
 
           {/* Footer Buttons */}
           <div className="flex flex-col sm:flex-row justify-between gap-4">
@@ -304,7 +250,7 @@ export function ResumeStep() {
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!tempResume || isSubmitting}
+              // disabled={!tempResume || isSubmitting || !resumeUrl}
               className="w-full sm:w-auto bg-brand-blue-light hover:bg-brand-blue-dark"
             >
               {isSubmitting ? (

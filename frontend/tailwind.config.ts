@@ -121,9 +121,9 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out",
         "slide-in-right": "slide-in-right 0.6s ease-out",
       },
-      fontFamily: {
-        inter: ["Inter", "sans-serif"],
-      },
+      // fontFamily: {
+      //   inter: ["Inter", "sans-serif"],
+      // },
     },
   },
   plugins: [require("tailwindcss-animate")],

@@ -19,12 +19,12 @@ import {
 import { useProfileStore } from "@/store/profileStore";
 import { personalInfoSchema } from "@/schemas/profileSchema";
 
-export function PersonalInfoStep() {
+export default function PersonalInfoStep() {
   const { tempPersonalInfo, updatePersonalInfo, profileUrl, setCurrentStep } =
     useProfileStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
-  const [showProfilePic, setShowProfilePic] = useState<boolean>(!profileUrl);
+  const [showProfilePic, setShowProfilePic] = useState<boolean>(!!profileUrl);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (field: string, value: string) => {
@@ -138,7 +138,7 @@ export function PersonalInfoStep() {
               <Upload className="w-4 h-4" />
               <span>Upload Profile Picture</span>
             </Button>
-            {/* {tempPersonalInfo.profilePic && (
+            {tempPersonalInfo.profilePic && (
               <Button
                 onClick={handleDeletePic}
                 className="text-sm "
@@ -146,7 +146,7 @@ export function PersonalInfoStep() {
               >
                 Remove Profile Pic
               </Button>
-            )} */}
+            )}
             <input
               ref={fileInputRef}
               type="file"

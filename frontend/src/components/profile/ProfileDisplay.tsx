@@ -9,7 +9,6 @@ import {
   FileText,
   Edit3,
   Camera,
-  Badge,
   Building,
   Award,
   Download,
@@ -17,9 +16,9 @@ import {
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "@/services/profileService";
-import { on } from "events";
+import { Button } from "../ui/button";
 
-export default function ProfileDisplay({onEditProfile}) {
+export default function ProfileDisplay() {
   const [activeTab, setActiveTab] = useState("overview");
   const {
     data: userData,
@@ -29,6 +28,7 @@ export default function ProfileDisplay({onEditProfile}) {
     queryKey: ["profileData"],
     queryFn: getProfile,
   });
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -39,7 +39,7 @@ export default function ProfileDisplay({onEditProfile}) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen  bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Error Loading Profile
@@ -49,8 +49,8 @@ export default function ProfileDisplay({onEditProfile}) {
       </div>
     );
   }
+
   const data = userData?.user;
-  console.log("Profile data in display:", data);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -60,22 +60,10 @@ export default function ProfileDisplay({onEditProfile}) {
     });
   };
 
-  const handleEditProfile = () => {
-    console.log("Edit profile clicked");
-    onEditProfile("form");
-    // Add your edit profile logic here
-  };
-
-  const handleDownloadResume = () => {
-    console.log("Download resume clicked");
-    // Add download logic here
-  };
-
   const ProfileHeader = () => (
     <div className="bg-brand-blue-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row items-center gap-6">
-          {/* Profile Picture */}
           <div className="relative group">
             <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-lg">
               {data.profilePic ? (
@@ -93,13 +81,14 @@ export default function ProfileDisplay({onEditProfile}) {
             </button>
           </div>
 
-          {/* Basic Info */}
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
               <h1 className="text-3xl font-bold">
                 {data.firstName} {data.lastName}
               </h1>
-              {data.isVerified && <CheckCircle2 className="w-6 h-6 text-green-400" />}
+              {data.isVerified && (
+                <CheckCircle2 className="w-6 h-6 text-green-400" />
+              )}
             </div>
             <p className="text-blue-100 text-lg mb-2">@{data.username}</p>
             <p className="text-blue-100 mb-4">College ID: {data.collegeId}</p>
@@ -121,24 +110,22 @@ export default function ProfileDisplay({onEditProfile}) {
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={handleEditProfile}
-              className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2"
-            >
-              <Edit3 className="w-4 h-4" />
-              Edit Profile
-            </button>
-            {data.resume && (
-              <button
-                onClick={handleDownloadResume}
-                className="bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-800 transition-colors flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Resume
-              </button>
-            )}
+            <Button className="w-full sm:w-auto bg-white text-brand-gray-dark hover:bg-brand-white/70 " >
+              {data.resume && (
+                <a
+                  href={import.meta.env.VITE_BACKEND_URL + data.resume}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className="flex gap-2 items-center">
+                    <Download className="w-4 h-4" />
+                    Resume
+                  </span>
+                </a>
+              )}
+            </Button>
           </div>
         </div>
       </div>
@@ -146,9 +133,9 @@ export default function ProfileDisplay({onEditProfile}) {
   );
 
   const TabNavigation = () => (
-    <div className="bg-white border-b">
+    <div className="bg-white border-b overflow-x-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <nav className="flex space-x-8">
+        <nav className="flex space-x-4 sm:space-x-8">
           {[
             { id: "overview", label: "Overview", icon: User },
             { id: "education", label: "Education", icon: GraduationCap },
@@ -157,7 +144,7 @@ export default function ProfileDisplay({onEditProfile}) {
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
+              className={`py-4 px-2 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors whitespace-nowrap ${
                 activeTab === id
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -174,7 +161,6 @@ export default function ProfileDisplay({onEditProfile}) {
 
   const OverviewTab = () => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Quick Stats */}
       <div className="lg:col-span-1">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -211,15 +197,14 @@ export default function ProfileDisplay({onEditProfile}) {
         </div>
       </div>
 
-      {/* Education Summary */}
       <div className="lg:col-span-2">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Education Summary
           </h3>
           {data.education.map((edu) => (
-            <div key={edu.id} className="border rounded-lg p-4">
-              <div className="flex items-start justify-between mb-2">
+            <div key={edu.id} className="border rounded-lg p-4 mb-4">
+              <div className="flex flex-col sm:flex-row items-start justify-between mb-2 gap-2">
                 <div>
                   <h4 className="font-semibold text-gray-900">
                     {edu.educationalLevel}
@@ -270,7 +255,6 @@ export default function ProfileDisplay({onEditProfile}) {
               <p className="text-gray-600">{edu.specialization}</p>
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label className="text-sm font-medium text-gray-500">
@@ -366,8 +350,7 @@ export default function ProfileDisplay({onEditProfile}) {
     <div className="min-h-screen bg-gray-50">
       <ProfileHeader />
       <TabNavigation />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "overview" && <OverviewTab />}
         {activeTab === "education" && <EducationTab />}
         {activeTab === "personal" && <PersonalInfoTab />}

@@ -1,21 +1,20 @@
-// App.tsx
-import { useEffect, useState, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { Toaster } from "@/components/ui/toaster";
-import JobApplications from "@/components/jobs/admin/JobApplications";
+import LoadingSpinner from "./components/LoadingSpinner";
 
-// Loading spinner
-const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-  </div>
-);
-
-// Lazy imports
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
 const SideNav = lazy(() => import("@/components/SideNav"));
+const ProfileForm = lazy(() => import("@/components/profile/ProfileForm"));
+const ProfileDisplay = lazy(
+  () => import("@/components/profile/ProfileDisplay")
+);
+const JobApplications = lazy(
+  () => import("@/components/jobs/admin/JobApplications")
+);
+const JobPostingForm = lazy(() => import("@/components/jobs/admin/JobPosting"));
 const LandingPage = lazy(() => import("@/pages/Home"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Jobs = lazy(() => import("@/pages/Jobs"));
@@ -23,9 +22,7 @@ const AppliedJobs = lazy(() => import("@/components/jobs/user/AppliedJobs"));
 const ProtectedRoute = lazy(
   () => import("@/components/landing/ProtectedRoute")
 );
-const JobPostingForm = lazy(() =>
-  import("@/pages/JobPosting").then((mod) => ({ default: mod.JobPostingForm }))
-);
+
 const PostedJobs = lazy(() => import("@/components/jobs/admin/PostedJobs"));
 const JobDetails = lazy(() => import("@/components/jobs/user/JobDetails"));
 
@@ -126,6 +123,24 @@ export default function App() {
               </ProtectedRoute>
             </Suspense>
           ),
+          children: [
+            {
+              index: true,
+              element: (
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ProfileDisplay />
+                </Suspense>
+              ),
+            },
+            {
+              path: "update-profile",
+              element: (
+                <Suspense fallback={<LoadingSpinner />}>
+                  <ProfileForm />
+                </Suspense>
+              ),
+            },
+          ],
         },
         {
           path: "applied-jobs",

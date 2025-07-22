@@ -321,9 +321,13 @@ EligibilityCriteriaSection.displayName = "EligibilityCriteriaSection";
 ApplicationDeadlineSection.displayName = "ApplicationDeadlineSection";
 
 // Main Component
-export const JobPostingForm = () => {
+const JobPostingForm = () => {
   const { jobId } = useParams();
-  const { data: jobData, isLoading,refetch } = useQuery({
+  const {
+    data: jobData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["job", jobId],
     queryFn: () => getJobById(jobId),
     enabled: !!jobId,
@@ -381,7 +385,7 @@ export const JobPostingForm = () => {
             description: "Job has been updated successfully.",
           });
           console.log("Update response:", response);
-          refetch()
+          refetch();
         } else {
           console.log("Hello post");
           const response = await postJob(formData);
@@ -492,3 +496,4 @@ export const JobPostingForm = () => {
     </div>
   );
 };
+export default JobPostingForm;
