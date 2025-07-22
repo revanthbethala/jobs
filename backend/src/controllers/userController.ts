@@ -154,9 +154,8 @@ const deleteFile = (relativeFilePath: string) => {
   }
 };
 
-
 export const updateProfile = async (req: Request, res: Response): Promise<Response> => {
-  console.log("updateProfile controller hit");
+  console.log('updateProfile controller hit');
 
   try {
     const userId = (req as any).user?.id as string;
@@ -233,14 +232,13 @@ export const updateProfile = async (req: Request, res: Response): Promise<Respon
 
     return res.json({
       user: updatedUser,
-      message: "Profile updated successfully",
+      message: 'Profile updated successfully',
     });
   } catch (error) {
-    console.error("Update failed:", error);
-    return res.status(500).json({ message: "Update failed", error });
+    console.error('Update failed:', error);
+    return res.status(500).json({ message: 'Update failed', error });
   }
 };
-
 
 export const getProfile = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -273,7 +271,18 @@ const safeUser = (user: any) => {
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
+    // Parse pagination query parameters
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    // Fetch total user count
+    const totalUsers = await prisma.user.count();
+
+    // Fetch paginated users
     const users = await prisma.user.findMany({
+      skip,
+      take: limit,
       include: {
         education: true,
       },
@@ -281,7 +290,13 @@ export const getAllUsers = async (req: Request, res: Response): Promise<Response
 
     const cleanedUsers = users.map(safeUser);
 
-    return res.json({ users: cleanedUsers });
+    return res.json({
+      users: cleanedUsers,
+      page,
+      limit,
+      totalUsers,
+      totalPages: Math.ceil(totalUsers / limit),
+    });
   } catch (error) {
     console.error('Failed to fetch users:', error);
     return res.status(500).json({ message: 'Failed to fetch users', error });

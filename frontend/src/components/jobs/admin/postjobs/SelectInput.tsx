@@ -1,8 +1,14 @@
-import React from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
-import { cn } from '@/lib/utils';
-import { FormField } from './FormField';
-import { ChevronDown } from 'lucide-react';
+import React from "react";
+import { UseFormRegisterReturn, useController } from "react-hook-form";
+import { FormField } from "./FormField";
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface SelectOption {
   value: string;
@@ -22,7 +28,7 @@ interface SelectInputProps {
 export const SelectInput: React.FC<SelectInputProps> = ({
   label,
   options,
-  placeholder = 'Select an option',
+  placeholder = "Select an option",
   error,
   registration,
   className,
@@ -30,25 +36,26 @@ export const SelectInput: React.FC<SelectInputProps> = ({
 }) => {
   return (
     <FormField label={label} required={required} error={error} className={className}>
-      <div className="relative">
-        <select
-          {...registration}
+      <Select
+        onValueChange={(value) => registration.onChange({ target: { value, name: registration.name } })}
+        defaultValue={registration.value}
+      >
+        <SelectTrigger
           className={cn(
-            'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
-            'placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50 appearance-none cursor-pointer',
-            error && 'border-destructive focus:ring-destructive'
+            "w-full",
+            error && "border-destructive focus:ring-destructive"
           )}
         >
-          <option value="">{placeholder}</option>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <SelectItem key={option.value} value={option.value}>
               {option.label}
-            </option>
+            </SelectItem>
           ))}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
-      </div>
+        </SelectContent>
+      </Select>
     </FormField>
   );
 };

@@ -133,7 +133,11 @@ export default function MyJobsTable() {
   }
   const filteredJobs = data
     ?.filter((job: Job) =>
-      job.jobTitle.toLowerCase().includes(debouncedQuery.toLowerCase())
+      job.jobTitle
+        .toLowerCase()
+        .includes(
+          typeof debouncedQuery === "string" ? debouncedQuery?.toLowerCase() : ""
+        )
     )
     .sort((a, b) => {
       const aDate = new Date(a.postedDate).getTime();

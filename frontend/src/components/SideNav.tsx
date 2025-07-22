@@ -267,7 +267,7 @@ const SideNav = () => {
         )}
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1">
           <div className="p-4 md:p-6 lg:p-8">
             <Outlet />
           </div>

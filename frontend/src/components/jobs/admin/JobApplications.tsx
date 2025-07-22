@@ -170,7 +170,7 @@ function JobApplications() {
                       <TableCell>{user.gender}</TableCell>
                       <TableCell>
                         <a
-                          href={import.meta.env.VITE_BACKEND_URL + app.resume}
+                          href={import.meta.env.VITE_BACKEND_URL+app.resume}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline flex items-center gap-1"
