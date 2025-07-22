@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import LoadingSpinner from "./components/LoadingSpinner";
 import JobRounds from "./components/jobs/admin/rounds/JobRounds";
 import AllUsers from "./components/jobs/admin/AllUsers";
+import Dashboard from "./components/jobs/admin/Dashboard";
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -52,6 +53,16 @@ export default function App() {
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute allowedRoles={["ADMIN", "USER"]}>
                 <Jobs />
+              </ProtectedRoute>
+            </Suspense>
+          ),
+        },
+        {
+          path: "/dashboard",
+          element: (
+            <Suspense fallback={<LoadingSpinner />}>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <Dashboard />
               </ProtectedRoute>
             </Suspense>
           ),

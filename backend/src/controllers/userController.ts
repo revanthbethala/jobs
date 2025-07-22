@@ -305,19 +305,91 @@ export const getAllUsers = async (req: Request, res: Response): Promise<Response
 
 export const getAdminDashboard = async (_req: Request, res: Response) => {
   try {
-    const [jobsCount, applicationsCount, usersCount, qualifiedCount] = await Promise.all([
+    const [
+      totalJobs,
+      totalApplications,
+      totalUsers,
+      totalQualified,
+      userRoles,
+      btechSpecializations,
+      jobSummaries,
+      topJobs,
+    ] = await Promise.all([
       prisma.job.count(),
       prisma.jobApplication.count(),
       prisma.user.count(),
       prisma.results.count({ where: { status: 'Qualified' } }),
+
+      // User roles breakdown (e.g., CANDIDATE, RECRUITER)
+      prisma.user.groupBy({
+        by: ['role'],
+        _count: { _all: true },
+      }),
+
+      // Group by B.Tech specializations
+      prisma.education.groupBy({
+        by: ['specialization'],
+        where: {
+          educationalLevel: 'B.Tech',
+          specialization: {
+            not: null, // Avoid counting null specializations
+          },
+        },
+        _count: {
+          specialization: true,
+        },
+      }),
+
+      // Job-wise summary
+      prisma.job.findMany({
+        select: {
+          id: true,
+          jobRole: true,
+          applications: {
+            select: { id: true },
+          },
+          rounds: {
+            select: {
+              roundNumber: true,
+              results: {
+                where: { status: 'Qualified' },
+                select: { id: true },
+              },
+            },
+          },
+        },
+      }),
+
+      // Top jobs by application count
+      prisma.job.findMany({
+        orderBy: {
+          applications: {
+            _count: 'desc',
+          },
+        },
+        take: 5,
+        select: {
+          id: true,
+          jobRole: true,
+          _count: {
+            select: {
+              applications: true,
+            },
+          },
+        },
+      }),
     ]);
 
     return res.json({
       dashboard: {
-        totalJobs: jobsCount,
-        totalApplications: applicationsCount,
-        totalUsers: usersCount,
-        totalQualified: qualifiedCount,
+        totalJobs,
+        totalApplications,
+        totalUsers,
+        totalQualified,
+        userRoles, // [{ role: 'CANDIDATE', _count: { _all: 50 } }, ...]
+        btechSpecializations, // [{ specialization: 'CSE', _count: { specialization: 12 } }, ...]
+        jobSummaries,
+        topJobs,
       },
     });
   } catch (error) {
@@ -325,3 +397,4 @@ export const getAdminDashboard = async (_req: Request, res: Response) => {
     return res.status(500).json({ message: 'Failed to load admin dashboard', error });
   }
 };
+

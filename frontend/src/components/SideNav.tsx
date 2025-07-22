@@ -9,6 +9,9 @@ import {
   X,
   ChevronLeft,
   Pen,
+  UsersRound,
+  Pencil,
+  ChartColumnIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
@@ -25,7 +28,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import path from "path";
 
 const SideNav = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -67,13 +69,29 @@ const SideNav = () => {
   const navItems = [
     { name: "Profile", path: "/profile", icon: User, roles: ["USER"] },
     {
-      name: "Posted Jobs",
+      name: "Dashboard",
+      path: "/dashboard",
+      icon: ChartColumnIcon,
+      roles: ["ADMIN"],
+    },
+    {
+      name: "Users",
+      path: "/users",
+      icon: UsersRound,
+      roles: ["ADMIN"],
+    },
+    {
+      name: "All Jobs",
+      path: "/jobs",
+      icon: Briefcase,
+      roles: ["USER", "ADMIN"],
+    },
+    {
+      name: "My Job Postings",
       path: "/posted-jobs",
       icon: Briefcase,
       roles: ["ADMIN"],
     },
-
-    { name: "Jobs", path: "/jobs", icon: Briefcase, roles: ["USER", "ADMIN"] },
     {
       name: "Applied Jobs",
       path: "/applied-jobs",
@@ -81,9 +99,9 @@ const SideNav = () => {
       roles: ["USER"],
     },
     {
-      name: "Post Jobs",
+      name: "Post a Job",
       path: "/post-job",
-      icon: Pen,
+      icon: Pencil,
       roles: ["ADMIN"],
     },
   ];
