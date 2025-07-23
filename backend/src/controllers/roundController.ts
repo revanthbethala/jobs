@@ -5,6 +5,7 @@ import ExcelJS from 'exceljs';
 const prisma = new PrismaClient();
 
 import { sendRoundResultEmail } from '../utils/email';
+import { error } from 'console';
 
 export const uploadRoundResults = async (req: Request, res: Response) => {
   const { jobId, roundName, users, status } = req.body;
@@ -188,5 +189,15 @@ export const exportRoundResults = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Excel export failed:', error);
     res.status(500).json({ message: 'Failed to export round results', error });
+  }
+};
+
+export const deleteRound = async (req: Request, res: Response) => {
+  try {
+    await prisma.round.delete({
+      where: { id: req.params.roundId },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to delete round', error });
   }
 };

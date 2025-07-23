@@ -2,7 +2,21 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+import { Trash } from "lucide-react";
+import { useState } from "react";
+import { useJobRoundsStore } from "@/store/roundStore";
+import { deleteRound } from "@/services/roundServices";
 interface RoundSelectionCardProps {
   round: {
     roundNumber: number;
@@ -21,6 +35,19 @@ export function RoundSelectionCard({
   isSelected,
   onSelect,
 }: RoundSelectionCardProps) {
+  const { selectedRound, rounds } = useJobRoundsStore();
+  const handleDeleteRound = async () => {
+    const round_info = rounds?.find(
+      (round) => round.roundNumber == selectedRound
+    );
+    const round_id = round_info?.id;
+    try {
+      const res = await deleteRound(round_id);
+      console.log("Delete round", res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <Card
       className={`cursor-pointer transition-all hover:shadow-md ${
@@ -42,9 +69,30 @@ export function RoundSelectionCard({
         <h3 className="font-semibold text-sm mb-1 capitalize">
           {round?.roundName}
         </h3>
-        {/* <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Users className="h-3 w-3" />
-          {roundState.eligibleStudents.length} students
+        {/* <div className="flex mt-2 text-right justify-between flex-row-reverse">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Trash size={16} className="text-red-600 cursor-pointer" />
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  this item.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteRound}
+                  className="bg-red-600 hover:bg-red-600/80"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div> */}
       </CardContent>
     </Card>

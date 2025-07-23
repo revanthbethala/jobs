@@ -10,10 +10,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { AxiosError } from "axios";
-import { Users } from "lucide-react";
+import { Trash, User2, Users, Users2 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import useDebounce from "@/hooks/use-debounce";
 import * as XLSX from "xlsx";
@@ -70,7 +81,9 @@ function StudentManagementTable() {
   const filteredResults = useMemo(() => {
     const results = data?.roundResults ?? [];
     return results.filter((result) =>
-      result?.user?.username?.toLowerCase().includes(debouncedQuery?.toLowerCase())
+      result?.user?.username
+        ?.toLowerCase()
+        .includes(debouncedQuery?.toLowerCase())
     );
   }, [data, debouncedQuery]);
 
@@ -134,7 +147,12 @@ function StudentManagementTable() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <Button onClick={handleExportToExcel}>Export to Excel</Button>
+        <div className="flex gap-3 items-center">
+          <Badge variant="outline">
+            {filteredResults.length} students found
+          </Badge>
+          <Button onClick={handleExportToExcel}>Export to Excel</Button>
+        </div>
       </div>
 
       {isDebouncing ? (
@@ -144,8 +162,11 @@ function StudentManagementTable() {
           ))}
         </div>
       ) : filteredResults.length < 1 ? (
-        <p className="text-center text-muted mt-4">
-          No user found with the given username.
+        <p className="text-center font-medium mt-4">
+          <span className="flex flex-col gap-1 items-center">
+            <Users2 />
+            No user found with the given username.
+          </span>
         </p>
       ) : (
         <div className="border rounded-md overflow-auto">
@@ -158,6 +179,7 @@ function StudentManagementTable() {
                 <TableHead>Gender</TableHead>
                 <TableHead>Resume</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Delete</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -191,6 +213,33 @@ function StudentManagementTable() {
                       >
                         {result.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Trash
+                            size={16}
+                            className="text-red-600 cursor-pointer"
+                          />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete this item.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction className="bg-red-600 hover:bg-red-600/80">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 );

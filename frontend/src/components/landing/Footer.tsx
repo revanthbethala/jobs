@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Separator } from "@/components/ui/separator";
 
 const Footer = () => {
   const footerLinks = {
@@ -94,7 +93,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <Separator className="bg-white/10" />
+        <hr className="bg-white/10" />
 
         {/* Bottom Footer */}
         <motion.div

@@ -19,7 +19,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -50,6 +50,7 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
+import { AxiosError } from "axios";
 
 function getIncompleteFields(profile): number {
   const incompleteFields: string[] = [];
@@ -536,12 +537,12 @@ export default function JobDetails() {
                       <span className="text-sm text-gray-500">Experience</span>
                       <span className="font-semibold">{job.experience}</span>
                     </div>
-                    <Separator />
+                    <hr />
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500">Job Role</span>
                       <span className="font-semibold">{job.jobRole}</span>
                     </div>
-                    <Separator />
+                    <hr />
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500">Job Type</span>
                       <Badge variant="outline">{job.jobType}</Badge>

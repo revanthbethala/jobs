@@ -36,3 +36,17 @@ export const getSpecificRoundResults = async (
     throw err;
   }
 };
+
+export const deleteRound = async (roundId: string | undefined) => {
+  try {
+    const res = axios.delete(`${backend_url}/api/rounds/${roundId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return (await res).data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};

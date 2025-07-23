@@ -1,6 +1,5 @@
 import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 const HowItWorks = () => {
   const steps = [
@@ -178,7 +177,7 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <Separator className="mb-8" />
+          <div className="mb-8" />
           <div className="text-center">
             <h3 className="text-2xl font-bold text-brand-gray-dark mb-4">
               Ready to Get Started?
