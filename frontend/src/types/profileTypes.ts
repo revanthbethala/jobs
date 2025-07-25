@@ -21,9 +21,9 @@ export interface Education {
   id: string;
   educationalLevel: string;
   institution: string;
-  specialization: string;
+  specialization: string | null;
   boardOrUniversity: string;
-  percentage: string;
+  percentage: number;
   passedOutYear: number;
   location: string;
   noOfActiveBacklogs: number;

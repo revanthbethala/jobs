@@ -6,6 +6,7 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import JobRounds from "./components/jobs/admin/rounds/JobRounds";
 import AllUsers from "./components/jobs/admin/AllUsers";
 import Dashboard from "./components/jobs/admin/Dashboard";
+import Index from "./components/jobs/admin/Index";
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -72,7 +73,7 @@ export default function App() {
           element: (
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <AllUsers />
+                <Index />
               </ProtectedRoute>
             </Suspense>
           ),

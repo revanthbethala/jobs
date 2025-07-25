@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash } from "lucide-react";
 import { useState } from "react";
-import { useJobRoundsStore } from "@/store/roundStore";
+import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import { deleteRound } from "@/services/roundServices";
 interface RoundSelectionCardProps {
   round: {

@@ -267,26 +267,30 @@ export default function EducationStep() {
                     </div>
 
                     {/* No. of Active Backlogs */}
-                    <div className="space-y-2 w-full">
-                      <Label>Active Backlogs</Label>
-                      <Input
-                        type="number"
-                        {...register(
-                          `education.${index}.noOfActiveBacklogs`,
-                          {
-                            valueAsNumber: true,
-                          }
+                    {["B.Tech", "M.Tech", "B.Pharmacy", "M.Pharmacy"].includes(
+                      level
+                    ) && (
+                      <div className="space-y-2 w-full">
+                        <Label>Active Backlogs</Label>
+                        <Input
+                          type="number"
+                          {...register(
+                            `education.${index}.noOfActiveBacklogs`,
+                            {
+                              valueAsNumber: true,
+                            }
+                          )}
+                        />
+                        {errors.education?.[index]?.noOfActiveBacklogs && (
+                          <p className="text-red-600 text-sm">
+                            {
+                              errors.education[index].noOfActiveBacklogs
+                                ?.message
+                            }
+                          </p>
                         )}
-                      />
-                      {errors.education?.[index]?.noOfActiveBacklogs && (
-                        <p className="text-red-600 text-sm">
-                          {
-                            errors.education[index].noOfActiveBacklogs
-                              ?.message
-                          }
-                        </p>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               );

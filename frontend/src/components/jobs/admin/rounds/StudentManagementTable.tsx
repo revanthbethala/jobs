@@ -1,5 +1,5 @@
 import { getSpecificRoundResults } from "@/services/roundServices";
-import { useJobRoundsStore } from "@/store/roundStore";
+import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import {

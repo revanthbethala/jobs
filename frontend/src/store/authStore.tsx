@@ -71,7 +71,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logOut: () => {
     Cookies.remove("token");
-    Cookies.remove("userId");
+    Cookies.remove("role");
     set({
       token: "",
       isLoggedIn: false,

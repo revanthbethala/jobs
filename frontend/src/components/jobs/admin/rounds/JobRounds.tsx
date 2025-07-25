@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobById } from "@/services/jobServices";
 import { useEffect } from "react";
-import { useJobRoundsStore } from "@/store/roundStore";
+import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import StudentManagementTable from "./StudentManagementTable";
 
 export default function JobRounds() {

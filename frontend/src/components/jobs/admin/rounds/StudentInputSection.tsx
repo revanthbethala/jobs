@@ -15,7 +15,7 @@ import { RoundSelectionCard } from "./RoundSelectionCard";
 import { getSpecificRoundResults, uploadRoundResults } from "@/services/roundServices";
 import { useParams } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { useJobRoundsStore } from "@/store/roundStore";
+import { useJobRoundsStore } from "@/store/jobRoundsStore";
 
 export function StudentInputSection() {
   const { selectedRound, rounds, setSelectedRound, students } =
