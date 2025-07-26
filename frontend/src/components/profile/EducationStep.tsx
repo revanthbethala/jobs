@@ -39,8 +39,8 @@ export default function EducationStep() {
               institution: "",
               specialization: "",
               boardOrUniversity: "",
-              percentage: 0,
-              passedOutYear: Number(new Date().getFullYear()),
+              percentage: "",
+              passedOutYear: "",
               location: "",
               noOfActiveBacklogs: 0,
             },
@@ -121,7 +121,7 @@ export default function EducationStep() {
                     <h3 className="text-lg font-semibold text-brand-blue-dark">
                       Education Entry {index + 1}
                     </h3>
-                    {fields.length > 1 && (
+                    {fields.length > 3 && (
                       <Button
                         type="button"
                         variant="outline"
@@ -158,11 +158,6 @@ export default function EducationStep() {
                           ))}
                         </SelectContent>
                       </Select>
-                      {errors.education?.[index]?.educationalLevel && (
-                        <p className="text-red-600 text-sm">
-                          {errors.education[index].educationalLevel?.message}
-                        </p>
-                      )}
                     </div>
 
                     {/* Institution */}
@@ -289,13 +284,23 @@ export default function EducationStep() {
                             }
                           </p>
                         )}
+                        {errors.education?.message && (
+                          <p className="text-red-600 text-sm text-center">
+                            {errors.education.message}
+                          </p>
+                        )}
                       </div>
                     )}
                   </CardContent>
                 </Card>
               );
             })}
-
+            {errors.education && !Array.isArray(errors.education) &&
+              typeof errors.education.message === "string" && (
+                <p className="text-red-600 text-sm text-center">
+                  {errors.education.message}
+                </p>
+              )}
             {/* Navigation Buttons */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
               <Button type="button" variant="outline" onClick={handleBack}>

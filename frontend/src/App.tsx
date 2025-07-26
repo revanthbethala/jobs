@@ -1,12 +1,8 @@
 import { Suspense, lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useAuthStore } from "@/store/authStore";
 import { Toaster } from "@/components/ui/toaster";
+import { useAuthStore } from "@/store/authStore";
 import LoadingSpinner from "./components/LoadingSpinner";
-import JobRounds from "./components/jobs/admin/rounds/JobRounds";
-import AllUsers from "./components/jobs/admin/AllUsers";
-import Dashboard from "./components/jobs/admin/Dashboard";
-import Index from "./components/jobs/admin/Index";
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -15,6 +11,12 @@ const ProfileForm = lazy(() => import("@/components/profile/ProfileForm"));
 const ProfileDisplay = lazy(
   () => import("@/components/profile/ProfileDisplay")
 );
+const JobRounds = lazy(
+  () => import("./components/jobs/admin/rounds/JobRounds")
+);
+const Dashboard = lazy(() => import("./components/jobs/admin/Dashboard"));
+const Index = lazy(() => import("./components/jobs/admin/Index"));
+
 const JobApplications = lazy(
   () => import("@/components/jobs/admin/JobApplications")
 );
@@ -29,6 +31,7 @@ const ProtectedRoute = lazy(
 
 const PostedJobs = lazy(() => import("@/components/jobs/admin/PostedJobs"));
 const JobDetails = lazy(() => import("@/components/jobs/user/JobDetails"));
+
 
 export default function App() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -212,6 +215,7 @@ export default function App() {
 
   return (
     <>
+
       <RouterProvider router={router} />
       <Toaster />
     </>

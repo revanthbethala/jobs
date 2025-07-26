@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +24,11 @@ export default function PersonalInfoStep() {
     useProfileStore();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
-  const [showProfilePic, setShowProfilePic] = useState<boolean>(!!profileUrl);
+  const [showProfilePic, setShowProfilePic] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (profileUrl) setShowProfilePic(true);
+  }, [profileUrl]);
 
   const handleInputChange = (field: string, value: string) => {
     updatePersonalInfo({ [field]: value });
@@ -86,7 +89,7 @@ export default function PersonalInfoStep() {
       setErrors(fieldErrors);
     }
   };
-
+  console.log(profileUrl);
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}

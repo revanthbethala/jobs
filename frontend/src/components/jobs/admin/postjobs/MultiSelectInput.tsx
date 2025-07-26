@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Control, useController } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { Check, X, ChevronDown } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,7 +23,7 @@ interface MultiSelectInputProps {
   placeholder?: string;
   error?: string;
   name: string;
-  control: Control<any>;
+  control: Control;
   className?: string;
   required?: boolean;
 }

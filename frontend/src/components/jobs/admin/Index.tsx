@@ -11,8 +11,7 @@ import { useSearchParams } from "react-router-dom";
 const Index = () => {
   const { setUsers } = useUserFilterStore();
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const page = parseInt(searchParams.get("page") || "1", 10);
+  const page = parseInt(searchParams.get("page") ?? "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
 
   const updateParams = (newPage: number, newLimit: number) => {
@@ -24,6 +23,7 @@ const Index = () => {
     queryFn: () => getPaginatedUsers(page, limit),
     placeholderData: keepPreviousData,
   });
+  console.log("page info", data);
 
   useEffect(() => {
     if (data?.users) {
@@ -65,12 +65,16 @@ const Index = () => {
       <FilterPanel />
       <ActiveFilters />
       <UsersTable
-        users={data.users}
+        usersData={data?.users || []}
         page={page}
         limit={limit}
-        total={data.totalUsers}
-        setPage={(p) => updateParams(p, limit)}
-        setLimit={(l) => updateParams(1, l)} // reset to page 1 when limit changes
+        total={data?.totalPages || 0}
+        setParams={(newPage, newLimit) =>
+          setSearchParams({
+            page: newPage.toString(),
+            limit: newLimit.toString(),
+          })
+        }
       />
     </div>
   );

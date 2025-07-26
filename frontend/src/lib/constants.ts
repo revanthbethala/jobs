@@ -49,7 +49,7 @@ export const SPECIALIZATIONS = {
   "Pharm.D": [],
 };
 
-export const GENDERS = ["Male", "Female", "Prefer not to say"];
+export const GENDERS = ["Male", "Female", "Others"];
 
 export const JOB_ROLE_OPTIONS = [
   { value: "developer", label: "Software Developer" },

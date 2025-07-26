@@ -1,12 +1,7 @@
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL + "/api/users"; // Ensure this is set in your .env
-
-const getAuthHeaders = (token: string) => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${token}`,
-});
+const API_BASE = import.meta.env.VITE_BACKEND_URL + "/api/users";
 
 export const getProfile = async () => {
   try {

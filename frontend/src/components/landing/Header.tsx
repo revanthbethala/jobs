@@ -193,7 +193,7 @@ const Header = () => {
                 ))}
                 <div className="pt-4  flex gap-3 items-center">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     className={`w-full hover:bg-white/10 ${
                       isScrolled
                         ? "text-gray-900 hover:text-brand-blue-light hover:bg-slate-200/10 hover:border hover:border-gray-200"

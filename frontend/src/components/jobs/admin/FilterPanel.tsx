@@ -1,8 +1,9 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, X, ChevronDown, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Filter, X, ChevronDown, Trash2, Check } from "lucide-react";
+import { useState } from "react";
+import * as Slider from "@radix-ui/react-slider";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,104 +23,68 @@ import {
 } from "@/components/ui/popover";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { useUserFilterStore } from "@/store/userFiltersStore";
-import useDebounce from "@/hooks/use-debounce";
-import { FilterFormData, filterSchema } from "@/schemas/userFiltersSchema";
-import { EDUCATION_LEVELS, GENDERS } from "@/lib/constants";
-const educationalLevels = EDUCATION_LEVELS;
-const genders = ["Male", "Female", "Other"];
 
-// Generate years: past 6 years to next 6 years from current year
+import { FilterFormData, filterSchema } from "@/schemas/userFiltersSchema";
+import { EDUCATION_LEVELS, SPECIALIZATIONS, GENDERS } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+
+const educationalLevels = EDUCATION_LEVELS;
+const genders = GENDERS;
 const currentYear = new Date().getFullYear();
 const passedOutYears = Array.from(
   { length: 13 },
   (_, i) => currentYear - 6 + i
 );
 
-interface EducationalLevelFilter {
+export interface EducationalLevelFilter {
   level: string;
+  specialization?: string[];
   percentageRange: [number, number];
+  gradeSystem?: "Percentage";
+  hasBacklogs?: boolean;
 }
 
 export const FilterPanel = () => {
-  const {
-    filters,
-    isFilterPanelOpen,
-    toggleFilterPanel,
-    setFilters,
-    clearFilters,
-  } = useUserFilterStore();
-  // const [searchValue, setSearchValue] = useState(filters.search || "");
-  const [selectedYears, setSelectedYears] = useState<number[]>(
-    filters.passedOutYears || []
-  );
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedYears, setSelectedYears] = useState<number[]>([]);
   const [educationalLevelFilters, setEducationalLevelFilters] = useState<
     EducationalLevelFilter[]
-  >(filters.educationalLevels || []);
+  >([]);
 
-  const { handleSubmit, setValue, reset } = useForm<FilterFormData>({
+  const { handleSubmit, reset, control } = useForm<FilterFormData>({
     resolver: zodResolver(filterSchema),
-    defaultValues: filters,
+    defaultValues: {},
   });
 
-  // Handle filter state synchronization
-  useEffect(() => {
-    reset(filters);
-    // setSearchValue(filters.search || "");
-    setSelectedYears(filters.passedOutYears || []);
-    setEducationalLevelFilters(filters.educationalLevels || []);
-  }, [filters, reset]);
+  const togglePanel = () => setIsOpen((prev) => !prev);
 
   const onSubmit = (data: FilterFormData) => {
     const cleanedData: FilterFormData = {};
 
-    // Include search if it has any value (even empty string is valid for clearing search)
-    if (data.search !== undefined) {
-      cleanedData.search = data.search.trim() || undefined;
+    if (data.search?.trim()) {
+      cleanedData.search = data.search.trim();
     }
-
-    // Include gender if selected
-    if (data.gender) {
-      cleanedData.gender = data.gender;
-    }
-
-    // Include educational level filters if any are selected
-    if (educationalLevelFilters.length > 0) {
+    if (data.gender) cleanedData.gender = data.gender;
+    if (educationalLevelFilters.length > 0)
       cleanedData.educationalLevels = educationalLevelFilters;
-    }
-
-    // Include selected years if any are selected
-    if (selectedYears.length > 0) {
-      cleanedData.passedOutYears = selectedYears;
-    }
-
-    // Include backlog filters if they have values (including 0)
-    if (
-      data.minActiveBacklogs !== undefined &&
-      data.minActiveBacklogs !== null &&
-      data.minActiveBacklogs >= 0
-    ) {
+    if (selectedYears.length > 0) cleanedData.passedOutYears = selectedYears;
+    if (typeof data.minActiveBacklogs === "number")
       cleanedData.minActiveBacklogs = data.minActiveBacklogs;
-    }
-
-    if (
-      data.maxActiveBacklogs !== undefined &&
-      data.maxActiveBacklogs !== null &&
-      data.maxActiveBacklogs >= 0
-    ) {
+    if (typeof data.maxActiveBacklogs === "number")
       cleanedData.maxActiveBacklogs = data.maxActiveBacklogs;
-    }
 
-    setFilters(cleanedData);
+    console.log("Selected Filters:", cleanedData);
   };
 
   const handleClearFilters = () => {
-    clearFilters();
-    setSearchValue("");
     setSelectedYears([]);
     setEducationalLevelFilters([]);
-    reset({});
+    reset({
+      minActiveBacklogs: undefined,
+      gender: undefined,
+      maxActiveBacklogs: undefined,
+      search: undefined,
+    });
   };
 
   const handleYearToggle = (year: number) => {
@@ -129,21 +94,16 @@ export const FilterPanel = () => {
   };
 
   const handleAddEducationalLevel = (level: string) => {
-    if (!educationalLevelFilters.some((filter) => filter.level === level)) {
+    if (!educationalLevelFilters.some((f) => f.level === level)) {
       setEducationalLevelFilters((prev) => [
         ...prev,
-        {
-          level,
-          percentageRange: [0, 100],
-        },
+        { level, percentageRange: [0, 100], specialization: [] },
       ]);
     }
   };
 
   const handleRemoveEducationalLevel = (level: string) => {
-    setEducationalLevelFilters((prev) =>
-      prev.filter((filter) => filter.level !== level)
-    );
+    setEducationalLevelFilters((prev) => prev.filter((f) => f.level !== level));
   };
 
   const handlePercentageRangeChange = (
@@ -151,46 +111,45 @@ export const FilterPanel = () => {
     value: [number, number]
   ) => {
     setEducationalLevelFilters((prev) =>
-      prev.map((filter) =>
-        filter.level === level ? { ...filter, percentageRange: value } : filter
+      prev.map((f) =>
+        f.level === level ? { ...f, percentageRange: value } : f
       )
     );
   };
 
-  const getActiveFiltersCount = () => {
-    return Object.values(filters).filter(
-      (value) =>
-        value !== undefined &&
-        value !== "" &&
-        value !== 0 &&
-        (Array.isArray(value) ? value.length > 0 : true)
-    ).length;
+  const toggleSpecialization = (level: string, spec: string) => {
+    setEducationalLevelFilters((prev) =>
+      prev.map((f) => {
+        if (f.level !== level) return f;
+        const specs = f.specialization || [];
+        const exists = specs.includes(spec);
+        return {
+          ...f,
+          specialization: exists
+            ? specs.filter((s) => s !== spec)
+            : [...specs, spec],
+        };
+      })
+    );
   };
 
   const availableEducationalLevels = educationalLevels.filter(
-    (level) => !educationalLevelFilters.some((filter) => filter.level === level)
+    (level) => !educationalLevelFilters.some((f) => f.level === level)
   );
 
   return (
     <div className="relative">
-      {/* Filter Toggle Button */}
       <Button
-        onClick={toggleFilterPanel}
+        onClick={togglePanel}
         variant="outline"
         className="mb-4 flex items-center gap-2 hover:bg-primary/10 transition-colors"
       >
         <Filter className="h-4 w-4" />
         Filters
-        {getActiveFiltersCount() > 0 && (
-          <Badge variant="secondary" className="ml-2">
-            {getActiveFiltersCount()}
-          </Badge>
-        )}
       </Button>
 
-      {/* Filter Panel */}
       <AnimatePresence>
-        {isFilterPanelOpen && (
+        {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -205,145 +164,170 @@ export const FilterPanel = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={toggleFilterPanel}
+                    onClick={togglePanel}
                     className="h-8 w-8 p-0"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </CardTitle>
               </CardHeader>
+
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="space-y-6">
-                    {/* Grid: Gender + Educational Level Dropdown */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 justify-between">
-                      {/* Gender */}
-                      <div className="space-y-2">
-                        <Label>Gender </Label>
-                        <Select
-                          onValueChange={(value) =>
-                            setValue(
-                              "gender",
-                              value as "Male" | "Female" | "Other" | undefined
-                            )
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {genders.map((gender) => (
-                              <SelectItem key={gender} value={gender}>
-                                {gender}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Educational Level Dropdown */}
-                      <div className="space-y-2">
-                        <Label>Educational Levels</Label>
-                        {availableEducationalLevels.length > 0 && (
-                          <Select onValueChange={handleAddEducationalLevel}>
-                            <SelectTrigger className="">
-                              <SelectValue placeholder="Add Education level" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Gender</Label>
+                      <Controller
+                        control={control}
+                        name="gender"
+                        render={({ field }) => (
+                          <Select
+                            key={field.value ?? "empty"}
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
                             </SelectTrigger>
                             <SelectContent>
-                              {availableEducationalLevels.map((level) => (
-                                <SelectItem key={level} value={level}>
-                                  {level}
+                              {genders.map((gender) => (
+                                <SelectItem key={gender} value={gender}>
+                                  {gender}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         )}
-                      </div>
+                      />
                     </div>
 
-                    {/* Grid: Educational Level Filters */}
-                    {educationalLevelFilters.length > 0 && (
-                      <AnimatePresence>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                          {educationalLevelFilters.map((filter) => (
-                            <motion.div
-                              key={filter.level}
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.3 }}
-                              className="border rounded-lg p-4 space-y-4"
-                            >
-                              <div className="flex items-center justify-between">
-                                <Badge variant="outline" className="text-sm">
-                                  {filter.level}
-                                </Badge>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleRemoveEducationalLevel(filter.level)
-                                  }
-                                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-
-                              <div className="space-y-4">
-                                <Label>
-                                  Percentage Range for {filter.level}
-                                </Label>
-                                <div className="space-y-4">
-                                  <div className="px-4">
-                                    <Slider
-                                      value={filter.percentageRange}
-                                      onValueChange={(value) =>
-                                        handlePercentageRangeChange(
-                                          filter.level,
-                                          value as [number, number]
-                                        )
-                                      }
-                                      max={100}
-                                      min={0}
-                                      step={1}
-                                      className="w-full"
-                                    />
-                                  </div>
-                                  <div className="flex justify-between items-center text-sm">
-                                    <span className="text-muted-foreground">
-                                      {filter.percentageRange[0]}% -{" "}
-                                      {filter.percentageRange[1]}%
-                                    </span>
-                                    <div className="flex gap-2">
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs"
-                                      >
-                                        Min: {filter.percentageRange[0]}%
-                                      </Badge>
-                                      <Badge
-                                        variant="outline"
-                                        className="text-xs"
-                                      >
-                                        Max: {filter.percentageRange[1]}%
-                                      </Badge>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </AnimatePresence>
-                    )}
+                    <div className="space-y-2">
+                      <Label>Educational Levels</Label>
+                      {availableEducationalLevels.length > 0 && (
+                        <Select onValueChange={handleAddEducationalLevel}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Add Education level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableEducationalLevels.map((level) => (
+                              <SelectItem key={level} value={level}>
+                                {level}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
                   </div>
 
+                  {educationalLevelFilters.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {educationalLevelFilters.map((filter) => (
+                        <div
+                          key={filter.level}
+                          className="border rounded-lg p-4 space-y-4"
+                        >
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline">{filter.level}</Badge>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                handleRemoveEducationalLevel(filter.level)
+                              }
+                              className="h-8 w-8 p-0 text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <div>
+                            <Label>Percentage Range</Label>
+                            <Slider.Root
+                              className="relative flex items-center select-none touch-none w-full h-6"
+                              min={0}
+                              max={100}
+                              step={1}
+                              value={filter.percentageRange}
+                              onValueChange={(range) =>
+                                handlePercentageRangeChange(
+                                  filter.level,
+                                  range as [number, number]
+                                )
+                              }
+                            >
+                              <Slider.Track className="bg-gray-200 relative grow rounded-full h-1">
+                                <Slider.Range className="absolute bg-blue-500 rounded-full h-full" />
+                              </Slider.Track>
+                              <Slider.Thumb className="block w-4 h-4 bg-white border border-gray-300 rounded-full shadow" />
+                              <Slider.Thumb className="block w-4 h-4 bg-white border border-gray-300 rounded-full shadow" />
+                            </Slider.Root>
+
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge variant="outline">
+                                Min: {filter.percentageRange[0]}%
+                              </Badge>
+                              <Badge variant="outline">
+                                Max: {filter.percentageRange[1]}%
+                              </Badge>
+                            </div>
+                          </div>
+
+                          {SPECIALIZATIONS[filter.level]?.length > 0 && (
+                            <div className="space-y-2">
+                              <Label>Specializations</Label>
+                              <Select>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select specializations" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {SPECIALIZATIONS[filter.level].map((spec) => {
+                                    const isSelected =
+                                      filter.specialization?.includes(spec);
+                                    return (
+                                      <button
+                                        type="button"
+                                        key={spec}
+                                        className={cn(
+                                          "flex w-full items-center px-2 py-1.5 text-sm hover:bg-muted",
+                                          isSelected && "bg-muted"
+                                        )}
+                                        onClick={() =>
+                                          toggleSpecialization(
+                                            filter.level,
+                                            spec
+                                          )
+                                        }
+                                      >
+                                        <span className="flex-grow text-left">
+                                          {spec}
+                                        </span>
+                                        {isSelected && (
+                                          <Check className="h-4 w-4" />
+                                        )}
+                                      </button>
+                                    );
+                                  })}
+                                </SelectContent>
+                              </Select>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {filter.specialization?.map((spec) => (
+                                  <Badge key={spec} variant="secondary">
+                                    {spec}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Passed Out Years */}
                     <div className="space-y-2">
-                      <Label>Passed Out Years </Label>
+                      <Label>Passed Out Years</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
@@ -351,9 +335,7 @@ export const FilterPanel = () => {
                             className="w-full justify-start text-left font-normal"
                           >
                             {selectedYears.length > 0
-                              ? `${selectedYears.length} year${
-                                  selectedYears.length > 1 ? "s" : ""
-                                } selected`
+                              ? `${selectedYears.length} year(s) selected`
                               : "Select years"}
                             <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -383,36 +365,46 @@ export const FilterPanel = () => {
                       </Popover>
                     </div>
 
-                    {/* Active Backlogs */}
                     <div className="space-y-2">
-                      <Label>Active Backlogs - Min/Max </Label>
+                      <Label>Active Backlogs - Min/Max</Label>
                       <div className="flex gap-2">
-                        <Input
-                          type="number"
-                          placeholder="Min"
-                          min={0}
-                          onChange={(e) =>
-                            setValue(
-                              "minActiveBacklogs",
-                              e.target.value === ""
-                                ? undefined
-                                : Number(e.target.value)
-                            )
-                          }
+                        <Controller
+                          control={control}
+                          name="minActiveBacklogs"
+                          render={({ field }) => (
+                            <Input
+                              type="number"
+                              placeholder="Min"
+                              min={0}
+                              value={field.value ?? ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ""
+                                    ? undefined
+                                    : Number(e.target.value)
+                                )
+                              }
+                            />
+                          )}
                         />
-
-                        <Input
-                          type="number"
-                          placeholder="Max"
-                          min={0}
-                          onChange={(e) =>
-                            setValue(
-                              "maxActiveBacklogs",
-                              e.target.value === ""
-                                ? undefined
-                                : Number(e.target.value)
-                            )
-                          }
+                        <Controller
+                          control={control}
+                          name="maxActiveBacklogs"
+                          render={({ field }) => (
+                            <Input
+                              type="number"
+                              placeholder="Max"
+                              min={0}
+                              value={field.value ?? ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === ""
+                                    ? undefined
+                                    : Number(e.target.value)
+                                )
+                              }
+                            />
+                          )}
                         />
                       </div>
                     </div>

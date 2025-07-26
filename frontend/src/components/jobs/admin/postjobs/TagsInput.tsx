@@ -8,7 +8,7 @@ interface TagsInputProps {
   placeholder?: string;
   error?: string;
   name: string;
-  control: Control<any>;
+  control: Control;
   className?: string;
   required?: boolean;
 }

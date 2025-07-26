@@ -272,6 +272,7 @@ const SideNav = () => {
               size="sm"
               onClick={toggleSidebar}
               className="h-8 w-8 p-0 mr-3"
+              aria-label="nav"
             >
               <Menu className="h-4 w-4" />
             </Button>

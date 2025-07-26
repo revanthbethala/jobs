@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, LogIn, Mail, User } from "lucide-react";
+import { Eye, EyeOff, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { loginSchema, LoginFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { userLogin } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
-import { OtpVerification } from "./OtpVerification";
 
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setCurrentStep, loginToken, isAuthenticated } = useAuthStore();
+  const { setCurrentStep, loginToken } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const {
@@ -120,6 +119,7 @@ export const LoginForm = () => {
               type="button"
               className="absolute inset-y-0 right-0 pr-3 flex items-center"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label="Close/Show"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5 text-gray-400" />

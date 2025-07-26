@@ -7,6 +7,7 @@ import jobRoutes from './routes/jobRoutes';
 import cors from 'cors';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -16,13 +17,14 @@ const app = express();
 
 app.use(
   cors({
-    origin: '*',
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(express.json());
+app.use(cookieParser( ))
 app.use('/api/rounds', roundRoutes);
 app.use('/api/applications', jobAppRoutes);
 app.use('/api/users', userRoutes);

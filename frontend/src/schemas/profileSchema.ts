@@ -44,7 +44,7 @@ export const educationSchema = z.object({
 
 export const educationArraySchema = z
   .array(educationSchema)
-  .min(1, "At least one education entry is required");
+  .min(3, "At least 3 educational entries are required");
 
 export const resumeSchema = z.object({
   resume: z

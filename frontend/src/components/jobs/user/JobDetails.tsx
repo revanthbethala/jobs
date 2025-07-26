@@ -300,6 +300,7 @@ export default function JobDetails() {
                   <div className="flex items-start gap-4 flex-1">
                     <div className="relative">
                       <img
+                        loading="lazy"
                         src={`${import.meta.env.VITE_BACKEND_URL}${
                           job.companyLogo
                         } `}

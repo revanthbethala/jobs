@@ -95,24 +95,64 @@ function applyFilters(users: User[], filters: Partial<FilterFormData>): User[] {
 
     // 👤 Gender
     if (filters.gender && user.gender !== filters.gender) return false;
+
     if (
       filters.educationFilters &&
       Object.keys(filters.educationFilters).length > 0
     ) {
       const match = Object.entries(filters.educationFilters).some(
-        ([level, { percentageRange }]) => {
-          const eduMatch = user.education.find(
-            (edu) =>
-              percentageRange &&
-              edu.educationalLevel === level &&
-              edu.percentage >= percentageRange[0] &&
-              edu.percentage <= percentageRange[1]
-          );
-          return !!eduMatch;
+        ([level, filter]) => {
+          return user.education.some((edu) => {
+            if (edu.educationalLevel !== level) return false;
+
+            // 🔍 Debug log to check values
+            console.log("Checking user:", user.username);
+            console.log("Against education:", edu);
+            console.log("With filter:", filter);
+
+            // Percentage range
+            if (
+              filter.percentageRange &&
+              (edu.percentage < filter.percentageRange[0] ||
+                edu.percentage > filter.percentageRange[1])
+            ) {
+              return false;
+            }
+
+            // Specialization
+            if (
+              filter.specialization &&
+              edu.specialization?.toLowerCase() !==
+                filter.specialization.toLowerCase()
+            ) {
+              return false;
+            }
+
+            // Institution
+            if (
+              filter.institution &&
+              edu.institution.toLowerCase() !== filter.institution.toLowerCase()
+            ) {
+              return false;
+            }
+
+            // Board / University
+            if (
+              filter.boardOrUniversity &&
+              edu.boardOrUniversity.toLowerCase() !==
+                filter.boardOrUniversity.toLowerCase()
+            ) {
+              return false;
+            }
+
+            return true; // all passed
+          });
         }
       );
+
       if (!match) return false;
     }
+
     // 🎓 Passed Out Year
     if (filters.passedOutYears?.length) {
       const match = user.education.some((e) =>

@@ -1,0 +1,1 @@
+import{b as i,u as c,j as t,av as e}from"./index-B6peOCw_.js";function l({children:o,allowedRoles:r=["USER","ADMIN"]}){const{token:s,isLoggedIn:a,role:u}=i(),n=c();return!a||!s?t.jsx(e,{to:"/auth",state:{from:n},replace:!0}):r.includes(u)?t.jsx(t.Fragment,{children:o}):t.jsx(e,{to:"/",replace:!0})}export{l as default};

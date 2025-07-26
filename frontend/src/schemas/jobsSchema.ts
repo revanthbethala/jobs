@@ -42,7 +42,8 @@ export const jobFormSchema = z.object({
     .min(1, "At least one passing year must be selected"),
 
   // Last Date to Apply
-  lastDateToApply: z.date({ required_error: "Last date to apply is required" }),
+  lastDateToApply:
+    z.date({ required_error: "Last date to apply is required" }) || null,
 
   // Interview Rounds
   interviewRounds: z
