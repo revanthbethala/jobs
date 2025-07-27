@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,31 +10,55 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User, useUserFilterStore } from "@/store/userFiltersStore";
-import { Education } from "@/types/profileTypes";
-import { exportToExcel } from "@/lib/exportToExcel";
 import { Button } from "@/components/ui/button";
+import { exportToExcel } from "@/lib/exportToExcel";
+import { useUserFiltersStore } from "@/store/userFiltersStore";
+import { getPaginatedUsers } from "@/services/userServices";
+import { Education } from "@/types/profileTypes";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-interface UsersTableProps {
-  usersData: User[];
-  page: number;
-  setPage: (page: number) => void;
-  limit: number;
-  setLimit: (limit: number) => void;
-  total: number;
-}
+const UsersTable = () => {
+  const {
+    search,
+    gender,
+    educationalLevels,
+    passedOutYears,
+    minActiveBacklogs,
+    maxActiveBacklogs,
+    page,
+    limit,
+    setPage,
+    setLimit,
+  } = useUserFiltersStore();
 
-export const UsersTable = ({
-  usersData,
-  page,
-  setPage,
-  limit,
-  setLimit,
-  total,
-}: UsersTableProps) => {
-  const totalPages = Math.ceil(total / limit);
-  const { filteredUsers:users } = useUserFilterStore();
-  console.log(users);
+  const filters = {
+    search,
+    gender,
+    educationalLevels,
+    passedOutYears,
+    minActiveBacklogs,
+    maxActiveBacklogs,
+  };
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["users", { page, limit, filters }],
+    queryFn: () => getPaginatedUsers(page, limit, filters),
+    placeholderData: (previousData) => previousData,
+    staleTime: 60 * 1000,
+  });
+
+  const users = data?.users || [];
+  const totalUsers = data?.totalUsers || 0;
+  const totalPages = data?.totalPages || 1;
+
   const handleExport = () => {
     const dataToExport = users.map((user) => {
       const getEdu = (level: string) =>
@@ -43,7 +68,7 @@ export const UsersTable = ({
       const btech = getEdu("B.Tech");
 
       const totalBacklogs = user.education.reduce(
-        (sum, edu) => sum + edu.noOfActiveBacklogs,
+        (sum, edu) => sum + (edu.noOfActiveBacklogs || 0),
         0
       );
 
@@ -62,6 +87,16 @@ export const UsersTable = ({
     exportToExcel(dataToExport, "Filtered_Users.xlsx");
   };
 
+  if (isLoading) {
+    return <div className="p-4 text-center">Loading users...</div>;
+  }
+
+  if (isError) {
+    return (
+      <div className="p-4 text-red-500 text-center">Failed to load users.</div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -71,13 +106,11 @@ export const UsersTable = ({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <div className=" space-y-3">
+            <div className="space-y-3">
               <h2>Users Information</h2>
-              <Badge variant="outline">
-                {total} user{total !== 1 ? "s" : ""} found
-              </Badge>
+              <Badge variant="outline">{totalUsers} user(s) found</Badge>
             </div>
-            <div className="flex gap-2 items-center">
+            <div>
               <Button onClick={handleExport}>Export to Excel</Button>
             </div>
           </CardTitle>
@@ -107,15 +140,17 @@ export const UsersTable = ({
                     {users.map((user) => {
                       const getEdu = (level: string) =>
                         user.education.find(
-                          (edu) => edu.educationalLevel === level
+                          (edu: Education) => edu.educationalLevel === level
                         );
+
                       const tenth = getEdu("10th");
                       const interOrDiploma =
                         getEdu("12th") || getEdu("Diploma");
                       const btech = getEdu("B.Tech");
 
                       const totalBacklogs = user.education.reduce(
-                        (sum, edu) => sum + edu.noOfActiveBacklogs,
+                        (sum: number, edu: Education) =>
+                          sum + (edu.noOfActiveBacklogs || 0),
                         0
                       );
 
@@ -174,49 +209,112 @@ export const UsersTable = ({
               </div>
 
               {/* Pagination Controls */}
-              <div className="flex justify-between items-center mt-6">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
+
+              <div className="mt-3">
+                {/* Rows Per Page */}
+                <div className="flex items-center gap-2 pt-3">
+                  <label
+                    htmlFor="rows-per-page"
+                    className="text-sm text-gray-600 "
+                  >
                     Rows per page:
-                  </span>
+                  </label>
                   <select
+                    id="rows-per-page"
                     value={limit}
                     onChange={(e) => {
-                      setPage(1);
                       setLimit(Number(e.target.value));
+                      setPage(1); // Reset to page 1 on change
                     }}
-                    className="px-2 py-1 border rounded text-sm"
+                    className="border border-input rounded-md px-3 py-1 text-sm"
                   >
-                    {[10, 25, 50].map((num) => (
-                      <option key={num} value={num}>
-                        {num}
+                    <option value="">{1}</option>
+                    {[5, 10, 20, 50].map((value) => (
+                      <option key={value} value={value}>
+                        {value}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                    Page {page} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      setPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={page === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div>
+
+                <Pagination>
+                  <PaginationContent className="gap-2">
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => {
+                          if (page !== 1) setPage(Math.max(page - 1, 1));
+                        }}
+                        className={`cursor-pointer${
+                          page === 1 ? " pointer-events-none opacity-50" : ""
+                        }`}
+                      />
+                    </PaginationItem>
+
+                    {[1, 2, 3].map((p) =>
+                      p <= totalPages ? (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={page === p}
+                            onClick={() => setPage(p)}
+                            className="cursor-pointer"
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ) : null
+                    )}
+
+                    {page > 4 && page < totalPages - 2 && (
+                      <>
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+
+                        <PaginationItem>
+                          <PaginationLink
+                            isActive
+                            onClick={() => setPage(page)}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      </>
+                    )}
+
+                    {totalPages > 3 &&
+                      [totalPages - 2, totalPages - 1, totalPages].map((p) =>
+                        p > 3 && p !== page ? (
+                          <PaginationItem key={p}>
+                            <PaginationLink
+                              isActive={page === p}
+                              onClick={() => setPage(p)}
+                              className="cursor-pointer"
+                            >
+                              {p}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ) : null
+                      )}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => {
+                          if (page !== totalPages) {
+                            setPage(Math.min(page + 1, totalPages));
+                          }
+                        }}
+                        className={`cursor-pointer${
+                          page ===totalPages ? " pointer-events-none opacity-50" : ""
+                        }`}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             </>
           )}

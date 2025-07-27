@@ -269,24 +269,106 @@ const safeUser = (user: any) => {
   return rest;
 };
 
-export const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
+
+
+export const getFilteredUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
+    // Get pagination info from query parameters
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
 
-    const totalUsers = await prisma.user.count();
+    // Destructure filters from request body
+    const {
+      gender,
+      username,
+      educationalLevels = [],
+      passedOutYears = [],
+      minActiveBacklogs,
+      maxActiveBacklogs,
+    } = req.body;
 
+    // Build the user-level filtering
+    const userWhere: any = {};
+    if (gender) {
+      userWhere.gender = gender;
+    }
+    if (username) {
+      userWhere.OR = [
+        { username: { contains: username, mode: 'insensitive' } },
+        { firstName: { contains: username, mode: 'insensitive' } },
+        { lastName: { contains: username, mode: 'insensitive' } },
+        { email: { contains: username, mode: 'insensitive' } },
+      ];
+    }
+
+    // Build an array of education filters based on the provided educationalLevels
+    const educationFilters = (Array.isArray(educationalLevels) ? educationalLevels : []).map(
+      (edu: any) => {
+        const filter: any = { educationalLevel: edu.level };
+
+        if (edu.percentageRange?.length === 2) {
+          filter.percentage = {
+            gte: edu.percentageRange[0],
+            lte: edu.percentageRange[1],
+          };
+        }
+
+        if (edu.specialization && edu.specialization.length > 0) {
+          filter.specialization = {
+            in: edu.specialization,
+            mode: 'insensitive',
+          };
+        }
+
+        // Handle active backlog filters (if provided globally)
+        if (minActiveBacklogs !== undefined || maxActiveBacklogs !== undefined) {
+          filter.noOfActiveBacklogs = {};
+          if (minActiveBacklogs !== undefined) {
+            filter.noOfActiveBacklogs.gte = minActiveBacklogs;
+          }
+          if (maxActiveBacklogs !== undefined) {
+            filter.noOfActiveBacklogs.lte = maxActiveBacklogs;
+          }
+        }
+
+        // Apply passed out years filter if provided
+        if (Array.isArray(passedOutYears) && passedOutYears.length > 0) {
+          filter.passedOutYear = {
+            in: passedOutYears,
+          };
+        }
+
+        return filter;
+      }
+    );
+
+    // Build the main where clause. Only add education filtering if any education filters exist.
+    const whereClause: any = {
+      ...userWhere,
+    };
+
+    if (educationFilters.length > 0) {
+      whereClause.education = {
+        some: {
+          OR: educationFilters,
+        },
+      };
+    }
+
+    // Query users with pagination and include education
     const users = await prisma.user.findMany({
+      where: whereClause,
       skip,
       take: limit,
-      include: {
-        education: true,
-      },
+      include: { education: true },
+    });
+
+    const totalUsers = await prisma.user.count({
+      where: whereClause,
     });
 
     const cleanedUsers = users.map(safeUser);
-
     return res.json({
       users: cleanedUsers,
       page,
@@ -295,7 +377,7 @@ export const getAllUsers = async (req: Request, res: Response): Promise<Response
       totalPages: Math.ceil(totalUsers / limit),
     });
   } catch (error) {
-    console.error('Failed to fetch users:', error);
+    console.error('Failed to fetch users with filters:', error);
     return res.status(500).json({ message: 'Failed to fetch users', error });
   }
 };
@@ -394,4 +476,3 @@ export const getAdminDashboard = async (_req: Request, res: Response) => {
     return res.status(500).json({ message: 'Failed to load admin dashboard', error });
   }
 };
-

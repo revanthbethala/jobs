@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { FilterFormData, filterSchema } from "@/schemas/userFiltersSchema";
 import { EDUCATION_LEVELS, SPECIALIZATIONS, GENDERS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useUserFiltersStore } from "@/store/userFiltersStore";
 
 const educationalLevels = EDUCATION_LEVELS;
 const genders = GENDERS;
@@ -43,8 +44,7 @@ export interface EducationalLevelFilter {
   gradeSystem?: "Percentage";
   hasBacklogs?: boolean;
 }
-
-export const FilterPanel = () => {
+const FilterPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedYears, setSelectedYears] = useState<number[]>([]);
   const [educationalLevelFilters, setEducationalLevelFilters] = useState<
@@ -74,6 +74,10 @@ export const FilterPanel = () => {
       cleanedData.maxActiveBacklogs = data.maxActiveBacklogs;
 
     console.log("Selected Filters:", cleanedData);
+    useUserFiltersStore.getState().setFilters({
+      ...data,
+      page: 1, // Reset to page 1 when filters change
+    });
   };
 
   const handleClearFilters = () => {
@@ -431,3 +435,4 @@ export const FilterPanel = () => {
     </div>
   );
 };
+export default FilterPanel

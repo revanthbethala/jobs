@@ -15,7 +15,7 @@ const JobRounds = lazy(
   () => import("./components/jobs/admin/rounds/JobRounds")
 );
 const Dashboard = lazy(() => import("./components/jobs/admin/Dashboard"));
-const Index = lazy(() => import("./components/jobs/admin/Index"));
+const Index = lazy(() => import("./components/jobs/admin/UsersInfo"));
 
 const JobApplications = lazy(
   () => import("@/components/jobs/admin/JobApplications")

@@ -105,18 +105,19 @@ export const adminLogin = async (userDetails: LoginFormData) => {
     throw error;
   }
 };
-export const getPaginatedUsers = async (page = 1, limit = 10) => {
+export const getPaginatedUsers = async (page = 1, limit = 10, filters = {}) => {
   const token = useAuthStore.getState().token;
   try {
-    const { data } = await axios.get(
+    const res = await axios.post(
       `${backend_url}/users?page=${page}&limit=${limit}`,
+      filters,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    return data;
+    return res.data;
   } catch (err) {
     console.log(err);
     throw err;

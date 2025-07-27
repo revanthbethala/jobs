@@ -11,6 +11,7 @@ import {
   getProfile,
   getAllUsers,
   getAdminDashboard,
+  getFilteredUsers,
 } from '../controllers/userController';
 import { isAdmin } from '../middlewares/isAdmin';
 import { upload } from '../middlewares/multer';
@@ -29,7 +30,7 @@ router.post('/request-password-otp', asyncHandler(requestPasswordOtp));
 router.post('/reset-password', asyncHandler(resetPassword));
 
 router.get('/userDashboard', protect, asyncHandler(getAdminDashboard));
-router.get('/', protect, isAdmin, asyncHandler(getAllUsers));
+router.post('/', protect, isAdmin, asyncHandler(getFilteredUsers));
 router.post('/logout', protect, asyncHandler(logout));
 router.get('/profile', protect, asyncHandler(getProfile));
 router.put(
