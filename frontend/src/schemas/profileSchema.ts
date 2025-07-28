@@ -23,7 +23,7 @@ export const educationSchema = z.object({
   id: z.string(),
   educationalLevel: z.string().min(1, "Educational level is required"),
   institution: z.string().min(1, "Institution is required"),
-  specialization: z.string(),
+  specialization: z.string().optional().nullable(),
   boardOrUniversity: z.string().min(1, "Board/University is required"),
   percentage: z
     .number({ invalid_type_error: "Percentage must be a number" })

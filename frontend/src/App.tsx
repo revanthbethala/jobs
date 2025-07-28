@@ -15,12 +15,16 @@ const JobRounds = lazy(
   () => import("./components/jobs/admin/rounds/JobRounds")
 );
 const Dashboard = lazy(() => import("./components/jobs/admin/Dashboard"));
-const Index = lazy(() => import("./components/jobs/admin/UsersInfo"));
+const UsersInfo = lazy(
+  () => import("./components/jobs/admin/usersInfo/UsersInfo")
+);
 
 const JobApplications = lazy(
   () => import("@/components/jobs/admin/JobApplications")
 );
-const JobPostingForm = lazy(() => import("@/components/jobs/admin/JobPosting"));
+const JobPostingForm = lazy(
+  () => import("@/components/jobs/admin/postjobs/JobPosting")
+);
 const LandingPage = lazy(() => import("@/pages/Home"));
 const Profile = lazy(() => import("@/pages/Profile"));
 const Jobs = lazy(() => import("@/pages/Jobs"));
@@ -31,7 +35,6 @@ const ProtectedRoute = lazy(
 
 const PostedJobs = lazy(() => import("@/components/jobs/admin/PostedJobs"));
 const JobDetails = lazy(() => import("@/components/jobs/user/JobDetails"));
-
 
 export default function App() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
@@ -76,7 +79,7 @@ export default function App() {
           element: (
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <Index />
+                <UsersInfo />
               </ProtectedRoute>
             </Suspense>
           ),
@@ -215,7 +218,6 @@ export default function App() {
 
   return (
     <>
-
       <RouterProvider router={router} />
       <Toaster />
     </>

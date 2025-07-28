@@ -269,27 +269,25 @@ const safeUser = (user: any) => {
   return rest;
 };
 
-
-
 export const getFilteredUsers = async (req: Request, res: Response): Promise<Response> => {
   try {
     // Get pagination info from query parameters
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
-
     // Destructure filters from request body
     const {
       gender,
-      username,
+      search: username,
       educationalLevels = [],
       passedOutYears = [],
       minActiveBacklogs,
       maxActiveBacklogs,
     } = req.body;
-
     // Build the user-level filtering
-    const userWhere: any = {};
+    const userWhere: any = {
+      role: 'USER',
+    };
     if (gender) {
       userWhere.gender = gender;
     }
@@ -345,15 +343,17 @@ export const getFilteredUsers = async (req: Request, res: Response): Promise<Res
 
     // Build the main where clause. Only add education filtering if any education filters exist.
     const whereClause: any = {
-      ...userWhere,
+      AND: [...Object.entries(userWhere).map(([key, value]) => ({ [key]: value }))],
     };
 
     if (educationFilters.length > 0) {
-      whereClause.education = {
-        some: {
-          OR: educationFilters,
-        },
-      };
+      whereClause.AND.push(
+        ...educationFilters.map(eduFilter => ({
+          education: {
+            some: eduFilter,
+          },
+        }))
+      );
     }
 
     // Query users with pagination and include education
@@ -382,45 +382,25 @@ export const getFilteredUsers = async (req: Request, res: Response): Promise<Res
   }
 };
 
-export const getAdminDashboard = async (_req: Request, res: Response) => {
+export const getAdminDashboard = async (req: Request, res: Response) => {
   try {
+    const adminId = (req as any).user?.id;
+
     const [
-      totalJobs,
+      totalJobsPostedByAdmin,
+      jobsWithDetails,
       totalApplications,
       totalUsers,
       totalQualified,
       userRoles,
       btechSpecializations,
-      jobSummaries,
-      topJobs,
     ] = await Promise.all([
-      prisma.job.count(),
-      prisma.jobApplication.count(),
-      prisma.user.count(),
-      prisma.results.count({ where: { status: 'Qualified' } }),
-
-      // User roles breakdown (e.g., CANDIDATE, RECRUITER)
-      prisma.user.groupBy({
-        by: ['role'],
-        _count: { _all: true },
+      prisma.job.count({
+        where: { createdById: adminId },
       }),
 
-      // Group by B.Tech specializations
-      prisma.education.groupBy({
-        by: ['specialization'],
-        where: {
-          educationalLevel: 'B.Tech',
-          specialization: {
-            not: null, // Avoid counting null specializations
-          },
-        },
-        _count: {
-          specialization: true,
-        },
-      }),
-
-      // Job-wise summary
       prisma.job.findMany({
+        where: { createdById: adminId },
         select: {
           id: true,
           jobRole: true,
@@ -430,6 +410,7 @@ export const getAdminDashboard = async (_req: Request, res: Response) => {
           rounds: {
             select: {
               roundNumber: true,
+              roundName: true,
               results: {
                 where: { status: 'Qualified' },
                 select: { id: true },
@@ -439,36 +420,69 @@ export const getAdminDashboard = async (_req: Request, res: Response) => {
         },
       }),
 
-      // Top jobs by application count
-      prisma.job.findMany({
-        orderBy: {
-          applications: {
-            _count: 'desc',
+      prisma.jobApplication.count(),
+      prisma.user.count(),
+      prisma.results.count({ where: { status: 'Qualified' } }),
+
+      prisma.user.groupBy({
+        by: ['role'],
+        _count: { _all: true },
+      }),
+
+      prisma.education.groupBy({
+        by: ['specialization'],
+        where: {
+          educationalLevel: 'B.Tech',
+          specialization: {
+            not: null,
           },
         },
-        take: 5,
-        select: {
-          id: true,
-          jobRole: true,
-          _count: {
-            select: {
-              applications: true,
-            },
-          },
+        _count: {
+          specialization: true,
         },
       }),
     ]);
 
+    const jobSummaries = jobsWithDetails.map((job) => {
+      const totalApplications = job.applications.length;
+      const totalRounds = job.rounds.length;
+
+      const roundSummaries = job.rounds.map((round) => ({
+        roundNumber: round.roundNumber,
+        roundName: round.roundName,
+        qualifiedUsers: round.results.length,
+      }));
+
+      const totalQualifiedUsersAcrossRounds = job.rounds.reduce(
+        (acc, round) => acc + round.results.length,
+        0
+      );
+
+      const qualificationRatio =
+        totalApplications > 0
+          ? ((totalQualifiedUsersAcrossRounds / totalApplications) * 100).toFixed(2)
+          : '0.00';
+
+      return {
+        jobId: job.id,
+        jobRole: job.jobRole,
+        totalApplications,
+        totalRounds,
+        totalQualifiedUsersAcrossRounds,
+        qualificationRatio: `${qualificationRatio}%`,
+        roundSummaries,
+      };
+    });
+
     return res.json({
       dashboard: {
-        totalJobs,
+        totalJobsPostedByAdmin,
         totalApplications,
         totalUsers,
         totalQualified,
-        userRoles, // [{ role: 'CANDIDATE', _count: { _all: 50 } }, ...]
-        btechSpecializations, // [{ specialization: 'CSE', _count: { specialization: 12 } }, ...]
+        userRoles,
+        btechSpecializations,
         jobSummaries,
-        topJobs,
       },
     });
   } catch (error) {
@@ -476,3 +490,4 @@ export const getAdminDashboard = async (_req: Request, res: Response) => {
     return res.status(500).json({ message: 'Failed to load admin dashboard', error });
   }
 };
+

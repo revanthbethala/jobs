@@ -1,5 +1,4 @@
-import { getAdminDashboard } from "@/services/userServices";
-import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import {
   BarChart,
@@ -8,119 +7,111 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  CartesianGrid,
-  Legend,
 } from "recharts";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-function Dashboard() {
-  const { data:dashboard_info, error, isLoading } = useQuery({
-    queryKey: ["admin-dashboard"],
+import { useQuery } from "@tanstack/react-query";
+import { getAdminDashboard } from "@/services/userServices";
+
+export default function AdminDashboardPage() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["dashboard"],
     queryFn: getAdminDashboard,
   });
-  const data = dashboard_info?.dashboard
   console.log(data);
-
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {Array(4)
-          .fill(0)
-          .map((_, i) => (
-            <Skeleton key={i} className="h-[120px] w-full rounded-xl" />
-          ))}
-      </div>
-    );
-  }
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
-    >
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {[
-          { label: "Total Jobs", value: data?.totalJobs },
-          { label: "Total Users", value: data?.totalUsers },
-          { label: "Total Applications", value: data?.totalApplications },
-          { label: "Qualified Students", value: data?.totalQualified },
-        ].map((stat) => (
-          <Card key={stat.label} className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg">{stat.label}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-bold text-blue-600">
-              {stat.value}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+    // <motion.div
+    //   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6"
+    //   initial={{ opacity: 0 }}
+    //   animate={{ opacity: 1 }}
+    // >
+    //   <Card className="shadow-xl">
+    //     <CardHeader>
+    //       <CardTitle>Total Jobs</CardTitle>
+    //     </CardHeader>
+    //     <CardContent>
+    //       <p className="text-4xl font-bold text-blue-600">{data.totalJobs}</p>
+    //     </CardContent>
+    //   </Card>
 
-      {/* Applications per Job Chart */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Applications per Job</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[350px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data?.jobSummaries?.map((job) => ({
-              name: job.title,
-              applications: job.applications.length,
-            }))}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="applications" fill="#3B82F6" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+    //   <Card className="shadow-xl">
+    //     <CardHeader>
+    //       <CardTitle>Total Applications</CardTitle>
+    //     </CardHeader>
+    //     <CardContent>
+    //       <p className="text-4xl font-bold text-blue-600">
+    //         {data.totalApplications}
+    //       </p>
+    //     </CardContent>
+    //   </Card>
 
-      {/* Qualified per Round per Job */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>Qualified Students Per Round</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[400px] overflow-x-auto">
-          <div className="w-[1000px]">
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={data.jobSummaries.map((job) => {
-                const roundData: Record<string, number> = {};
-                job.rounds.forEach((r) => {
-                  roundData[`Round ${r.roundNumber}`] = r.results.length;
-                });
-                return {
-                  name: job.title,
-                  ...roundData,
-                };
-              })}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {Array.from({ length: 5 }, (_, i) => (
-                  <Bar
-                    key={`Round ${i + 1}`}
-                    dataKey={`Round ${i + 1}`}
-                    fill={`hsl(${(i + 1) * 60}, 70%, 50%)`}
-                    stackId="a"
-                  />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
+    //   <Card className="shadow-xl">
+    //     <CardHeader>
+    //       <CardTitle>Total Qualified Users</CardTitle>
+    //     </CardHeader>
+    //     <CardContent>
+    //       <p className="text-4xl font-bold text-blue-600">
+    //         {data.totalQualified}
+    //       </p>
+    //     </CardContent>
+    //   </Card>
+
+    //   <Card className="col-span-1 md:col-span-2 lg:col-span-3 shadow-xl">
+    //     <CardHeader>
+    //       <CardTitle>Top 5 Jobs by Applications</CardTitle>
+    //     </CardHeader>
+    //     <CardContent>
+    //       <ResponsiveContainer width="100%" height={300}>
+    //         <BarChart
+    //           data={data.topJobs.map((job) => ({
+    //             name: job.jobRole,
+    //             applications: job._count.applications,
+    //           }))}
+    //         >
+    //           <XAxis dataKey="name" />
+    //           <YAxis />
+    //           <Tooltip />
+    //           <Bar
+    //             dataKey="applications"
+    //             fill="#3B82F6"
+    //             radius={[6, 6, 0, 0]}
+    //           />
+    //         </BarChart>
+    //       </ResponsiveContainer>
+    //     </CardContent>
+    //   </Card>
+
+    //   <Card className="col-span-1 md:col-span-2 shadow-xl">
+    //     <CardHeader>
+    //       <CardTitle>Job Summary</CardTitle>
+    //     </CardHeader>
+    //     <CardContent className="max-h-[300px] overflow-auto">
+    //       <table className="w-full text-left text-sm">
+    //         <thead>
+    //           <tr>
+    //             <th className="p-2">Job Role</th>
+    //             <th className="p-2">Applications</th>
+    //             <th className="p-2">Qualified</th>
+    //             <th className="p-2">Rounds</th>
+    //           </tr>
+    //         </thead>
+    //         <tbody>
+    //           {data.jobSummaries.map((job) => (
+    //             <tr key={job.id} className="border-t">
+    //               <td className="p-2">{job.jobRole}</td>
+    //               <td className="p-2">{job.applications.length}</td>
+    //               <td className="p-2">
+    //                 {job.rounds.reduce(
+    //                   (total, round) => total + round.results.length,
+    //                   0
+    //                 )}
+    //               </td>
+    //               <td className="p-2">{job.rounds.length}</td>
+    //             </tr>
+    //           ))}
+    //         </tbody>
+    //       </table>
+    //     </CardContent>
+    //   </Card>
+    // </motion.div>
+    <div>hello</div>
   );
-};
-
-
-
-export default Dashboard;
+}

@@ -230,6 +230,13 @@ export default function ResumeStep() {
                       PDF files only, max 3MB
                     </p>
                   </div>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                   <Button
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}

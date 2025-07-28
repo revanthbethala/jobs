@@ -29,12 +29,10 @@ export const LoginForm = () => {
     try {
       const new_data = { ...data };
       const res = await userLogin(new_data);
-      console.log(res);
       toast({
         title: "Login Successful!",
         description: "Welcome back to JobQuest.",
       });
-      console.log("login data", res);
       const role = res?.user?.role;
       const { token } = res;
       loginToken(token, role);

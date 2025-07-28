@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   User,
   Mail,
@@ -7,7 +7,6 @@ import {
   Calendar,
   GraduationCap,
   FileText,
-  Edit3,
   Camera,
   Building,
   Award,

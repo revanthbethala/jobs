@@ -51,7 +51,6 @@ export default function JobRounds() {
   }
 
   const rounds = data?.rounds || [];
-  console.log(data);
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="text-center mb-8">

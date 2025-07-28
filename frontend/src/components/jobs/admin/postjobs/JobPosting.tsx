@@ -378,22 +378,18 @@ const JobPostingForm = () => {
       try {
         const formData = buildFormData(data);
         if (jobId) {
-          console.log("hello update");
           const response = await updateJob(formData, jobId);
           toast({
             title: "Success!",
             description: "Job has been updated successfully.",
           });
-          console.log("Update response:", response);
           refetch();
         } else {
-          console.log("Hello post");
           const response = await postJob(formData);
           toast({
             title: "Success!",
             description: "Job posting has been created successfully.",
           });
-          console.log("Post response:", response);
         }
         navigate("/posted-jobs");
         reset();

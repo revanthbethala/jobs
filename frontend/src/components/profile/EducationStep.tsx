@@ -175,35 +175,38 @@ export default function EducationStep() {
                     </div>
 
                     {/* Specialization */}
-                    <div className="space-y-2 w-full">
-                      <Label>Specialization</Label>
-                      <Select
-                        disabled={!level || specs.length === 0}
-                        value={watch(`education.${index}.specialization`)}
-                        onValueChange={(value) =>
-                          form.setValue(
-                            `education.${index}.specialization`,
-                            value
-                          )
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select specialization" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {specs.map((spec) => (
-                            <SelectItem key={spec} value={spec}>
-                              {spec}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {errors.education?.[index]?.specialization && (
-                        <p className="text-red-600 text-sm">
-                          {errors.education[index].specialization?.message}
-                        </p>
-                      )}
-                    </div>
+
+                    {!["10th", "M.Pharmacy", "B.Pharmacy"].includes(level) && (
+                      <div className="space-y-2 w-full">
+                        <Label>Specialization</Label>
+                        <Select
+                          disabled={!level || specs.length === 0}
+                          value={watch(`education.${index}.specialization`)}
+                          onValueChange={(value) =>
+                            form.setValue(
+                              `education.${index}.specialization`,
+                              value
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select specialization" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {specs.map((spec) => (
+                              <SelectItem key={spec} value={spec}>
+                                {spec}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.education?.[index]?.specialization && (
+                          <p className="text-red-600 text-sm">
+                            {errors.education[index].specialization?.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     {/* Board/University */}
                     <div className="space-y-2 w-full">
@@ -295,7 +298,8 @@ export default function EducationStep() {
                 </Card>
               );
             })}
-            {errors.education && !Array.isArray(errors.education) &&
+            {errors.education &&
+              !Array.isArray(errors.education) &&
               typeof errors.education.message === "string" && (
                 <p className="text-red-600 text-sm text-center">
                   {errors.education.message}

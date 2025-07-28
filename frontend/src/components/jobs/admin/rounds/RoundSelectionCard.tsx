@@ -43,7 +43,6 @@ export function RoundSelectionCard({
     const round_id = round_info?.id;
     try {
       const res = await deleteRound(round_id);
-      console.log("Delete round", res);
     } catch (err) {
       console.log(err);
     }

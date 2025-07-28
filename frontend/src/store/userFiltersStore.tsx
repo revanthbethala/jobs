@@ -15,7 +15,8 @@ interface UserFiltersState {
   maxActiveBacklogs?: number;
   page: number;
   limit: number;
-
+  showAllData: boolean;
+  setShowAllData: (showData: boolean) => void;
   setFilters: (filters: Partial<UserFiltersState>) => void;
   resetFilters: () => void;
 
@@ -31,12 +32,13 @@ export const useUserFiltersStore = create<UserFiltersState>((set) => ({
   passedOutYears: [],
   minActiveBacklogs: undefined,
   maxActiveBacklogs: undefined,
+  showAllData: false,
   page: 1,
   limit: 5,
 
   // Set multiple filters
   setFilters: (filters) => set((state) => ({ ...state, ...filters })),
-
+  setShowAllData: (showData) => set({ showAllData: showData }),
   // Reset all filters
   resetFilters: () =>
     set({

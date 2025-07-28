@@ -55,7 +55,7 @@ const FilterPanel = () => {
     resolver: zodResolver(filterSchema),
     defaultValues: {},
   });
-
+  const { setShowAllData, resetFilters } = useUserFiltersStore();
   const togglePanel = () => setIsOpen((prev) => !prev);
 
   const onSubmit = (data: FilterFormData) => {
@@ -73,11 +73,11 @@ const FilterPanel = () => {
     if (typeof data.maxActiveBacklogs === "number")
       cleanedData.maxActiveBacklogs = data.maxActiveBacklogs;
 
-    console.log("Selected Filters:", cleanedData);
     useUserFiltersStore.getState().setFilters({
-      ...data,
+      ...cleanedData,
       page: 1, // Reset to page 1 when filters change
     });
+    setShowAllData(false);
   };
 
   const handleClearFilters = () => {
@@ -87,8 +87,10 @@ const FilterPanel = () => {
       minActiveBacklogs: undefined,
       gender: undefined,
       maxActiveBacklogs: undefined,
-      search: undefined,
+      search: "",
     });
+    resetFilters();
+    setShowAllData(true);
   };
 
   const handleYearToggle = (year: number) => {
@@ -208,7 +210,10 @@ const FilterPanel = () => {
                     <div className="space-y-2">
                       <Label>Educational Levels</Label>
                       {availableEducationalLevels.length > 0 && (
-                        <Select onValueChange={handleAddEducationalLevel}>
+                        <Select
+                          onValueChange={handleAddEducationalLevel}
+                          key={educationalLevelFilters.length} // ← this line forces remount
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Add Education level" />
                           </SelectTrigger>
@@ -368,7 +373,6 @@ const FilterPanel = () => {
                         </PopoverContent>
                       </Popover>
                     </div>
-
                     <div className="space-y-2">
                       <Label>Active Backlogs - Min/Max</Label>
                       <div className="flex gap-2">
@@ -412,6 +416,19 @@ const FilterPanel = () => {
                         />
                       </div>
                     </div>
+                    <div className="space-y-2">
+                      <Label>Username</Label>
+                      <Controller
+                        control={control}
+                        name="search"
+                        render={({ field }) => (
+                          <Input
+                            placeholder="Search by username or full name"
+                            {...field}
+                          />
+                        )}
+                      />{" "}
+                    </div>
                   </div>
 
                   <div className="flex gap-2 pt-4">
@@ -435,4 +452,4 @@ const FilterPanel = () => {
     </div>
   );
 };
-export default FilterPanel
+export default FilterPanel;

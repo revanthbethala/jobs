@@ -39,7 +39,7 @@ const UsersTable = () => {
     setLimit,
   } = useUserFiltersStore();
 
-  const filters = {
+  let filters = {
     search,
     gender,
     educationalLevels,
@@ -48,16 +48,33 @@ const UsersTable = () => {
     maxActiveBacklogs,
   };
 
+  const { showAllData } = useUserFiltersStore();
+  const queryKey = [
+    "users",
+    page,
+    limit,
+    showAllData,
+    search,
+    gender,
+    educationalLevels,
+    passedOutYears,
+    minActiveBacklogs,
+    maxActiveBacklogs,
+  ];
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["users", { page, limit, filters }],
-    queryFn: () => getPaginatedUsers(page, limit, filters),
+    queryKey,
+    queryFn: () => {
+      const finalFilters = showAllData ? {} : filters;
+      return getPaginatedUsers(page, limit, finalFilters);
+    },
     placeholderData: (previousData) => previousData,
-    staleTime: 60 * 1000,
+    // staleTime: 60 * 1000,
   });
-
+  console.log(filters);
   const users = data?.users || [];
   const totalUsers = data?.totalUsers || 0;
   const totalPages = data?.totalPages || 1;
+  console.log(users);
 
   const handleExport = () => {
     const dataToExport = users.map((user) => {
@@ -66,7 +83,6 @@ const UsersTable = () => {
       const tenth = getEdu("10th");
       const interOrDiploma = getEdu("12th") || getEdu("Diploma");
       const btech = getEdu("B.Tech");
-
       const totalBacklogs = user.education.reduce(
         (sum, edu) => sum + (edu.noOfActiveBacklogs || 0),
         0
@@ -131,8 +147,10 @@ const UsersTable = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Gender</TableHead>
                       <TableHead>10th</TableHead>
-                      <TableHead>12th/Diploma</TableHead>
+                      <TableHead>12th/Diploma </TableHead>
                       <TableHead>B.Tech</TableHead>
+                      <TableHead>Branch</TableHead>
+                      <TableHead>Passed Year</TableHead>
                       <TableHead>Active Backlogs</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -156,17 +174,7 @@ const UsersTable = () => {
 
                       const getPercentBadge = (edu?: Education) =>
                         edu ? (
-                          <Badge
-                            variant={
-                              edu.percentage >= 75
-                                ? "default"
-                                : edu.percentage >= 60
-                                ? "secondary"
-                                : "destructive"
-                            }
-                          >
-                            {edu.percentage}%
-                          </Badge>
+                          <Badge variant="secondary">{edu.percentage}%</Badge>
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         );
@@ -185,13 +193,38 @@ const UsersTable = () => {
                           <TableCell>{user.username}</TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
-                            <Badge variant="outline">{user.gender}</Badge>
+                            <Badge variant="outline">
+                              {user.gender ?? (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </Badge>
                           </TableCell>
-                          <TableCell>{getPercentBadge(tenth)}</TableCell>
                           <TableCell>
-                            {getPercentBadge(interOrDiploma)}
+                            {getPercentBadge(tenth) ?? (
+                              <span className="text-muted-foreground">-</span>
+                            )}
                           </TableCell>
-                          <TableCell>{getPercentBadge(btech)}</TableCell>
+                          <TableCell>
+                            {getPercentBadge(interOrDiploma) ?? (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {getPercentBadge(btech) ?? (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+
+                          <TableCell>
+                            {btech?.specialization ?? (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {btech?.passedOutYear ?? (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
                           <TableCell>
                             <Badge
                               variant={
@@ -309,7 +342,9 @@ const UsersTable = () => {
                           }
                         }}
                         className={`cursor-pointer${
-                          page ===totalPages ? " pointer-events-none opacity-50" : ""
+                          page === totalPages
+                            ? " pointer-events-none opacity-50"
+                            : ""
                         }`}
                       />
                     </PaginationItem>

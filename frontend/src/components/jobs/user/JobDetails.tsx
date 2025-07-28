@@ -50,7 +50,7 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
-import { AxiosError } from "axios";
+import { getProfile } from "@/services/profileService";
 
 function getIncompleteFields(profile): number {
   const incompleteFields: string[] = [];
@@ -94,7 +94,6 @@ function getIncompleteFields(profile): number {
   return incompleteFields.length;
 }
 const role = useAuthStore.getState().role;
-console.log("Role", role);
 export default function JobDetails() {
   const { jobId } = useParams();
   const navigate = useNavigate();
@@ -104,12 +103,19 @@ export default function JobDetails() {
   const [isLoading, setIsLoading] = useState(false);
   const [jobStatus, setJobStatus] = useState<string | null>(null);
 
-  // const { profile, fetchProfile } = useProfileStore();
-
+  const {
+    data: userData,
+    isLoading: isProfileLoading,
+    isError: isProfileError,
+  } = useQuery({
+    queryKey: ["profileData"],
+    queryFn: getProfile,
+  });
+  console.log(userData);
   const {
     data: applicationsData,
     isLoading: applicationLoading,
-    error: applicationError,
+    isError: isApplicationError,
   } = useQuery({
     queryKey: ["userApplications"],
     queryFn: getUserApplications,
@@ -139,8 +145,8 @@ export default function JobDetails() {
     }
   }, [jobId, applicationsData]);
 
-  if (isError) {
-    console.error("Error fetching job details:", jobError);
+  if (isError || isApplicationError || isProfileError) {
+    console.error("Error loading details:", jobError);
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-red-500">Failed to load job details.</p>
@@ -148,18 +154,12 @@ export default function JobDetails() {
     );
   }
   const handleSubmit = async () => {
-    // if (!profile) {
-    //   await fetchProfile();
-    // }
-    // const updatedProfile = useProfileStore.getState().profile;
-    //   console.log(updatedProfile);
-    //   setUserId(updatedProfile?.id);
-    //   const incompleteCount = getIncompleteFields(updatedProfile);
-    //   if (incompleteCount > 0) {
-    //     setShowAlert(true);
-    //   } else {
-    //     setShowConfirmation(true);
-    //   }
+    const incompleteCount = getIncompleteFields(userData);
+    if (incompleteCount > 0) {
+      setShowAlert(true);
+    } else {
+      setShowConfirmation(true);
+    }
     setShowConfirmation(true);
     console.log("U clicked Apply Now");
   };
@@ -176,6 +176,7 @@ export default function JobDetails() {
         title: err_msg || "Unknown error occurred",
         variant: "destructive",
       });
+      setShowConfirmation(false);
     }
   };
   const containerVariants = {
