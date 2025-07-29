@@ -5,35 +5,34 @@ import { Badge } from "@/components/ui/badge";
 const Services = () => {
   const services = [
     {
-      title: "Smart Job Matching",
+      title: "Browse Verified Jobs",
       description:
-        "Our AI-powered algorithm analyzes your skills, experience, and preferences to find the perfect job matches.",
+        "Explore a wide range of verified job listings from trusted companies across various domains.",
       features: [
-        "AI-Powered Matching",
-        "Skill Assessment",
-        "Preference Learning",
+        "Real-time Job Listings",
+        "Verified Employers",
+        "Filter by Role, Location, and More",
       ],
-      icon: "🎯",
+      icon: "🔍",
     },
     {
-      title: "Resume Builder",
+      title: "Easy Job Applications",
       description:
-        "Create professional, ATS-friendly resumes with our intuitive builder and expert templates.",
+        "Apply to jobs in just a few clicks using your profile details and uploaded resume.",
       features: [
-        "Professional Templates",
-        "ATS Optimization",
-        "Real-time Preview",
+        "Quick Apply",
+        "Track Application Status",
+        "Email Notifications",
       ],
-      icon: "📄",
+      icon: "📨",
     },
     {
-      title: "Salary Insights",
+      title: "Candidate Dashboard",
       description:
-        "Access comprehensive salary data and negotiation strategies for your target positions.",
-      features: ["Market Data", "Negotiation Tips", "Compensation Analysis"],
-      icon: "💰",
+        "Manage your applications, update your profile, and keep track of your job search progress.",
+      features: ["Application History", "Profile Management", "Saved Jobs"],
+      icon: "📊",
     },
-
   ];
 
   const containerVariants: Variants = {

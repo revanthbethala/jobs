@@ -1,5 +1,6 @@
 import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { Navigate, NavLink } from "react-router-dom";
 
 const HowItWorks = () => {
   const steps = [
@@ -103,7 +104,7 @@ const HowItWorks = () => {
                   <div className="relative">
                     <motion.div
                       whileHover={{ scale: 1.1 }}
-                      className="w-20 h-20 mx-auto bg-gradient-to-br from-brand-blue-dark to-brand-blue-light rounded-full flex items-center justify-center mb-6 shadow-lg"
+                      className="w-20 h-20 mx-auto bg-gradient-to-tr from-gray-300 to-white rounded-full flex items-center justify-center mb-6 shadow-lg"
                     >
                       <span className="text-2xl">{step.icon}</span>
                     </motion.div>
@@ -191,7 +192,7 @@ const HowItWorks = () => {
               whileTap={{ scale: 0.95 }}
               className="bg-gradient-to-r from-brand-blue-dark to-brand-blue-light text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Start Your Journey
+              <NavLink to="/auth" >Start Your Journey</NavLink>
             </motion.button>
           </div>
         </motion.div>

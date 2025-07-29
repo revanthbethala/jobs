@@ -3,6 +3,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useAuthStore } from "@/store/authStore";
 import LoadingSpinner from "./components/LoadingSpinner";
+import AdminDashboard from "./pages/AdminDashboard";
+import JobDetailsPage from "./pages/JobDetailsPage";
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -11,19 +13,15 @@ const ProfileForm = lazy(() => import("@/components/profile/ProfileForm"));
 const ProfileDisplay = lazy(
   () => import("@/components/profile/ProfileDisplay")
 );
-const JobRounds = lazy(
-  () => import("./components/jobs/admin/rounds/JobRounds")
-);
-const Dashboard = lazy(() => import("./components/jobs/admin/Dashboard"));
-const UsersInfo = lazy(
-  () => import("./components/jobs/admin/usersInfo/UsersInfo")
-);
+const JobRounds = lazy(() => import("./components/admin/rounds/JobRounds"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const UsersInfo = lazy(() => import("./components/admin/usersInfo/UsersInfo"));
 
 const JobApplications = lazy(
-  () => import("@/components/jobs/admin/JobApplications")
+  () => import("@/components/admin/JobApplications")
 );
 const JobPostingForm = lazy(
-  () => import("@/components/jobs/admin/postjobs/JobPosting")
+  () => import("@/components/admin/postjobs/JobPosting")
 );
 const LandingPage = lazy(() => import("@/pages/Home"));
 const Profile = lazy(() => import("@/pages/Profile"));
@@ -33,7 +31,7 @@ const ProtectedRoute = lazy(
   () => import("@/components/landing/ProtectedRoute")
 );
 
-const PostedJobs = lazy(() => import("@/components/jobs/admin/PostedJobs"));
+const PostedJobs = lazy(() => import("@/components/admin/PostedJobs"));
 const JobDetails = lazy(() => import("@/components/jobs/user/JobDetails"));
 
 export default function App() {
@@ -69,10 +67,17 @@ export default function App() {
           element: (
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute allowedRoles={["ADMIN"]}>
-                <Dashboard />
+                <AdminDashboard />
               </ProtectedRoute>
             </Suspense>
           ),
+          children: [
+            { index: true, element: <Dashboard /> },
+            {
+              path: "jobs/:jobId",
+              element: <JobDetailsPage />,
+            },
+          ],
         },
         {
           path: "users",

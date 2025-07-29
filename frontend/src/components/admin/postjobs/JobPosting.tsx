@@ -27,14 +27,14 @@ import {
 } from "@/types/jobTypes";
 import { useJobStore } from "@/store/jobStore";
 import { jobFormSchema } from "@/schemas/jobsSchema";
-import { TextInput } from "@/components/jobs/admin/postjobs/TextInput";
-import { SelectInput } from "@/components/jobs/admin/postjobs/SelectInput";
-import { TextArea } from "@/components/jobs/admin/postjobs/TextArea";
-import { TagsInput } from "@/components/jobs/admin/postjobs/TagsInput";
-import { MultiSelectInput } from "@/components/jobs/admin/postjobs/MultiSelectInput";
-import { DateInput } from "@/components/jobs/admin/postjobs/DateInput";
-import InterviewRounds from "@/components/jobs/admin/postjobs/InterviewRounds";
-import { FileInput } from "@/components/jobs/admin/postjobs/FileInput";
+import { TextInput } from "@/components/admin/postjobs/TextInput";
+import { SelectInput } from "@/components/admin/postjobs/SelectInput";
+import { TextArea } from "@/components/admin/postjobs/TextArea";
+import { TagsInput } from "@/components/admin/postjobs/TagsInput";
+import { MultiSelectInput } from "@/components/admin/postjobs/MultiSelectInput";
+import { DateInput } from "@/components/admin/postjobs/DateInput";
+import InterviewRounds from "@/components/admin/postjobs/InterviewRounds";
+import { FileInput } from "@/components/admin/postjobs/FileInput";
 import { getJobById, postJob, updateJob } from "@/services/jobServices";
 import {
   JOB_ROLE_OPTIONS,

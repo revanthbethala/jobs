@@ -51,6 +51,7 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { getProfile } from "@/services/profileService";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 function getIncompleteFields(profile): number {
   const incompleteFields: string[] = [];
@@ -114,7 +115,7 @@ export default function JobDetails() {
   console.log(userData);
   const {
     data: applicationsData,
-    isLoading: applicationLoading,
+    isLoading: isApplicationLoading,
     isError: isApplicationError,
   } = useQuery({
     queryKey: ["userApplications"],
@@ -145,6 +146,8 @@ export default function JobDetails() {
     }
   }, [jobId, applicationsData]);
 
+  if (isJobLoading || isProfileLoading || isApplicationLoading)
+    return <LoadingSpinner />;
   if (isError || isApplicationError || isProfileError) {
     console.error("Error loading details:", jobError);
     return (
@@ -171,7 +174,8 @@ export default function JobDetails() {
       setIsLoading(false);
       setJobStatus("Pending");
     } catch (err) {
-      const err_msg = err?.response?.data?.message;
+      const error = err as { response?: { data?: { message?: string } } };
+      const err_msg = error.response?.data?.message;
       toast({
         title: err_msg || "Unknown error occurred",
         variant: "destructive",

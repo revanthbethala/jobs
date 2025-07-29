@@ -389,10 +389,9 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
     const [
       totalJobsPostedByAdmin,
       jobsWithDetails,
-      totalApplications,
       totalUsers,
+      totalApplications,
       totalQualified,
-      userRoles,
       btechSpecializations,
     ] = await Promise.all([
       prisma.job.count({
@@ -403,9 +402,26 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
         where: { createdById: adminId },
         select: {
           id: true,
+          jobTitle: true,
           jobRole: true,
+          companyName: true,
+          createdBy: true,
+          salary: true,
+          postedDate: true,
           applications: {
-            select: { id: true },
+            select: {
+              id: true,
+              user: {
+                select: {
+                  education: {
+                    where: { educationalLevel: 'B.Tech' },
+                    select: {
+                      specialization: true,
+                    },
+                  },
+                },
+              },
+            },
           },
           rounds: {
             select: {
@@ -421,13 +437,8 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
       }),
 
       prisma.jobApplication.count(),
-      prisma.user.count(),
+      prisma.user.count({ where: { role: 'USER' } }),
       prisma.results.count({ where: { status: 'Qualified' } }),
-
-      prisma.user.groupBy({
-        by: ['role'],
-        _count: { _all: true },
-      }),
 
       prisma.education.groupBy({
         by: ['specialization'],
@@ -443,11 +454,11 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
       }),
     ]);
 
-    const jobSummaries = jobsWithDetails.map((job) => {
+    const jobSummaries = jobsWithDetails.map(job => {
       const totalApplications = job.applications.length;
       const totalRounds = job.rounds.length;
 
-      const roundSummaries = job.rounds.map((round) => ({
+      const roundSummaries = job.rounds.map(round => ({
         roundNumber: round.roundNumber,
         roundName: round.roundName,
         qualifiedUsers: round.results.length,
@@ -463,31 +474,46 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
           ? ((totalQualifiedUsersAcrossRounds / totalApplications) * 100).toFixed(2)
           : '0.00';
 
+      const specializationCounts: Record<string, number> = {};
+
+      job.applications.forEach(app => {
+        const btechEdu = app.user?.education?.find(edu => edu.specialization);
+        if (btechEdu?.specialization) {
+          const spec = btechEdu.specialization;
+          specializationCounts[spec] = (specializationCounts[spec] || 0) + 1;
+        }
+      });
+
       return {
         jobId: job.id,
         jobRole: job.jobRole,
+        jobTitle: job.jobTitle,
+        salary: job.salary,
+        companyName: job.companyName,
+        createdBy: job.createdBy.username,
+        postedAt: job.postedDate,
         totalApplications,
         totalRounds,
         totalQualifiedUsersAcrossRounds,
         qualificationRatio: `${qualificationRatio}%`,
         roundSummaries,
+        specializationCounts, // New field added
       };
     });
 
     return res.json({
       dashboard: {
         totalJobsPostedByAdmin,
-        totalApplications,
         totalUsers,
-        totalQualified,
-        userRoles,
         btechSpecializations,
         jobSummaries,
       },
     });
   } catch (error) {
     console.error('Admin dashboard failed:', error);
-    return res.status(500).json({ message: 'Failed to load admin dashboard', error });
+    return res.status(500).json({
+      message: 'Failed to load admin dashboard',
+      error,
+    });
   }
 };
-

@@ -24,6 +24,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const UsersTable = () => {
   const {
@@ -39,7 +40,7 @@ const UsersTable = () => {
     setLimit,
   } = useUserFiltersStore();
 
-  let filters = {
+  const filters = {
     search,
     gender,
     educationalLevels,
@@ -75,14 +76,15 @@ const UsersTable = () => {
   const totalUsers = data?.totalUsers || 0;
   const totalPages = data?.totalPages || 1;
   console.log(users);
-
   const handleExport = () => {
     const dataToExport = users.map((user) => {
       const getEdu = (level: string) =>
         user.education.find((edu) => edu.educationalLevel === level);
+
       const tenth = getEdu("10th");
       const interOrDiploma = getEdu("12th") || getEdu("Diploma");
       const btech = getEdu("B.Tech");
+
       const totalBacklogs = user.education.reduce(
         (sum, edu) => sum + (edu.noOfActiveBacklogs || 0),
         0
@@ -92,10 +94,12 @@ const UsersTable = () => {
         "Full Name": `${user.firstName} ${user.lastName}`,
         Username: user.username,
         Email: user.email,
-        Gender: user.gender,
-        "10th %": tenth?.percentage ?? "N/A",
-        "12th/Diploma %": interOrDiploma?.percentage ?? "N/A",
-        "B.Tech %": btech?.percentage ?? "N/A",
+        Gender: user.gender ?? "-",
+        "10th": tenth?.percentage ?? "-",
+        "12th/Diploma": interOrDiploma?.percentage ?? "-",
+        "B.Tech": btech?.percentage ?? "-",
+        Branch: btech?.specialization ?? "-",
+        "Passed Out Year": btech?.passedOutYear ?? "-",
         "Active Backlogs": totalBacklogs,
       };
     });
@@ -104,7 +108,7 @@ const UsersTable = () => {
   };
 
   if (isLoading) {
-    return <div className="p-4 text-center">Loading users...</div>;
+    <LoadingSpinner />;
   }
 
   if (isError) {

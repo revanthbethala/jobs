@@ -1,18 +1,17 @@
 import { motion } from "framer-motion";
+import { Github } from "lucide-react";
 
 const Footer = () => {
   const footerLinks = {
     company: [
       { name: "About Us", href: "#about" },
-      { name: "Careers", href: "#careers" },
-      { name: "Press", href: "#press" },
-      { name: "Blog", href: "#blog" },
+      { name: "Services", href: "#services" },
+      { name: "How it Works", href: "#how-it-works" },
     ],
     services: [
       { name: "Job Search", href: "#services" },
-      { name: "Resume Builder", href: "#resume" },
-      { name: "Career Coaching", href: "#coaching" },
-      { name: "Salary Insights", href: "#salary" },
+      { name: "Manage Applications", href: "#services" },
+      { name: "Salary Insights", href: "#services" },
     ],
     support: [
       { name: "Help Center", href: "#help" },
@@ -27,7 +26,7 @@ const Footer = () => {
       <div className="">
         {/* Main Footer Content */}
         <div className="py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Company Info */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -101,11 +100,10 @@ const Footer = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.5 }}
           viewport={{ once: true }}
-          className="py-6 flex flex-col md:flex-row justify-center items-center"
+          className="py-6 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 text-sm text-blue-200"
         >
-          <div className="text-blue-200 text-sm mb-4 md:mb-0 ">
-            © 2025 JobQuest. All rights reserved.
-          </div>
+          <div>© 2025 JobQuest. All rights reserved.</div>
+          <div>💙 Made by Shuriken</div>
         </motion.div>
       </div>
     </footer>
