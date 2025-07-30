@@ -92,7 +92,7 @@ function AppliedJobs() {
                 <TableCell className="text-right">
                   <Button
                     variant="outline"
-                    onClick={() => navigate(`job/${app.job.id}`)}
+                    onClick={() => navigate(`/job/${app.job.id}`)}
                   >
                     View Details
                   </Button>

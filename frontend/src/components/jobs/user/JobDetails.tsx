@@ -180,6 +180,7 @@ export default function JobDetails() {
         title: err_msg || "Unknown error occurred",
         variant: "destructive",
       });
+    } finally {
       setShowConfirmation(false);
     }
   };
