@@ -9,7 +9,6 @@ import {
   updateProfile,
   verifyEmail,
   getProfile,
-  getAllUsers,
   getAdminDashboard,
   getFilteredUsers,
 } from '../controllers/userController';

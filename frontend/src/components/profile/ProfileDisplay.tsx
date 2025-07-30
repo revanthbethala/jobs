@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
   User,
   Mail,
@@ -110,8 +110,8 @@ export default function ProfileDisplay() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button className="w-full sm:w-auto bg-white text-brand-gray-dark hover:bg-brand-white/70 " >
-              {data.resume && (
+            {data.resume && (
+              <Button className="w-full sm:w-auto bg-white text-brand-gray-dark hover:bg-brand-white/70 ">
                 <a
                   href={import.meta.env.VITE_BACKEND_URL + data.resume}
                   download
@@ -123,8 +123,8 @@ export default function ProfileDisplay() {
                     Resume
                   </span>
                 </a>
-              )}
-            </Button>
+              </Button>
+            )}
           </div>
         </div>
       </div>
