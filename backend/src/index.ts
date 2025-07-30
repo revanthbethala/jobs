@@ -7,31 +7,38 @@ import jobRoutes from './routes/jobRoutes';
 import cors from 'cors';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
-import cookieParser from 'cookie-parser';
+import swaggerAutogen from 'swagger-autogen';
+import swaggerUi from "swagger-ui-express" 
+import swaggerDocument from './swagger-output.json';
+
 
 dotenv.config();
 
 const prisma = new PrismaClient();
 
+
+
+
 const app = express();
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(
   cors({
-    origin: "*",
+    origin: '*',
     credentials: true,
   })
 );
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(express.json());
-app.use(cookieParser( ))
 app.use('/api/rounds', roundRoutes);
 app.use('/api/applications', jobAppRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/jobs', jobRoutes);
 
 app.get('/', (_req, res) => {
-  res.send('✅ API is running...');
+  res.send('API is running...');
 });
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

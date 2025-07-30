@@ -9,7 +9,7 @@ import { useProfileStore } from "@/store/profileStore";
 import { resumeSchema } from "@/schemas/profileSchema";
 import { updateProfile } from "@/services/profileService";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 export default function ResumeStep() {
   const navigate = useNavigate();
@@ -103,7 +103,6 @@ export default function ResumeStep() {
       });
 
       // Log form data for debugging
-      console.log("Form Data:");
       for (const [key, value] of formData.entries()) {
         if (value instanceof File) {
           console.log(`${key}:`, value.name, value.size, value.type);
@@ -113,9 +112,9 @@ export default function ResumeStep() {
 
       const res = await updateProfile(formData);
       console.log("✅ Profile updated successfully:", res);
-
+      console.log(formData);
       setIsSubmitted(true);
-      toast.success("Profile updated successfully!");
+      toast({ title: "Profile updated successfully!" });
       setTimeout(() => setIsSubmitted(false), 3000);
       navigate("/profile");
       setCurrentStep(1);
@@ -124,6 +123,14 @@ export default function ResumeStep() {
       const fieldErrors: Record<string, string> = {};
       error.errors?.forEach((err) => {
         fieldErrors[err.path[0]] = err.message;
+      });
+      toast({
+        title: "Error",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update profile. Please try again.",
+        variant: "destructive",
       });
       setErrors(fieldErrors);
     } finally {

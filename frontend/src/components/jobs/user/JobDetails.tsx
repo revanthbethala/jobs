@@ -9,8 +9,6 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  Mail,
-  Phone,
   AlertTriangle,
   Loader2,
 } from "lucide-react";
@@ -19,7 +17,6 @@ import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -372,7 +369,9 @@ export default function JobDetails() {
                             Already Applied
                           </Button>
                         ) : isTimeOver ? (
-                          <Button variant="destructive">Applications Closed</Button>
+                          <Button variant="destructive">
+                            Applications Closed
+                          </Button>
                         ) : (
                           <Button
                             onClick={handleSubmit}

@@ -169,19 +169,23 @@ export const updateProfile = async (req: Request, res: Response): Promise<Respon
       passedOutYear,
       noOfActiveBacklogs,
       percentage,
+      isCPT,
       ...rest
     } = req.body;
 
     const safeData: any = {
       ...rest,
     };
-
     // ✅ Parse required types from strings
     if (percentage) safeData.percentage = parseFloat(percentage);
     if (noOfActiveBacklogs) safeData.noOfActiveBacklogs = parseInt(noOfActiveBacklogs);
     if (passedOutYear) safeData.passedOutYear = parseInt(passedOutYear);
     if (dateOfBirth) safeData.dateOfBirth = new Date(dateOfBirth);
-
+    if (isCPT.toLowerCase() === 'true') {
+      safeData.isCPT = true;
+    } else if (isCPT.toLowerCase() === 'false') {
+      safeData.isCPT = false;
+    }
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
     };
@@ -436,8 +440,8 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
         },
       }),
 
-      prisma.user.count({ where: { role: 'USER' } }),
       prisma.jobApplication.count(),
+      prisma.user.count({ where: { role: 'USER' } }),
       prisma.results.count({ where: { status: 'Qualified' } }),
 
       prisma.education.groupBy({

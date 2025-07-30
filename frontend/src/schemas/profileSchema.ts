@@ -4,7 +4,7 @@ const currentYear = new Date().getFullYear();
 
 export const personalInfoSchema = z.object({
   username: z.string().min(1, "Username is required"),
-  collegeId: z.string().min(1, "College ID is required"),
+  isCPT: z.boolean(),
   email: z.string().email("Invalid email address"),
   gender: z.string().min(1, "Gender is required"),
   firstName: z.string().min(1, "First name is required"),

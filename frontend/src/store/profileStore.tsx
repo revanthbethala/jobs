@@ -65,7 +65,7 @@ export const useProfileStore = create<FormStore>()((set) => ({
           city: profile.city,
           state: profile.state,
           country: profile.country,
-          collegeId: profile.collegeId,
+          isCPT: profile.isCPT,
         },
         profileUrl: profile.profilePic, // string url
         tempEducation: profile.education || [],

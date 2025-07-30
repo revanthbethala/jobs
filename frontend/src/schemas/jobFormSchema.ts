@@ -40,6 +40,7 @@ export const jobFormSchema = z.object({
   allowedPassingYears: z
     .array(z.string())
     .min(1, "At least one passing year must be selected"),
+  // cptEligibility: z.string(), // <-- Add this line
 
   // Last Date to Apply
   lastDateToApply: z.date({ required_error: "Last date to apply is required" }),

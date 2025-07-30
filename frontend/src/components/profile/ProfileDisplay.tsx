@@ -58,7 +58,7 @@ export default function ProfileDisplay() {
       day: "numeric",
     });
   };
-
+  console.log(data.isCPT);
   const ProfileHeader = () => (
     <div className="bg-brand-blue-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -72,12 +72,16 @@ export default function ProfileDisplay() {
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (
-                <User className="w-16 h-16 text-gray-400" />
+                <span className="uppercase text-4xl font-bold text-brand-blue-dark">
+                  {/* {data?.firstName[0]||"J" + data?.lastName[0]||"Q"} */}
+                  {data.username[0]}
+                </span>
+                // <User className="w-16 h-16 text-gray-400" />
               )}
             </div>
-            <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
               <Camera className="w-6 h-6" />
-            </button>
+            </button> */}
           </div>
 
           <div className="flex-1 text-center lg:text-left">
@@ -85,12 +89,11 @@ export default function ProfileDisplay() {
               <h1 className="text-3xl font-bold">
                 {data.firstName} {data.lastName}
               </h1>
-              {data.isVerified && (
-                <CheckCircle2 className="w-6 h-6 text-green-400" />
-              )}
             </div>
             <p className="text-blue-100 text-lg mb-2">@{data.username}</p>
-            <p className="text-blue-100 mb-4">College ID: {data.collegeId}</p>
+            <p className="text-blue-100 mb-4">
+              Are you in CPT: {data?.isCPT ? "Yes" : "No"}
+            </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
@@ -124,7 +127,7 @@ export default function ProfileDisplay() {
                   </span>
                 </a>
               </Button>
-            )}v
+            )}
           </div>
         </div>
       </div>

@@ -1,8 +1,5 @@
-"use client";
-
 import { create } from "zustand";
 
-// Types
 export interface Student {
   id: string;
   username: string;

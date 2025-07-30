@@ -20,9 +20,9 @@ const asyncHandler =
 
 router.get('/', asyncHandler(getAllJobs));
 router.get('/:id', asyncHandler(getJobById));
-router.get('/:adminId/jobs', protect,isAdmin,asyncHandler(getJobsByAdmin));
 
 router.post('/', protect, isAdmin, upload.single('companyLogo'), asyncHandler(createJob));
+router.get('/:adminId/jobs', protect,isAdmin,asyncHandler(getJobsByAdmin));
 router.put('/:id', protect, isAdmin, upload.single('companyLogo'), asyncHandler(updateJob));
 router.delete('/:id', protect, isAdmin, asyncHandler(deleteJob));
 

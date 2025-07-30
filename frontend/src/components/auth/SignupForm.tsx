@@ -67,7 +67,7 @@ export const SignupForm = () => {
           transition={{ delay: 0.2 }}
         >
           <Label htmlFor="username" className="text-brand-gray-dark">
-            Username
+            CollegeId
           </Label>
           <div className="relative mt-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -76,7 +76,7 @@ export const SignupForm = () => {
             <Input
               id="username"
               type="text"
-              placeholder="Choose a username"
+              placeholder="Enter your CollegeId"
               className="pl-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
               {...register("username")}
             />

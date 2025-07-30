@@ -15,63 +15,71 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  username   String?   @unique @db.VarChar(255)
-  email      String    @unique @db.VarChar(255)
-  password   String    @db.VarChar(255)
-  gender     String?   @db.VarChar(100)
-  token      String?   @db.VarChar(255)
-  isVerified Boolean   @default(false)
-  otp        String?   @db.VarChar(10)
-  otpExpiry  DateTime?
+  id           String           @id @default(uuid())
+  username     String?          @unique @db.VarChar(255)
+  email        String           @unique @db.VarChar(255)
+  password     String           @db.VarChar(255)
+  gender       String?          @db.VarChar(100)
+  token        String?          @db.VarChar(255)
+  isVerified   Boolean          @default(false)
+  otp          String?          @db.VarChar(10)
+  otpExpiry    DateTime?
 
-  firstName   String?   @db.VarChar(255)
-  lastName    String?   @db.VarChar(255)
-  collegeId   String?   @db.VarChar(100)
-  dateOfBirth DateTime?
-  phoneNumber String?   @db.VarChar(20)
-  address     String?   @db.VarChar(255)
-  fatherName  String?   @db.VarChar(255)
-  motherName  String?   @db.VarChar(255)
-  city        String?   @db.VarChar(100)
-  state       String?   @db.VarChar(100)
-  country     String?   @db.VarChar(100)
-  profilePic  String?   @db.VarChar(500)
-  resume      String?   @db.VarChar(500)
+  firstName    String?          @db.VarChar(255)
+  lastName     String?          @db.VarChar(255)
+  isCPT        Boolean          @default(false)
+  dateOfBirth  DateTime?
+  phoneNumber  String?          @db.VarChar(20)
+  address      String?          @db.VarChar(255)
+  fatherName   String?          @db.VarChar(255)
+  motherName   String?          @db.VarChar(255)
+  city         String?          @db.VarChar(100)
+  state        String?          @db.VarChar(100)
+  country      String?          @db.VarChar(100)
+  profilePic   String?          @db.VarChar(500)
+  resume       String?          @db.VarChar(500)
 
-  role Role @default(USER)
+  role         Role             @default(USER)   
 
   education    Education[]
   applications JobApplication[]
   roundResults Results[]
-  jobsCreated  Job[]
+  jobsCreated Job[] 
 }
+
 
 model Education {
   id                String  @id @default(uuid())
   userId            String
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  educationalLevel  String  @db.VarChar(50)
+  educationalLevel  String  @db.VarChar(50) 
   institution       String  @db.VarChar(255)
-  specialization    String? @db.VarChar(255)
-  boardOrUniversity String? @db.VarChar(255)
+  specialization    String? @db.VarChar(255) 
+  boardOrUniversity String? @db.VarChar(255) 
   percentage        Float
   passedOutYear     Int
   location          String? @db.VarChar(255)
 
   noOfActiveBacklogs Int? @default(0)
+
+}
+
+enum CptEligibility {
+  CPT
+  NON_CPT
+  BOTH
 }
 
 model Job {
-  id             String   @id @default(uuid())
+  id             String      @id @default(uuid())
   jobTitle       String   @db.VarChar(255)
   jobDescription String   @db.Text
-  skillsRequired Json
+  skillsRequired Json 
   location       String   @db.VarChar(255)
-  salary         String?  @db.VarChar(100)
-  experience     String?  @db.VarChar(100)
-  jobRole        String?  @db.VarChar(100)
-  jobType        String?  @db.VarChar(100)
+  salary         String?  @db.VarChar(100) 
+  experience     String?  @db.VarChar(100) 
+  jobRole        String?  @db.VarChar(100) 
+  jobType        String?  @db.VarChar(100) 
   postedDate     DateTime @default(now())
 
   companyName    String           @db.VarChar(255)
@@ -79,18 +87,19 @@ model Job {
   companyLogo    String?          @db.VarChar(500)
   companyEmail   String?          @db.VarChar(255)
   companyPhone   String?          @db.VarChar(50)
-  applications   JobApplication[]
+  applications   JobApplication[] 
   rounds         Round[]
-  roundResults   Results[]
+  roundResults   Results[] 
 
   lastDateToApply DateTime?
 
-  allowedBranches     String[] @default([])
-  allowedPassingYears Int[]    @default([])
-
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  allowedBranches     String[]     @default([])
+  allowedPassingYears Int[]        @default([])
+  cptEligibility        CptEligibility   @default(BOTH)
+  createdById    String          
+  createdBy      User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
 }
+
 
 enum Role {
   ADMIN
@@ -98,34 +107,35 @@ enum Role {
 }
 
 model JobApplication {
-  id        String   @id @default(uuid())
+  id        String      @id @default(uuid())
   jobId     String
   userId    String
   resume    String?  @db.VarChar(500)
   status    String   @default("Pending")
   appliedAt DateTime @default(now())
 
-  currentRound Int?
+  currentRound Int?   
 
   job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+
 model Round {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   jobId       String
   roundNumber Int
-  roundName   String  @db.VarChar(100)
-  description String? @db.Text
+  roundName   String   @db.VarChar(100)
+  description String?  @db.Text
 
-  job     Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job     Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
   results Results[]
 }
 
 model Results {
   id        String   @id @default(uuid())
-  userId    String
-  jobId     String
+  userId    String   
+  jobId     String   
   roundId   String
   roundName String   @db.VarChar(100)
   status    String   @default("Qualified")
@@ -135,5 +145,7 @@ model Results {
   job   Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
   round Round @relation(fields: [roundId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, jobId, roundName])
+  @@unique([userId, jobId, roundName]) 
 }
+
+

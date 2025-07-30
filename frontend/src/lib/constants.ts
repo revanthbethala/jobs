@@ -101,6 +101,11 @@ export const PASSING_YEAR_OPTIONS = Array.from(
     return { value: year.toString(), label: year.toString() };
   }
 );
+export const cptEligibility = [
+  { value: "CPT", label: "CPT" },
+  { value: "NON_CPT", label: "NON_CPT" },
+  { value: "BOTH", label: "BOTH" },
+];
 
 export const mockData = {
   totalJobsPostedByAdmin: 8,

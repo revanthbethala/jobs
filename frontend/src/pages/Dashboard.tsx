@@ -112,7 +112,7 @@ const Dashboard = () => {
               </div>
             </>
           ) : (
-            <div className="bg-red-600">No data available</div>
+            <div className="text-red-600 flex items-center justify-center font-semibold">No data available</div>
           )}
         </div>
 

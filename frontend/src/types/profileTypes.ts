@@ -1,6 +1,6 @@
 export interface PersonalInfo {
   username: string;
-  collegeId: string;
+  isCPT: boolean;
   email: string;
   gender: string;
   firstName: string;

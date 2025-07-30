@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getUserApplications } from "@/services/jobServices";
-import { useJobStore } from "@/store/jobStore";
 import type { AppliedJob } from "@/types/jobTypes";
 import {
   Table,

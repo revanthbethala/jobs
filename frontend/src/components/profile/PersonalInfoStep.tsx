@@ -1,7 +1,5 @@
 import type React from "react";
-
 import { useState, useRef, useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +28,7 @@ export default function PersonalInfoStep() {
     if (profileUrl) setShowProfilePic(true);
   }, [profileUrl]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     updatePersonalInfo({ [field]: value });
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
@@ -89,7 +87,6 @@ export default function PersonalInfoStep() {
       setErrors(fieldErrors);
     }
   };
-  console.log(profileUrl);
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -189,15 +186,25 @@ export default function PersonalInfoStep() {
 
             {/* Editable fields */}
             <div className="space-y-2">
-              <Label htmlFor="collegeId">College ID</Label>
-              <Input
-                id="collegeId"
-                value={tempPersonalInfo.collegeId || ""}
-                onChange={(e) => handleInputChange("collegeId", e.target.value)}
-                className={errors.collegeId ? "border-red-500" : ""}
-              />
-              {errors.collegeId && (
-                <p className="text-red-500 text-sm">{errors.collegeId}</p>
+              <Label htmlFor="isCPT">Are you in CPT?</Label>
+
+              <Select
+                value={tempPersonalInfo.isCPT ? "yes" : "no"}
+                onValueChange={(value) =>
+                  handleInputChange("isCPT", value === "yes")
+                }
+              >
+                <SelectTrigger id="isCPT" className="w-[200px]">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="yes">Yes</SelectItem>
+                  <SelectItem value="no">No</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {errors.isCPT && (
+                <p className="text-red-500 text-sm">{errors.isCPT}</p>
               )}
             </div>
 

@@ -1,10 +1,5 @@
 import { useMemo, useCallback, memo, useEffect } from "react";
-import {
-  useForm,
-  Control,
-  FieldErrors,
-  UseFormRegister,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
@@ -432,9 +427,7 @@ const JobPostingForm = () => {
     <div className="py-8 ">
       <div className="container mx-auto px-4 max-w-4xl">
         <header className="text-center mb-8 animate-fade-in-up">
-          <h1 className="text-4xl font-bold mb-2">
-            Create Job Posting
-          </h1>
+          <h1 className="text-4xl font-bold mb-2">Create Job Posting</h1>
           <p className="text-lg text-muted-foreground">
             Fill out the details below to create a comprehensive job posting
           </p>

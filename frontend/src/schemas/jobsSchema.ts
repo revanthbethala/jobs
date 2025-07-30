@@ -1,3 +1,4 @@
+import { cptEligibility } from "@/lib/constants";
 import { z } from "zod";
 
 export const interviewRoundSchema = z.object({
@@ -21,7 +22,7 @@ export const jobFormSchema = z.object({
   jobType: z.string().min(1, "Job type is required"),
   jobSector: z.string().min(1, "Job sector is required"),
   customSector: z.string().optional(),
-
+  // cptEligibility: z.string().min(1,"CPT Eligibility required"),
   // Company Information
   companyName: z.string().min(1, "Company name is required"),
   companyWebsite: z
@@ -40,7 +41,6 @@ export const jobFormSchema = z.object({
   allowedPassingYears: z
     .array(z.string())
     .min(1, "At least one passing year must be selected"),
-
   // Last Date to Apply
   lastDateToApply:
     z.date({ required_error: "Last date to apply is required" }).nullable() ||
