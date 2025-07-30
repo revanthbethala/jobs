@@ -164,7 +164,7 @@ export default function PersonalInfoStep() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Non-editable fields */}
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">College Id</Label>
               <Input
                 id="username"
                 value={tempPersonalInfo.username || ""}

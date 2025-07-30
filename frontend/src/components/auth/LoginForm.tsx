@@ -76,16 +76,16 @@ export const LoginForm = () => {
           transition={{ delay: 0.2 }}
         >
           <Label htmlFor="email" className="text-brand-gray-dark">
-            Username
+            CollegeId
           </Label>
           <div className="relative mt-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <User className="h-5 w-5 text-gray-400" />
             </div>
             <Input
-              id="username"
+              id="collegeId"
               type="text"
-              placeholder="Enter your username"
+              placeholder="Enter your CollegeId"
               className="pl-10 border-gray-300 focus:outline-none focus:border-brand-blue-light focus:ring-brand-blue-light"
               {...register("username")}
             />
