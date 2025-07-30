@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Users } from "lucide-react";
+import { Loader2, Plus, Users, Upload } from "lucide-react";
 import { RoundSelectionCard } from "./RoundSelectionCard";
 import {
   getSpecificRoundResults,
@@ -19,10 +19,10 @@ import {
 import { useParams } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useJobRoundsStore } from "@/store/jobRoundsStore";
+import * as XLSX from "xlsx";
 
 export function StudentInputSection() {
-  const { selectedRound, rounds, setSelectedRound } =
-    useJobRoundsStore();
+  const { selectedRound, rounds, setSelectedRound } = useJobRoundsStore();
 
   const [commonUsername, setCommonUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,6 @@ export function StudentInputSection() {
     try {
       setIsLoading(true);
       const res = await uploadRoundResults(data);
-
       const skippedUsers = res?.data?.skippedUsers || [];
 
       if (skippedUsers.length > 0) {
@@ -80,6 +79,65 @@ export function StudentInputSection() {
     setCommonUsername("");
   };
 
+  const handleExcelUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+
+    reader.onload = (e) => {
+      const binaryStr = e.target?.result as string;
+      const workbook = XLSX.read(binaryStr, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+      // Normalize and match columns
+      const acceptedKeys = [
+        "username",
+        "usernames",
+        "rollnum",
+        "rollno",
+        "rollnumber",
+        "rollnumbers",
+        "rollnos",
+      ];
+
+      const normalize = (str: string) =>
+        str.toLowerCase().replace(/\s+|\./g, "");
+
+      const usernames: string[] = [];
+
+      data.forEach((row) => {
+        Object.entries(row).forEach(([key, value]) => {
+          if (
+            typeof value === "string" &&
+            acceptedKeys.includes(normalize(key))
+          ) {
+            usernames.push(value.trim());
+          }
+        });
+      });
+
+      if (usernames.length === 0) {
+        toast({
+          title: "No valid usernames",
+          description:
+            "No valid 'username' or 'roll number' columns found in Excel.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setCommonUsername(usernames.join(", "));
+      toast({
+        title: "Excel Loaded",
+        description: `${usernames.length} usernames loaded from Excel.`,
+      });
+    };
+  };
+
   return (
     <Card className="bg-muted/50">
       <CardHeader>
@@ -88,13 +146,11 @@ export function StudentInputSection() {
           Add Eligible Students
         </CardTitle>
         <CardDescription>
-          Select a round and enter usernames (comma-separated)
+          Select a round and enter usernames manually or via Excel upload.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Round Selection Cards */}
-
         <div className="space-y-2">
           <Label htmlFor="common-username">Enter Usernames</Label>
           <div className="flex lg:flex-row flex-col gap-2 lg:items-center justify-center">
@@ -105,6 +161,7 @@ export function StudentInputSection() {
               onChange={(e) => setCommonUsername(e.target.value)}
               className="min-h-[80px]"
             />
+
             <Button
               onClick={handleAddStudents}
               disabled={!selectedRound || isLoading}
@@ -123,20 +180,47 @@ export function StudentInputSection() {
               )}
             </Button>
           </div>
+
+          <div className="space-y-2 flex flex-col justify-center items-center ">
+            <Label className="text-sm font-medium text-gray-700">
+              Or Upload via Excel File
+            </Label>
+            <div className="flex items-center gap-4">
+              <div className="relative space-y-4">
+                <input
+                  id="excel-upload"
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleExcelUpload}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 border-gray-300 hover:bg-gray-50"
+                >
+                  <Upload className="h-4 w-4" />
+                  Choose Excel File
+                </Button>
+                <span className="text-sm text-gray-500">
+                  Supported formats: .xlsx, .xls
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {rounds?.map((round, index) => {
-            return (
-              <RoundSelectionCard
-                key={round.id}
-                round={round}
-                index={index}
-                isSelected={selectedRound === round.roundNumber}
-                onSelect={setSelectedRound}
-              />
-            );
-          })}
+          {rounds?.map((round, index) => (
+            <RoundSelectionCard
+              key={round.id}
+              round={round}
+              index={index}
+              isSelected={selectedRound === round.roundNumber}
+              onSelect={setSelectedRound}
+            />
+          ))}
         </div>
+
         {selectedRound && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">

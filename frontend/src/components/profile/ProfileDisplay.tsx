@@ -124,7 +124,7 @@ export default function ProfileDisplay() {
                   </span>
                 </a>
               </Button>
-            )}
+            )}v
           </div>
         </div>
       </div>

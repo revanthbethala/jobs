@@ -429,10 +429,10 @@ const JobPostingForm = () => {
   );
 
   return (
-    <div className="py-8">
+    <div className="py-8 ">
       <div className="container mx-auto px-4 max-w-4xl">
         <header className="text-center mb-8 animate-fade-in-up">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
+          <h1 className="text-4xl font-bold mb-2">
             Create Job Posting
           </h1>
           <p className="text-lg text-muted-foreground">
@@ -441,11 +441,6 @@ const JobPostingForm = () => {
         </header>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <JobDetailsSection
-            {...sectionProps}
-            showCustomSector={showCustomSector}
-          />
-
           <CompanyInformationSection
             {...sectionProps}
             logoUrl={
@@ -454,12 +449,15 @@ const JobPostingForm = () => {
                 : undefined
             }
           />
+          <JobDetailsSection
+            {...sectionProps}
+            showCustomSector={showCustomSector}
+          />
 
           <EligibilityCriteriaSection {...sectionProps} />
 
-          <ApplicationDeadlineSection {...sectionProps} />
-
           <InterviewRounds control={control} errors={errors} />
+          <ApplicationDeadlineSection {...sectionProps} />
 
           <footer className="flex flex-col sm:flex-row gap-4 justify-end animate-fade-in-up">
             <Button
@@ -475,7 +473,7 @@ const JobPostingForm = () => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 gradient-bg"
+              className="flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
               {isSubmitting

@@ -103,7 +103,7 @@ export default function JobDetails() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [jobStatus, setJobStatus] = useState<string | null>(null);
-
+  const [isTimeOver, setIsTimeOver] = useState(false);
   const {
     data: userData,
     isLoading: isProfileLoading,
@@ -112,6 +112,7 @@ export default function JobDetails() {
     queryKey: ["profileData"],
     queryFn: getProfile,
   });
+
   const {
     data: applicationsData,
     isLoading: isApplicationLoading,
@@ -142,6 +143,12 @@ export default function JobDetails() {
       setJobStatus(matched.status);
     }
   }, [jobId, applicationsData]);
+  useEffect(() => {
+    if (job?.lastDateToApply) {
+      const isOver = Date.now() > new Date(job.lastDateToApply).getTime();
+      setIsTimeOver(isOver);
+    }
+  }, [job?.lastDateToApply]);
 
   if (isJobLoading || isProfileLoading || isApplicationLoading)
     return <LoadingSpinner />;
@@ -153,6 +160,7 @@ export default function JobDetails() {
       </div>
     );
   }
+
   const handleSubmit = async () => {
     const incompleteCount = getIncompleteFields(userData);
     if (incompleteCount > 0) {
@@ -336,7 +344,10 @@ export default function JobDetails() {
                         </span>
                         <span className="font-medium">
                           Apply by{" "}
-                          {format(new Date(job.lastDateToApply), "dd MMM YYY")}
+                          {format(
+                            new Date(job?.lastDateToApply),
+                            "dd MMM yyyy hh:mm a"
+                          )}
                         </span>
                       </div>
                     </div>
@@ -351,13 +362,17 @@ export default function JobDetails() {
                       <span>
                         {jobStatus ? (
                           <Button
+                            disabled={true}
                             className={cn(
-                              jobStatus && "bg-pending hover:bg-pending/80",
+                              jobStatus &&
+                                "bg-gray-600 text-white hover:bg-gray-600/90",
                               "py-3 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                             )}
                           >
-                            Application Status: {jobStatus}
+                            Already Applied
                           </Button>
+                        ) : isTimeOver ? (
+                          <Button variant="destructive">Applications Closed</Button>
                         ) : (
                           <Button
                             onClick={handleSubmit}
@@ -570,7 +585,7 @@ export default function JobDetails() {
                         <span className="text-sm">Visit Website</span>
                       </a>
                     )}
-                    {job.companyEmail && (
+                    {/* {job.companyEmail && (
                       <a
                         href={`mailto:${job.companyEmail}`}
                         className="flex items-center gap-2 text-brand-blue-light hover:text-brand-blue-dark transition-colors group"
@@ -587,7 +602,7 @@ export default function JobDetails() {
                         <Phone className="w-4 h-4 group-hover:scale-110 transition-transform" />
                         <span className="text-sm">Call Now</span>
                       </a>
-                    )}
+                    )} */}
                   </CardContent>
                 </Card>
               </motion.div>

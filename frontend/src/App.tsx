@@ -16,7 +16,7 @@ const ProfileDisplay = lazy(
 const JobRounds = lazy(() => import("./components/admin/rounds/JobRounds"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const UsersInfo = lazy(() => import("./components/admin/usersInfo/UsersInfo"));
-
+import ExcelReader from "@/components/ExcelReader";
 const JobApplications = lazy(
   () => import("@/components/admin/JobApplications")
 );
@@ -78,6 +78,10 @@ export default function App() {
               element: <JobDetailsPage />,
             },
           ],
+        },
+        {
+          path: "excel",
+          element: <ExcelReader />,
         },
         {
           path: "users",
