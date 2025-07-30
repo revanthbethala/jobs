@@ -63,7 +63,7 @@ export default function ProfileDisplay() {
     <div className="bg-brand-blue-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row items-center gap-6">
-          <div className="relative group">
+          {/* <div className="relative group">
             <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-lg">
               {data.profilePic ? (
                 <img
@@ -72,17 +72,19 @@ export default function ProfileDisplay() {
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (
-                <span className="uppercase text-4xl font-bold text-brand-blue-dark">
-                  {/* {data?.firstName[0]||"J" + data?.lastName[0]||"Q"} */}
-                  {data.username[0]}
-                </span>
-                // <User className="w-16 h-16 text-gray-400" />
+                <>
+                  <span className="uppercase text-4xl font-bold text-brand-blue-dark">
+                    {data?.firstName[0] || "J" + data?.lastName[0] || "Q"}
+                    {data.username[0]}
+                  </span>
+                  <User className="w-16 h-16 text-gray-400" />
+                </>
               )}
             </div>
-            {/* <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+            <button className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
               <Camera className="w-6 h-6" />
-            </button> */}
-          </div>
+            </button>
+          </div> */}
 
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-2 mb-2">
