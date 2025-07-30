@@ -176,7 +176,6 @@ export default function ResumeStep() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Resume View Button */}
           {resumePreview ? (
             <div className="text-center">
               <Button size="sm">
@@ -245,6 +244,7 @@ export default function ResumeStep() {
                     className="hidden"
                   />
                   <Button
+                    disabled
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     className="border-brand-blue-light text-brand-blue-light hover:bg-brand-blue-light hover:text-white"
@@ -257,7 +257,6 @@ export default function ResumeStep() {
             </div>
           )}
 
-          {/* Footer Buttons */}
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Button
               variant="outline"

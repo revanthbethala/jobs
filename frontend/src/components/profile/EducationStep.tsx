@@ -66,6 +66,8 @@ export default function EducationStep() {
     setCurrentStep(3);
   };
 
+
+  
   const handleBack = () => setCurrentStep(1);
 
   return (
