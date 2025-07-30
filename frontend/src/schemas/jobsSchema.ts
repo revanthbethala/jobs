@@ -43,7 +43,8 @@ export const jobFormSchema = z.object({
 
   // Last Date to Apply
   lastDateToApply:
-    z.date({ required_error: "Last date to apply is required" }) || null,
+    z.date({ required_error: "Last date to apply is required" }).nullable() ||
+    null,
 
   // Interview Rounds
   interviewRounds: z

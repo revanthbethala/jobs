@@ -25,7 +25,7 @@ const Dashboard = () => {
       setDashboardData(data?.dashboard);
     }
   }, [data, setDashboardData]);
-
+  console.log(data);
   const {
     totalJobsPostedByAdmin,
     totalUsers,
@@ -33,7 +33,6 @@ const Dashboard = () => {
     jobSummaries,
     getPeakJobsDate,
   } = useDashboardStore();
-
   const peakDate = getPeakJobsDate();
   if (isLoading) return <LoadingSpinner />;
   if (isError) return <div>Unknown error occurred</div>;

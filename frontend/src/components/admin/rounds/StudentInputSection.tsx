@@ -12,13 +12,16 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Users } from "lucide-react";
 import { RoundSelectionCard } from "./RoundSelectionCard";
-import { getSpecificRoundResults, uploadRoundResults } from "@/services/roundServices";
+import {
+  getSpecificRoundResults,
+  uploadRoundResults,
+} from "@/services/roundServices";
 import { useParams } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useJobRoundsStore } from "@/store/jobRoundsStore";
 
 export function StudentInputSection() {
-  const { selectedRound, rounds, setSelectedRound, students } =
+  const { selectedRound, rounds, setSelectedRound } =
     useJobRoundsStore();
 
   const [commonUsername, setCommonUsername] = useState("");
@@ -47,7 +50,6 @@ export function StudentInputSection() {
     try {
       setIsLoading(true);
       const res = await uploadRoundResults(data);
-      setIsLoading(false);
 
       const skippedUsers = res?.data?.skippedUsers || [];
 
@@ -62,7 +64,7 @@ export function StudentInputSection() {
           title: "Success",
           description: "Round results updated successfully",
         });
-        await getSpecificRoundResults(jobId,round.roundName)
+        await getSpecificRoundResults(jobId, round.roundName);
       }
     } catch (err) {
       console.error("Upload error:", err);
@@ -71,6 +73,8 @@ export function StudentInputSection() {
         description: "An error occurred while updating results.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
 
     setCommonUsername("");

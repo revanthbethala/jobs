@@ -112,7 +112,6 @@ export default function JobDetails() {
     queryKey: ["profileData"],
     queryFn: getProfile,
   });
-  console.log(userData);
   const {
     data: applicationsData,
     isLoading: isApplicationLoading,
@@ -122,7 +121,6 @@ export default function JobDetails() {
     queryFn: getUserApplications,
     refetchOnMount: false,
   });
-  console.log("application data", applicationsData);
   // const applicationMeta = { status: "Pending" };
   const {
     data: job,
@@ -142,7 +140,6 @@ export default function JobDetails() {
 
     if (matched) {
       setJobStatus(matched.status);
-      console.log("Job Status:", matched.status);
     }
   }, [jobId, applicationsData]);
 
@@ -164,13 +161,11 @@ export default function JobDetails() {
       setShowConfirmation(true);
     }
     setShowConfirmation(true);
-    console.log("U clicked Apply Now");
   };
   const handleApply = async () => {
     try {
       setIsLoading(true);
       const res = await applyJob(job?.id);
-      console.log("Apply Job Response:", res);
       setIsLoading(false);
       setJobStatus("Pending");
     } catch (err) {
@@ -263,7 +258,7 @@ export default function JobDetails() {
               onClick={handleApply}
             >
               {isLoading ? (
-                <span className="flex gap-1">
+                <span className="flex gap-1 items-center">
                   <Loader2 className="animate-spin h-4 w-4 mr-2" /> Applying
                 </span>
               ) : (
@@ -606,7 +601,6 @@ export default function JobDetails() {
 
 function InterviewRounds({ job, itemVariants }) {
   const rounds_info = !!job?.rounds;
-  console.log("Calling interview rounds", job);
   return (
     <motion.div variants={itemVariants}>
       {rounds_info && (

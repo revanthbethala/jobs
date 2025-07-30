@@ -1,34 +1,34 @@
-"use client"
-import { motion } from "framer-motion"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Search, SlidersHorizontal, X } from "lucide-react"
-import { useJobStore } from "@/store/jobStore"
+"use client";
+import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+import { useJobStore } from "@/store/jobStore";
 
 interface TopFilterBarProps {
-  onOpenFilters: () => void
+  onOpenFilters: () => void;
 }
 
 export function TopFilterBar({ onOpenFilters }: TopFilterBarProps) {
-  const { filters, setFilters, clearFilters, filteredJobs } = useJobStore()
+  const { filters, setFilters, clearFilters, filteredJobs } = useJobStore();
 
-  const activeFiltersCount = Object.values(filters).filter(Boolean).length
-  const hasActiveFilters = activeFiltersCount > 0
+  const activeFiltersCount = Object.values(filters).filter(Boolean).length;
+  const hasActiveFilters = activeFiltersCount > 0;
 
   const handleSearchChange = (value: string) => {
-    setFilters({ searchTitle: value })
-  }
+    setFilters({ searchTitle: value });
+  };
 
   const handleClearSearch = () => {
-    setFilters({ searchTitle: "" })
-  }
+    setFilters({ searchTitle: "" });
+  };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white border-b border-gray-200 sticky top-0 z-40 backdrop-blur-sm bg-white/95"
+      className="bg-white/80 border-b border-gray-200 sticky top-0 z-40 backdrop-blur-sm "
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -54,7 +54,8 @@ export function TopFilterBar({ onOpenFilters }: TopFilterBarProps) {
           {/* Filter Button and Results */}
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
             <div className="text-sm text-gray-600 font-medium">
-              {filteredJobs.length} job{filteredJobs.length !== 1 ? "s" : ""} found
+              {filteredJobs.length} job{filteredJobs.length !== 1 ? "s" : ""}{" "}
+              found
             </div>
 
             <div className="flex items-center gap-2">
@@ -68,7 +69,8 @@ export function TopFilterBar({ onOpenFilters }: TopFilterBarProps) {
                     variant="secondary"
                     className="bg-brand-blue-light/10 text-brand-blue-dark border-brand-blue-light/20"
                   >
-                    {activeFiltersCount} filter{activeFiltersCount !== 1 ? "s" : ""}
+                    {activeFiltersCount} filter
+                    {activeFiltersCount !== 1 ? "s" : ""}
                   </Badge>
                   <Button
                     variant="ghost"
@@ -101,5 +103,5 @@ export function TopFilterBar({ onOpenFilters }: TopFilterBarProps) {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }

@@ -65,7 +65,7 @@ function AppliedJobs() {
                 </TableCell>
                 <TableCell>
                   <a
-                    href={app.resume}
+                    href={import.meta.env.VITE_BACKEND_URL + app.resume}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 underline text-sm"

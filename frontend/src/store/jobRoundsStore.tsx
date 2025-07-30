@@ -29,7 +29,7 @@ interface JobRoundsState {
   // (Optional for later use)
 }
 
-export const useJobRoundsStore = create<JobRoundsState>((set, get) => ({
+export const useJobRoundsStore = create<JobRoundsState>((set) => ({
   selectedRound: 1,
   activeRoundTab: "1",
   rounds: [],

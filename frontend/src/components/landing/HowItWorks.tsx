@@ -20,9 +20,9 @@ const HowItWorks = () => {
     },
     {
       number: "03",
-      title: "Apply & Interview",
+      title: "Apply",
       description:
-        "Apply to matched positions and ace your interviews with our preparation tools.",
+        "Apply to matched positions and ace your interviews with our motivation.",
       icon: "📝",
     },
     {
@@ -192,7 +192,7 @@ const HowItWorks = () => {
               whileTap={{ scale: 0.95 }}
               className="bg-gradient-to-r from-brand-blue-dark to-brand-blue-light text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              <NavLink to="/auth" >Start Your Journey</NavLink>
+              <NavLink to="/auth">Start Your Journey</NavLink>
             </motion.button>
           </div>
         </motion.div>

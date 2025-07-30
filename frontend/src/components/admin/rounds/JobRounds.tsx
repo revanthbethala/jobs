@@ -1,11 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { StudentInputSection } from "./StudentInputSection";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getJobById } from "@/services/jobServices";
 import { useEffect } from "react";
 import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import StudentManagementTable from "./StudentManagementTable";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function JobRounds() {
   const { jobId } = useParams();
@@ -53,9 +55,14 @@ export default function JobRounds() {
   const rounds = data?.rounds || [];
   return (
     <div className="container mx-auto p-4 space-y-6">
+      <div>
+        <Button variant="outline">
+          <NavLink to="/posted-jobs" className="flex gap-2 items-center justify-center"><ArrowLeft/> Back to Jobs</NavLink>
+        </Button>
+      </div>
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2 capitalize">
-          Interview Rounds for {data.jobRole} role at {data.companyName}
+          Interview Rounds for {data.jobTitle} role at {data.companyName}
         </h1>
         <p className="text-muted-foreground">
           {data?.title && `for ${data.title}`}

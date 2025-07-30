@@ -436,8 +436,8 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
         },
       }),
 
-      prisma.jobApplication.count(),
       prisma.user.count({ where: { role: 'USER' } }),
+      prisma.jobApplication.count(),
       prisma.results.count({ where: { status: 'Qualified' } }),
 
       prisma.education.groupBy({

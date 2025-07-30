@@ -1,4 +1,4 @@
-import { getSpecificRoundResults } from "@/services/roundServices";
+import { deleteRound, getSpecificRoundResults } from "@/services/roundServices";
 import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
@@ -24,13 +24,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { AxiosError } from "axios";
-import { Trash, User2, Users, Users2 } from "lucide-react";
+import { Loader2, Trash, Users, Users2 } from "lucide-react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import useDebounce from "@/hooks/use-debounce";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Button } from "@/components/ui/button";
-
+import { toast } from "@/hooks/use-toast";
 const ITEMS_PER_CHUNK = 20;
 
 function StudentManagementTable() {
@@ -39,10 +39,12 @@ function StudentManagementTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedQuery, isDebouncing] = useDebounce(searchTerm, 500);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_CHUNK);
+  const [isDeleting, setIsDeleting] = useState(false);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const round = rounds?.find((r) => r.roundNumber === selectedRound);
   const roundName = round?.roundName;
+  const roundId = round?.id;
 
   const isEnabled = !!jobId && !!roundName;
 
@@ -77,7 +79,23 @@ function StudentManagementTable() {
 
     saveAs(dataBlob, `${roundName}-round-results.xlsx`);
   };
-
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      // const res = await deleteRound(roundId);
+      toast({
+        title: "User deleted successfully",
+      });
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "Error occurred while deleting user",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   const filteredResults = useMemo(() => {
     const results = data?.roundResults ?? [];
     return results.filter((result) =>
@@ -222,6 +240,7 @@ function StudentManagementTable() {
                             className="text-red-600 cursor-pointer"
                           />
                         </AlertDialogTrigger>
+
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>
@@ -229,13 +248,27 @@ function StudentManagementTable() {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               This action cannot be undone. This will
-                              permanently delete this item.
+                              permanently delete this round.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
+
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction className="bg-red-600 hover:bg-red-600/80">
-                              Delete
+                            <AlertDialogCancel disabled={isDeleting}>
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={handleDelete}
+                              disabled={isDeleting}
+                              className="bg-red-600 hover:bg-red-600/80"
+                            >
+                              {!isDeleting ? (
+                                <span>Delete</span>
+                              ) : (
+                                <span className="flex gap-1 items-center">
+                                  <Loader2 className="animate-spin" />{" "}
+                                  Deleting...
+                                </span>
+                              )}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

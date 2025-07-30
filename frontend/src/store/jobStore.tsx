@@ -51,6 +51,7 @@ const initialFormData: JobFormData = {
   allowedPassingYears: [],
   lastDateToApply: null,
   interviewRounds: [],
+  jobSector: "",
 };
 
 const initialFilters: JobFilters = {
@@ -162,17 +163,26 @@ export const useJobStore = create<JobStore>((set, get) => ({
 
     if (filters.salaryRange) {
       filtered = filtered.filter((job) => {
-        const salary = job.salary.replace(/[₹,\s]/g, "").split("-")[0];
-        const salaryNum = parseInt(salary);
+        const rawSalary = job.salary?.toUpperCase().replace(/\s/g, "") || "";
+        const lowerBoundStr = rawSalary.split("-")[0];
+
+        let salaryNum = 0;
+
+        if (lowerBoundStr.includes("LPA")) {
+          salaryNum = parseFloat(lowerBoundStr.replace("LPA", "")) * 100000;
+        } else {
+          salaryNum = parseFloat(lowerBoundStr) * 100000; // fallback
+        }
+
         switch (filters.salaryRange) {
           case "0-5":
             return salaryNum <= 500000;
           case "5-10":
-            return salaryNum >= 500000 && salaryNum <= 1000000;
+            return salaryNum > 500000 && salaryNum <= 1000000;
           case "10-15":
-            return salaryNum >= 1000000 && salaryNum <= 1500000;
+            return salaryNum > 1000000 && salaryNum <= 1500000;
           case "15+":
-            return salaryNum >= 1500000;
+            return salaryNum > 1500000;
           default:
             return true;
         }
@@ -181,18 +191,30 @@ export const useJobStore = create<JobStore>((set, get) => ({
 
     if (filters.experience) {
       filtered = filtered.filter((job) => {
-        const exp = job.experience.toLowerCase();
+        const expRaw = job.experience?.toLowerCase().replace(/\s/g, "") || "";
+
+        let expNum = 0;
+
+        if (expRaw.includes("fresher")) {
+          expNum = 0;
+        } else if (expRaw.includes("-")) {
+          const [low] = expRaw.split("-");
+          expNum = parseFloat(low);
+        } else if (expRaw.includes("+")) {
+          expNum = parseFloat(expRaw.replace("+", ""));
+        } else {
+          expNum = parseFloat(expRaw); // e.g., "4"
+        }
+
         switch (filters.experience) {
           case "0-1":
-            return (
-              exp.includes("0") || exp.includes("1") || exp.includes("fresher")
-            );
+            return expNum <= 1;
           case "1-3":
-            return exp.includes("1") || exp.includes("2") || exp.includes("3");
+            return expNum >= 1 && expNum <= 3;
           case "3-5":
-            return exp.includes("3") || exp.includes("4") || exp.includes("5");
+            return expNum >= 3 && expNum <= 5;
           case "5+":
-            return ["5", "6", "7", "8", "9"].some((e) => exp.includes(e));
+            return expNum >= 5;
           default:
             return true;
         }
