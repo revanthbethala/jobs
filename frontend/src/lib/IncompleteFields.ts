@@ -36,6 +36,6 @@ export function getIncompleteFields(profile): number {
       }
     }
   }
-
+  console.log(incompleteFields);
   return incompleteFields.length;
 }

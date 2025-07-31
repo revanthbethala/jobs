@@ -1,5 +1,5 @@
 import { Users } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { getUserRoundResults } from "@/services/roundServices";
@@ -8,7 +8,7 @@ import { Round } from "@/store/jobRoundsStore";
 
 interface InterviewRoundsProps {
   rounds: Round[];
-  itemVariants: any;
+  itemVariants: Variants;
 }
 
 export function InterviewRounds({
@@ -54,7 +54,7 @@ export function InterviewRounds({
             <div className="space-y-6">
               {rounds.map((round, index) => {
                 const userRound = data?.rounds?.find(
-                  (r: UserRound) => r.roundId === round.id
+                  (r) => r.roundId === round.id
                 );
                 const isRoundQualified = userRound?.status === "Qualified";
 

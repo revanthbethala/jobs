@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Job } from "@/types/job";
 import { ExternalLink } from "lucide-react";
+import { Job } from "@/types/jobTypes";
 
 interface JobDetailsCardProps {
   job: Job;
-  itemVariants: any;
+  itemVariants: Variants;
 }
 
 export function JobDetailsCard({ job, itemVariants }: JobDetailsCardProps) {
@@ -42,7 +42,7 @@ export function JobDetailsCard({ job, itemVariants }: JobDetailsCardProps) {
 
 interface CompanyContactCardProps {
   companyWebsite?: string;
-  itemVariants: any;
+  itemVariants: Variants;
 }
 
 export function CompanyContactCard({

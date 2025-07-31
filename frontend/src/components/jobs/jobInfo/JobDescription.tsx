@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -7,7 +7,7 @@ interface JobDescriptionProps {
   description: string;
   isExpanded: boolean;
   onToggleExpanded: () => void;
-  itemVariants: any;
+  itemVariants: Variants;
 }
 
 export function JobDescription({

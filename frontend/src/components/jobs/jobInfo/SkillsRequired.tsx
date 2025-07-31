@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface SkillsRequiredProps {
   skills: string[];
-  itemVariants: any;
+  itemVariants: Variants;
 }
 
 export function SkillsRequired({ skills, itemVariants }: SkillsRequiredProps) {

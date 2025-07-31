@@ -66,8 +66,6 @@ export default function EducationStep() {
     setCurrentStep(3);
   };
 
-
-  
   const handleBack = () => setCurrentStep(1);
 
   return (
@@ -123,7 +121,7 @@ export default function EducationStep() {
                     <h3 className="text-lg font-semibold text-brand-blue-dark">
                       Education Entry {index + 1}
                     </h3>
-                    {fields.length > 3 && (
+                    {fields.length > 1 && (
                       <Button
                         type="button"
                         variant="outline"
@@ -300,13 +298,13 @@ export default function EducationStep() {
                 </Card>
               );
             })}
-            {errors.education &&
-              !Array.isArray(errors.education) &&
-              typeof errors.education.message === "string" && (
-                <p className="text-red-600 text-sm text-center">
-                  {errors.education.message}
+            <div>
+              {errors.education && (
+                <p className="text-red-600 text-base font-semibold text-center">
+                  {errors.education.root.message}
                 </p>
               )}
+            </div>
             {/* Navigation Buttons */}
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
               <Button type="button" variant="outline" onClick={handleBack}>

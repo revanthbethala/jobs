@@ -16,12 +16,8 @@ import { motion } from "framer-motion";
 import {
   Trash2,
   Pencil,
-  Eye,
-  ArrowDownZA,
-  ArrowUpZA,
   ArrowDownAZ,
   ArrowUpAZ,
-  Briefcase,
   BriefcaseBusiness,
 } from "lucide-react";
 import {
@@ -48,7 +44,7 @@ import { toast } from "@/hooks/use-toast";
 import { Job } from "@/types/jobTypes";
 import useDebounce from "@/hooks/use-debounce";
 import { useNavigate } from "react-router-dom";
-
+import { Badge } from "@/components/ui/badge";
 // 🧠 Custom debounce hook
 
 export default function MyJobsTable() {
@@ -136,7 +132,9 @@ export default function MyJobsTable() {
       job.jobTitle
         .toLowerCase()
         .includes(
-          typeof debouncedQuery === "string" ? debouncedQuery?.toLowerCase() : ""
+          typeof debouncedQuery === "string"
+            ? debouncedQuery?.toLowerCase()
+            : ""
         )
     )
     .sort((a, b) => {
@@ -147,13 +145,14 @@ export default function MyJobsTable() {
 
   return (
     <motion.div
-      className="p-6"
+      className="p-6 space-y-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className="text-xl font-semibold mb-4">My Posted Jobs</h2>
-
+      <div>
+        <h2 className="text-xl font-semibold mb-4">My Posted Jobs</h2>
+      </div>
       {/* Search + Sort */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <input
@@ -163,6 +162,7 @@ export default function MyJobsTable() {
           placeholder="Search by job title..."
           className="w-full sm:w-1/2 p-2 border text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <Badge variant="outline">{filteredJobs.length} application(s)</Badge>
       </div>
 
       {/* Table */}
