@@ -301,7 +301,8 @@ export default function EducationStep() {
             <div>
               {errors.education && (
                 <p className="text-red-600 text-base font-semibold text-center">
-                  {errors.education.root.message}
+                  {/* {errors.education.root.message} */}
+                  Need atleast 3 educational entries
                 </p>
               )}
             </div>
