@@ -5,7 +5,9 @@
 html {
   scroll-behavior: smooth;
 }
-
+.active{
+  @apply bg-brand-blue-light text-white
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

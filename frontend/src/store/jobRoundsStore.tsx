@@ -17,11 +17,13 @@ interface JobRoundsState {
   activeRoundTab: string;
   rounds: Round[]; // <-- Store all rounds here
   students: Record<number, Student[]>;
+  showRoundData: boolean;
 
   // Setters
   setSelectedRound: (roundId: number) => void;
   setActiveRoundTab: (tab: string) => void;
   setRounds: (rounds: Round[]) => void;
+  setShowRoundData: (showRoundData: boolean) => void;
 
   // (Optional for later use)
 }
@@ -31,14 +33,14 @@ export const useJobRoundsStore = create<JobRoundsState>((set) => ({
   activeRoundTab: "1",
   rounds: [],
   students: {},
-
+  showRoundData: false,
   setSelectedRound: (roundId) => {
     set({
       selectedRound: roundId,
       activeRoundTab: roundId.toString(),
     });
-  },
-
+},
+  setShowRoundData: (showRoundData) => showRoundData,
   setActiveRoundTab: (tab) => {
     set({
       activeRoundTab: tab,

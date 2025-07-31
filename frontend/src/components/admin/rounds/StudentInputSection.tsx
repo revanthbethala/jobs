@@ -12,17 +12,15 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Plus, Users, Upload } from "lucide-react";
 import { RoundSelectionCard } from "./RoundSelectionCard";
-import {
-  getSpecificRoundResults,
-  uploadRoundResults,
-} from "@/services/roundServices";
+import { uploadRoundResults } from "@/services/roundServices";
 import { useParams } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import * as XLSX from "xlsx";
 
 export function StudentInputSection() {
-  const { selectedRound, rounds, setSelectedRound } = useJobRoundsStore();
+  const { selectedRound, rounds, setSelectedRound, setShowRoundData } =
+    useJobRoundsStore();
 
   const [commonUsername, setCommonUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +49,6 @@ export function StudentInputSection() {
       setIsLoading(true);
       const res = await uploadRoundResults(data);
       const skippedUsers = res?.data?.skippedUsers || [];
-
       if (skippedUsers.length > 0) {
         toast({
           title: "Some users not found",
@@ -63,8 +60,9 @@ export function StudentInputSection() {
           title: "Success",
           description: "Round results updated successfully",
         });
-        await getSpecificRoundResults(jobId, round.roundName);
       }
+      // await getSpecificRoundResults(jobId, round.roundName);
+      setShowRoundData(true);
     } catch (err) {
       console.error("Upload error:", err);
       toast({

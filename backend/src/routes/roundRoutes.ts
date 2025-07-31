@@ -2,7 +2,7 @@ import express from 'express';
 import { protect } from '../middlewares/authMiddleware';
 import { isAdmin } from '../middlewares/isAdmin';
 import {
-  uploadRoundResults, 
+  uploadRoundResults,
   getUserRoundResults,
   getJobRoundSummary,
   getSpecificRoundResults,
@@ -21,6 +21,6 @@ router.post('/upload', protect, isAdmin, asyncHandler(uploadRoundResults));
 router.get('/user', protect, getUserRoundResults);
 router.get('/job/:jobId', protect, isAdmin, getJobRoundSummary);
 router.get('/results/:jobId/:roundName', protect, asyncHandler(getSpecificRoundResults));
-router.delete('/:roundId',protect,isAdmin,asyncHandler(deleteRound))
+router.delete('/:roundId', protect, isAdmin, asyncHandler(deleteRound));
 router.delete('/results/:jobId/:roundName/users', asyncHandler(bulkDeleteUsersFromRound));
 export default router;

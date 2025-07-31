@@ -11,21 +11,21 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
   try {
     // Validate required parameters
     if (!jobId || !roundName || !users || !status) {
-      return res.status(400).json({ 
-        message: 'Missing required parameters: jobId, roundName, users, and status are required' 
+      return res.status(400).json({
+        message: 'Missing required parameters: jobId, roundName, users, and status are required',
       });
     }
 
     if (!Array.isArray(users) || users.length === 0) {
-      return res.status(400).json({ 
-        message: 'users must be a non-empty array of usernames' 
+      return res.status(400).json({
+        message: 'users must be a non-empty array of usernames',
       });
     }
 
     // Validate job exists
     const job = await prisma.job.findUnique({
       where: { id: jobId },
-      select: { id: true, jobTitle: true }
+      select: { id: true, jobTitle: true },
     });
 
     if (!job) {
@@ -38,8 +38,8 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
     });
 
     if (!round) {
-      return res.status(404).json({ 
-        message: `Round "${roundName}" not found for this job.` 
+      return res.status(404).json({
+        message: `Round "${roundName}" not found for this job.`,
       });
     }
 
@@ -64,7 +64,7 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
 
         const user = await prisma.user.findUnique({
           where: { username: username },
-          select: { id: true, email: true, firstName: true, lastName: true, username: true }
+          select: { id: true, email: true, firstName: true, lastName: true, username: true },
         });
 
         if (!user) {
@@ -78,9 +78,9 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
             userId_jobId_roundName: {
               userId: user.id,
               jobId: jobId,
-              roundName: roundName
-            }
-          }
+              roundName: roundName,
+            },
+          },
         });
 
         // Upsert the result (create if doesn't exist, update if exists)
@@ -89,27 +89,27 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
             userId_jobId_roundName: {
               userId: user.id,
               jobId: jobId,
-              roundName: roundName
-            }
+              roundName: roundName,
+            },
           },
-          update: { 
+          update: {
             status: status,
-            timestamp: new Date() 
+            timestamp: new Date(),
           },
           create: {
             userId: user.id,
             jobId: jobId,
             roundId: round.id,
             roundName: roundName,
-            status: status
-          }
+            status: status,
+          },
         });
 
         const userInfo = {
           username: user.username,
           email: user.email,
           fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-          status: status
+          status: status,
         };
 
         // Track whether this was an update or new addition
@@ -126,7 +126,6 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
           console.error(`Email error for ${user.email}:`, emailError);
           emailErrors.push(user.email);
         }
-
       } catch (userError) {
         console.error(`Error processing username ${username}:`, userError);
         notFoundUsers.push(username);
@@ -141,20 +140,19 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
         updated: updatedUsers.length,
         notFound: notFoundUsers.length,
         duplicates: duplicateUsers.length,
-        emailErrors: emailErrors.length
+        emailErrors: emailErrors.length,
       },
       newlyAddedUsers: addedUsers.length > 0 ? addedUsers : undefined,
       updatedUsers: updatedUsers.length > 0 ? updatedUsers : undefined,
       notFoundUsers: notFoundUsers.length > 0 ? notFoundUsers : undefined,
       duplicateUsers: duplicateUsers.length > 0 ? duplicateUsers : undefined,
-      emailErrors: emailErrors.length > 0 ? emailErrors : undefined
+      emailErrors: emailErrors.length > 0 ? emailErrors : undefined,
     });
-
   } catch (error) {
     console.error('Upload failed:', error);
-    return res.status(500).json({ 
-      message: 'Error uploading round results', 
-      error: process.env.NODE_ENV === 'development' ? error : 'Internal server error'
+    return res.status(500).json({
+      message: 'Error uploading round results',
+      error: process.env.NODE_ENV === 'development' ? error : 'Internal server error',
     });
   }
 };
@@ -222,25 +220,26 @@ export const getSpecificRoundResults = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteRound = async(req:Request,res:Response)=>{
+export const deleteRound = async (req: Request, res: Response) => {
   try {
     await prisma.round.delete({
-      where:{id:req.params.id}
-    })
-    res.json({"message":"Round deleted successfully"})
+      where: { id: req.params.id },
+    });
+    res.json({ message: 'Round deleted successfully' });
   } catch (error) {
-    res.status(500).json({"message":"Failed to delete round",error})
+    res.status(500).json({ message: 'Failed to delete round', error });
   }
-}
+};
 
 export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
   try {
     const { jobId, roundName } = req.params;
-       let { usernames } = req.body; 
-
+    let  usernames  = req.body;
+    console.log('body', req.body);
+    console.log("params info:",req.params);
     if (!jobId || !roundName || !usernames) {
-      return res.status(400).json({ 
-        message: 'Missing required parameters: jobId, roundName, and usernames are required' 
+      return res.status(400).json({
+        message: 'Missing required parameters: jobId, roundName, and usernames are required',
       });
     }
 
@@ -249,14 +248,14 @@ export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
     }
 
     if (!Array.isArray(usernames) || usernames.length === 0) {
-      return res.status(400).json({ 
-        message: 'usernames must be a string or array of strings' 
+      return res.status(400).json({
+        message: 'usernames must be a string or array of strings',
       });
     }
 
     const job = await prisma.job.findUnique({
       where: { id: jobId },
-      select: { id: true, jobTitle: true }
+      select: { id: true, jobTitle: true },
     });
 
     if (!job) {
@@ -264,15 +263,15 @@ export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
     }
 
     const round = await prisma.round.findFirst({
-      where: { 
+      where: {
         jobId: jobId,
-        roundName: roundName 
-      }
+        roundName: roundName,
+      },
     });
 
     if (!round) {
-      return res.status(404).json({ 
-        message: `Round "${roundName}" not found for this job` 
+      return res.status(404).json({
+        message: `Round "${roundName}" not found for this job`,
       });
     }
 
@@ -284,7 +283,7 @@ export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
       try {
         const user = await prisma.user.findUnique({
           where: { username: username },
-          select: { id: true, email: true, firstName: true, lastName: true, username: true }
+          select: { id: true, email: true, firstName: true, lastName: true, username: true },
         });
 
         if (!user) {
@@ -297,9 +296,9 @@ export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
             userId_jobId_roundName: {
               userId: user.id,
               jobId: jobId,
-              roundName: roundName
-            }
-          }
+              roundName: roundName,
+            },
+          },
         });
 
         if (!existingResult) {
@@ -312,30 +311,29 @@ export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
             userId_jobId_roundName: {
               userId: user.id,
               jobId: jobId,
-              roundName: roundName
-            }
-          }
+              roundName: roundName,
+            },
+          },
         });
 
         deletedUsers.push({
           username: user.username,
           email: user.email,
-          fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim()
+          fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
         });
 
         try {
           const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
-          
+
           await sendRoundResultEmail(
-            user.email, 
-            `${roundName} - Result Correction`, 
+            user.email,
+            `${roundName} - Result Correction`,
             'Correction - Previous result was sent by mistake. Please disregard the earlier notification.'
           );
         } catch (emailError) {
           console.error(`Email error for ${user.email}:`, emailError);
           emailErrors.push(user.email);
         }
-
       } catch (userError) {
         console.error(`Error processing username ${username}:`, userError);
         notFoundUsers.push(username);
@@ -349,17 +347,16 @@ export const bulkDeleteUsersFromRound = async (req: Request, res: Response) => {
         totalRequested: usernames.length,
         successfullyDeleted: deletedUsers.length,
         notFound: notFoundUsers.length,
-        emailErrors: emailErrors.length
+        emailErrors: emailErrors.length,
       },
       notFoundUsers: notFoundUsers.length > 0 ? notFoundUsers : undefined,
-      emailErrors: emailErrors.length > 0 ? emailErrors : undefined
+      emailErrors: emailErrors.length > 0 ? emailErrors : undefined,
     });
-
   } catch (error) {
     console.error('Error in bulk delete:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       message: 'Failed to bulk delete users from round results',
-      error: process.env.NODE_ENV === 'development' ? error : 'Internal server error'
+      error: process.env.NODE_ENV === 'development' ? error : 'Internal server error',
     });
   }
 };

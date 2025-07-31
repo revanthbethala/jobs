@@ -1,4 +1,8 @@
-import { deleteRound, getSpecificRoundResults } from "@/services/roundServices";
+import {
+  deleteRound,
+  deleteUserInRound,
+  getSpecificRoundResults,
+} from "@/services/roundServices";
 import { useJobRoundsStore } from "@/store/jobRoundsStore";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
@@ -45,11 +49,10 @@ function StudentManagementTable() {
   const round = rounds?.find((r) => r.roundNumber === selectedRound);
   const roundName = round?.roundName;
   const roundId = round?.id;
-
   const isEnabled = !!jobId && !!roundName;
-
+  const { showRoundData } = useJobRoundsStore();
   const { data, isLoading, error, isError } = useQuery({
-    queryKey: ["round-details", jobId, roundName],
+    queryKey: ["round-details", jobId, roundName, showRoundData],
     queryFn: () => getSpecificRoundResults(jobId!, roundName!),
     enabled: isEnabled,
     retry: false,
@@ -79,10 +82,12 @@ function StudentManagementTable() {
 
     saveAs(dataBlob, `${roundName}-round-results.xlsx`);
   };
-  const handleDelete = async () => {
+  const handleDelete = async (users) => {
+    const usernames = [users];
     try {
       setIsDeleting(true);
-      // const res = await deleteRound(roundId);
+      const res = await deleteUserInRound(jobId, roundName,usernames);
+      console.log(res);
       toast({
         title: "User deleted successfully",
       });
@@ -257,7 +262,7 @@ function StudentManagementTable() {
                               Cancel
                             </AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={handleDelete}
+                              onClick={() => handleDelete(user.username)}
                               disabled={isDeleting}
                               className="bg-red-600 hover:bg-red-600/80"
                             >

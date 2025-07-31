@@ -74,7 +74,6 @@ const Dashboard = () => {
             value={totalApplications}
             icon={Target}
             delay={0.3}
-            trend="+25% from last month"
             color="purple"
           /> */}
           <StatCard

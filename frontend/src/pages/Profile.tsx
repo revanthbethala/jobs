@@ -8,13 +8,13 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b">
+      <nav>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             {/* Logo Section */}
             <div className="flex items-center space-x-2 justify-center sm:justify-start">
-              <div className="w-9 h-9 bg-brand-blue-light rounded-lg flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 text-brand-blue-light font-extrabold rounded-lg flex items-center justify-center">
+                <User size={27} />
               </div>
               <span className="text-xl font-bold text-brand-blue-dark">
                 ProfileBuilder
@@ -32,7 +32,7 @@ export default function Profile() {
                 <span className="text-sm">Update Profile</span>
               </Button>
               <Button
-                className="flex items-center justify-center gap-2 w-full xs:w-auto bg-brand-blue-light hover:bg-brand-blue-dark"
+                className="flex items-center justify-center gap-2 w-full xs:w-auto"
                 onClick={() => navigate("/profile")}
               >
                 <User className="w-4 h-4" />
