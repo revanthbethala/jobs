@@ -274,12 +274,20 @@ export default function PersonalInfoStep() {
               <Label htmlFor="phoneNumber">Phone Number</Label>
               <Input
                 id="phoneNumber"
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={10}
                 value={tempPersonalInfo.phoneNumber || ""}
                 onChange={(e) =>
-                  handleInputChange("phoneNumber", e.target.value)
+                  handleInputChange(
+                    "phoneNumber",
+                    e.target.value.replace(/\D/g, "")
+                  )
                 }
                 className={errors.phoneNumber ? "border-red-500" : ""}
               />
+
               {errors.phoneNumber && (
                 <p className="text-red-500 text-sm">{errors.phoneNumber}</p>
               )}
