@@ -45,7 +45,6 @@ import { Job } from "@/types/jobTypes";
 import useDebounce from "@/hooks/use-debounce";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-// 🧠 Custom debounce hook
 
 export default function MyJobsTable() {
   const { data, isLoading, isError, refetch } = useQuery({

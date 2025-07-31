@@ -247,9 +247,7 @@ export default function PersonalInfoStep() {
                 <SelectContent>
                   <SelectItem value="Male">Male</SelectItem>
                   <SelectItem value="Female">Female</SelectItem>
-                  <SelectItem value="Prefer not to say">
-                    Prefer not to say
-                  </SelectItem>
+                  <SelectItem value="Others">Others</SelectItem>
                 </SelectContent>
               </Select>
               {errors.gender && (

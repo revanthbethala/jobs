@@ -53,13 +53,31 @@ export const GENDERS = ["Male", "Female", "Others"];
 
 export const JOB_ROLE_OPTIONS = [
   { value: "developer", label: "Software Developer" },
+  { value: "frontend-developer", label: "Frontend Developer" },
+  { value: "backend-developer", label: "Backend Developer" },
+  { value: "fullstack-developer", label: "Full Stack Developer" },
+  { value: "mobile-developer", label: "Mobile App Developer" },
   { value: "designer", label: "UI/UX Designer" },
+  { value: "graphic-designer", label: "Graphic Designer" },
   { value: "manager", label: "Project Manager" },
+  { value: "product-manager", label: "Product Manager" },
+  { value: "marketing-manager", label: "Marketing Manager" },
+  { value: "hr-manager", label: "HR Manager" },
   { value: "analyst", label: "Business Analyst" },
+  { value: "data-analyst", label: "Data Analyst" },
   { value: "tester", label: "QA Tester" },
+  { value: "qa-engineer", label: "QA Engineer" },
   { value: "devops", label: "DevOps Engineer" },
   { value: "data-scientist", label: "Data Scientist" },
-  { value: "product-manager", label: "Product Manager" },
+  { value: "ml-engineer", label: "Machine Learning Engineer" },
+  { value: "cloud-engineer", label: "Cloud Engineer" },
+  { value: "security-analyst", label: "Cybersecurity Analyst" },
+  { value: "solution-architect", label: "Solution Architect" },
+  { value: "technical-writer", label: "Technical Writer" },
+  { value: "system-admin", label: "System Administrator" },
+  { value: "support-engineer", label: "Support Engineer" },
+  { value: "researcher", label: "Research Scientist" },
+  { value: "intern", label: "Intern" },
 ];
 
 export const JOB_TYPE_OPTIONS = [
@@ -106,4 +124,3 @@ export const cptEligibility = [
   { value: "NON_CPT", label: "NON_CPT" },
   { value: "BOTH", label: "BOTH" },
 ];
-

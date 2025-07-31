@@ -15,7 +15,7 @@ const HowItWorks = () => {
       number: "02",
       title: "Get Matched",
       description:
-        "Our AI algorithm finds relevant job opportunities that align with your profile and preferences.",
+        "Find relevant job opportunities that align with your profile and preferences.",
       icon: "🔍",
     },
     {
