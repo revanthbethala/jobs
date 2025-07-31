@@ -133,7 +133,7 @@ const SideNav = () => {
       >
         {/* Sidebar Header */}
         <div>
-          <div className="h-16 px-4 border-b border-gray-200/60 flex items-center justify-between">
+          <div className="h-16 px-4 py-4 border-b border-gray-200/60 flex items-center justify-between">
             {(!isCollapsed || isMobile) && (
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">

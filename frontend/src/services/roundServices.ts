@@ -2,9 +2,9 @@ import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
 const backend_url = `${import.meta.env.VITE_BACKEND_URL}/api/rounds`;
 const token = useAuthStore.getState().token;
-export const uploadRoundResults = async (data) => {
+export const uploadRoundResults = async (users) => {
   try {
-    const res = axios.post(`${backend_url}/upload`, data, {
+    const res = axios.post(`${backend_url}/upload`, users, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ export const deleteUserInRound = async (jobId, roundName, usernames) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        data: usernames
+        data: usernames,
       }
     );
     return (await res).data;
@@ -68,7 +68,7 @@ export const deleteUserInRound = async (jobId, roundName, usernames) => {
 
 export const getUserRoundResults = async () => {
   try {
-    const res = axios.get(`${backend_url}/api/rounds/user`, {
+    const res = axios.get(`${backend_url}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

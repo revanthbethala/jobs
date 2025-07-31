@@ -59,8 +59,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUserId: (userId) => set({ userId }),
   setRole: (role) => set({ role }),
   loginToken: (token, role) => {
-    Cookies.set("token", token);
-    Cookies.set("role", role);
+    const expiresInDays = 1;
+    Cookies.set("token", token, { expires: expiresInDays });
+    Cookies.set("role", role, { expires: expiresInDays });
     set({
       token,
       isLoggedIn: true,

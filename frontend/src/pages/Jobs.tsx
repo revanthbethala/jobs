@@ -60,7 +60,6 @@ export default function Jobs() {
             <p className="text-red-800">Error loading jobs: {error?.message}</p>
           </motion.div>
         )}
-
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
@@ -73,7 +72,7 @@ export default function Jobs() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-12"
           >
-            <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <div className="p-4  rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <Briefcase className="w-8 h-8 text-gray-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
