@@ -25,7 +25,7 @@ export default function ProfileForm() {
   };
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-brand-blue-dark mb-2">
@@ -35,9 +35,6 @@ export default function ProfileForm() {
             Complete all steps to create your comprehensive profile
           </p>
         </div>
-
-        {/* <StepIndicator currentStep={currentStep} totalSteps={3} /> */}
-
         <AnimatePresence mode="wait">{renderStep()}</AnimatePresence>
       </div>
     </div>

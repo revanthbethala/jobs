@@ -1,23 +1,19 @@
 export function getIncompleteFields(user): number {
   const incompleteFields: string[] = [];
-  console.log(user);
+
   const profile = user?.user;
+  if (!profile) return 0;
+
   for (const key in profile) {
-    if (key === "token") continue;
+    if (key == "profilePic" || key == "resume" || key == "profilePic") continue;
 
     const value = profile[key];
-
-    // Check top-level null
-    if (value === null || value === undefined || value === "") {
-      incompleteFields.push(key);
-    }
 
     // Special case: education array
     if (key === "education") {
       if (!Array.isArray(value) || value.length === 0) {
         incompleteFields.push("education");
       } else {
-        // Check each education item for required fields
         const requiredEduFields = [
           "educationalLevel",
           "institution",
@@ -29,13 +25,25 @@ export function getIncompleteFields(user): number {
 
         value.forEach((edu, index: number) => {
           requiredEduFields.forEach((field) => {
-            if (!edu[field] && edu[field] !== 0) {
+            if (
+              edu[field] === null ||
+              edu[field] === undefined ||
+              edu[field] === ""
+            ) {
               incompleteFields.push(`education[${index}].${field}`);
             }
           });
         });
       }
+      continue; // skip base-level check for "education"
+    }
+
+    // Top-level null/empty string check
+    if (value === null || value === undefined || value === "") {
+      incompleteFields.push(key);
     }
   }
+  console.log("fields", incompleteFields);
+
   return incompleteFields.length;
 }

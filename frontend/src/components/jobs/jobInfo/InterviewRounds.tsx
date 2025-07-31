@@ -25,9 +25,7 @@ export function InterviewRounds({
   useEffect(() => {
     if (data?.rounds && rounds) {
       const allQualified = rounds.every((jobRound) => {
-        const userRound = data.rounds.find(
-          (r) => r.roundId === jobRound.id
-        );
+        const userRound = data.rounds.find((r) => r.roundId === jobRound.id);
         return userRound?.isQualified === true;
       });
       setIsQualified(allQualified);
@@ -50,7 +48,9 @@ export function InterviewRounds({
         <CardContent>
           <div className="relative">
             {/* Timeline Line */}
-            <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-brand-blue-light to-brand-blue-dark opacity-30" />
+            {rounds.length > 1 && (
+              <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-gradient-to-b from-brand-blue-light to-brand-blue-dark opacity-30" />
+            )}
             <div className="space-y-6">
               {rounds.map((round, index) => {
                 const userRound = data?.rounds?.find(
@@ -64,7 +64,7 @@ export function InterviewRounds({
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="relative flex gap-4 group"
+                    className="relative flex gap-4 items-center group"
                   >
                     {/* Round Number Circle */}
                     <div className="relative z-10 flex-shrink-0 w-12 h-12 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark text-white rounded-full flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-200">

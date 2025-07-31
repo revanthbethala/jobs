@@ -6,10 +6,10 @@ export default function Profile() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Navigation */}
       <nav>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <div className="max-w-7xl mx-auto md:px-4 lg:px-8 py-2">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             {/* Logo Section */}
             <div className="flex items-center space-x-2 justify-center sm:justify-start">

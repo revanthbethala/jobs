@@ -86,12 +86,13 @@ export default function JobDetails() {
 
   // Handlers
   const handleSubmit = async () => {
-    // const incompleteCount = getIncompleteFields(userData);
-    // if (incompleteCount > 0) {
-    //   setShowAlert(true);
-    // } else {
+    const incompleteCount = getIncompleteFields(userData);
+    console.log("count", incompleteCount);
+    if (incompleteCount > 0) {
+      setShowAlert(true);
+    } else {
       setShowConfirmation(true);
-    // }
+    }
   };
 
   const handleApply = async () => {
@@ -100,6 +101,10 @@ export default function JobDetails() {
       const res = await applyJob(job?.id);
       setIsLoading(false);
       setJobStatus("Pending");
+      toast({
+        title: "Applied to job successfully",
+        description:"Your application had been sent to recruiter.Please wait for further instructions"
+      });
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
       const err_msg = error.response?.data?.message;
@@ -113,7 +118,7 @@ export default function JobDetails() {
   };
 
   const handleGoToProfile = () => {
-    navigate("/profile");
+    navigate("/profile/update-profile");
     setShowAlert(false);
   };
 
@@ -199,6 +204,14 @@ export default function JobDetails() {
             {/* Main Content - Left Column */}
             <div className="lg:col-span-2 space-y-8">
               {/* Interview Process - TOP PRIORITY */}
+              <JobDescription
+                description={job.jobDescription}
+                isExpanded={isDescriptionExpanded}
+                onToggleExpanded={() =>
+                  setIsDescriptionExpanded(!isDescriptionExpanded)
+                }
+                itemVariants={itemVariants}
+              />
               <InterviewRounds
                 rounds={job.rounds || []}
                 itemVariants={itemVariants}
@@ -218,14 +231,6 @@ export default function JobDetails() {
               />
 
               {/* Job Description - MEDIUM PRIORITY */}
-              <JobDescription
-                description={job.jobDescription}
-                isExpanded={isDescriptionExpanded}
-                onToggleExpanded={() =>
-                  setIsDescriptionExpanded(!isDescriptionExpanded)
-                }
-                itemVariants={itemVariants}
-              />
             </div>
 
             {/* Sidebar - Right Column */}

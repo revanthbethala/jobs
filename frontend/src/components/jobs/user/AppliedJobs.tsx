@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 function AppliedJobs() {
   const [applications, setApplications] = useState<AppliedJob[]>([]);
@@ -30,7 +31,7 @@ function AppliedJobs() {
     }
   }, [data]);
 
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (isLoading) return <LoadingSpinner />;
   if (error)
     return (
       <p className="text-center mt-10 text-red-600">Something went wrong.</p>

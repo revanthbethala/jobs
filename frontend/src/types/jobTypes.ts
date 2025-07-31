@@ -15,6 +15,7 @@ export interface Job {
   companyWebsite: string;
   companyLogo: string;
   companyEmail: string;
+  applications: object[];
   companyPhone: string;
   lastDateToApply: string;
   allowedBranches: string[];

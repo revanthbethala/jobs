@@ -266,21 +266,21 @@ const SideNav = () => {
       >
         {/* Mobile header */}
         {isMobile && (
-          <header className="h-16 bg-white border-b border-gray-200/60 flex items-center px-4 lg:hidden">
+          <header className="sticky top-0 z-50 py-2 bg-white border-b border-gray-200 flex items-center px-4 shadow-sm lg:hidden">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={toggleSidebar}
-              className="h-8 w-8 p-0 mr-3"
-              aria-label="nav"
+              className="mr-3"
+              aria-label="Toggle Navigation"
             >
-              <Menu className="h-4 w-4" />
+              <Menu className="h-5 w-5 text-gray-700" />
             </Button>
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-gradient-to-br from-blue-600 to-blue-700 rounded-md flex items-center justify-center">
-                <Briefcase className="h-3 w-3 text-white" />
-              </div>
-              <h1 className="text-lg font-semibold text-gray-900">Job Quest</h1>
+
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-semibold capitalize">
+                Job Quest
+              </h1>
             </div>
           </header>
         )}
