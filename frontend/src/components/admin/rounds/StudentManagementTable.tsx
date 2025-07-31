@@ -86,7 +86,7 @@ function StudentManagementTable() {
     const usernames = [users];
     try {
       setIsDeleting(true);
-      const res = await deleteUserInRound(jobId, roundName,usernames);
+      const res = await deleteUserInRound(jobId, roundName, usernames);
       console.log(res);
       toast({
         title: "User deleted successfully",
@@ -208,6 +208,7 @@ function StudentManagementTable() {
             <TableBody>
               {filteredResults.slice(0, visibleCount).map((result) => {
                 const user = result.user;
+                if (result.status !== "Qualified") return null;
                 return (
                   <TableRow key={result.id}>
                     <TableCell>
