@@ -23,6 +23,7 @@ export function JobOverviewCard({
   onApply,
   itemVariants,
 }: JobOverviewCardProps) {
+  console.log("job info", job);
   return (
     <motion.div variants={itemVariants}>
       <Card className="mb-8 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-white to-gray-50">
@@ -105,9 +106,9 @@ export function JobOverviewCard({
                   )}
                 </span>
               )}
-              {job.applications?.length && (
+              {job?.applications?.length > 0 && (
                 <span className="text-sm text-brand-blue-dark tracking-tight font-medium">
-                  {job.applications?.length}+ students applied
+                  {job?.applications?.length}+ students applied
                 </span>
               )}
             </div>

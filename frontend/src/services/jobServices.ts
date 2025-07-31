@@ -1,6 +1,5 @@
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
-import { Trophy } from "lucide-react";
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 export const getAllJobs = async () => {
