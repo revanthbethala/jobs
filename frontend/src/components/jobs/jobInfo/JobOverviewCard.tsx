@@ -23,7 +23,6 @@ export function JobOverviewCard({
   onApply,
   itemVariants,
 }: JobOverviewCardProps) {
-  console.log("job info", job);
   return (
     <motion.div variants={itemVariants}>
       <Card className="mb-8 overflow-hidden border-0 shadow-lg bg-gradient-to-r from-white to-gray-50">

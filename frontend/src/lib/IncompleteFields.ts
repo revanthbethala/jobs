@@ -1,5 +1,6 @@
 export function getIncompleteFields(user): number {
   const incompleteFields: string[] = [];
+  console.log(user);
   const profile = user?.user;
   for (const key in profile) {
     if (key === "token") continue;
@@ -36,6 +37,5 @@ export function getIncompleteFields(user): number {
       }
     }
   }
-  console.log(incompleteFields);
   return incompleteFields.length;
 }
