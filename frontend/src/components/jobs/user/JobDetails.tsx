@@ -86,12 +86,12 @@ export default function JobDetails() {
 
   // Handlers
   const handleSubmit = async () => {
-    const incompleteCount = getIncompleteFields(userData);
-    if (incompleteCount > 0) {
-      setShowAlert(true);
-    } else {
+    // const incompleteCount = getIncompleteFields(userData);
+    // if (incompleteCount > 0) {
+    //   setShowAlert(true);
+    // } else {
       setShowConfirmation(true);
-    }
+    // }
   };
 
   const handleApply = async () => {
