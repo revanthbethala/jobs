@@ -32,7 +32,7 @@ const Header = () => {
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
-    {name:"OurPath",href:"#how-it-works"}
+    { name: "OurPath", href: "#how-it-works" },
     // { name: "Jobs", href: "#services" },
   ];
 
@@ -194,11 +194,10 @@ const Header = () => {
                 ))}
                 <div className="pt-4  flex gap-3 items-center">
                   <Button
-                    variant="outline"
-                    className={`w-full hover:bg-white/10 ${
+                    className={`w-full bg-white/20 hover:bg-white/10 ${
                       isScrolled
-                        ? "text-gray-900 hover:text-brand-blue-light hover:bg-slate-200/10 hover:border hover:border-gray-200"
-                        : "text-white hover:text-brand-blue-light"
+                        ? "text-gray-900  hover:border hover:border-gray-200"
+                        : "text-white "
                     }`}
                   >
                     <NavLink to="/auth">Sign In</NavLink>

@@ -159,7 +159,7 @@ export const uploadRoundResults = async (req: Request, res: Response) => {
   }
 };
 export const getUserRoundResults = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
+  const userId = (req as any).user?.id as string;
 
   try {
     const results = await prisma.results.findMany({

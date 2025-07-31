@@ -24,7 +24,7 @@ export default function Jobs() {
     if (data) {
       setJobs(data);
     }
-  }, [data]); // ✅ only run when `data` changes
+  }, [data]);
   const handleViewDetails = (job) => {
     setSelectedJob(job);
   };
@@ -40,10 +40,6 @@ export default function Jobs() {
   const handleCloseFilters = () => {
     setFiltersOpen(false);
   };
-
-  if (selectedJob) {
-    return <JobDetails job={selectedJob} onBack={handleBackToList} />;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">

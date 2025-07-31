@@ -63,14 +63,18 @@ function AppliedJobs() {
                   {format(new Date(app.appliedAt), "MMM dd, yyyy")}
                 </TableCell>
                 <TableCell>
-                  <a
-                    href={import.meta.env.VITE_BACKEND_URL + app.resume}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline text-sm"
-                  >
-                    View Resume
-                  </a>
+                  {app.resume ? (
+                    <a
+                      // href={import.meta.env.VITE_BACKEND_URL + app.resume}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline text-sm"
+                    >
+                      View Resume
+                    </a>
+                  ) : (
+                    "-"
+                  )}
                 </TableCell>
                 <TableCell>
                   <Badge

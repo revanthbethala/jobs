@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/store/authStore";
 import axios from "axios";
+import { P } from "node_modules/framer-motion/dist/types.d-BSoEx4Ea";
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 const token = useAuthStore.getState().token;
 export const uploadRoundResults = async (data) => {
@@ -40,6 +41,20 @@ export const getSpecificRoundResults = async (
 export const deleteRound = async (roundId: string | undefined) => {
   try {
     const res = axios.delete(`${backend_url}/api/rounds/${roundId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return (await res).data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+export const getUserRoundResults = async () => {
+  try {
+    const res = axios.get(`${backend_url}/api/rounds/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

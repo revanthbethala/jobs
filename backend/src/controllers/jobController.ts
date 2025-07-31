@@ -5,7 +5,7 @@ import fs from 'fs';
 
 const prisma = new PrismaClient();
 
-import { sendJobPostedEmail } from '../utils/email'; 
+import { sendJobPostedEmail } from '../utils/email';
 
 export const createJob = async (req: Request, res: Response) => {
   try {
@@ -27,7 +27,7 @@ export const createJob = async (req: Request, res: Response) => {
       lastDateToApply,
       allowedBranches,
       allowedPassingYears,
-      cptEligibility, 
+      cptEligibility,
     } = req.body;
 
     const file = req.file as Express.Multer.File | undefined;
@@ -75,7 +75,7 @@ export const createJob = async (req: Request, res: Response) => {
         createdById: adminId,
         allowedBranches: parsedAllowedBranches,
         allowedPassingYears: parsedAllowedPassingYears,
-        cptEligibility, 
+        cptEligibility,
         lastDateToApply: lastDateToApply ? new Date(lastDateToApply) : null,
         rounds: {
           create: parsedRounds.map((r: any) => ({
@@ -89,7 +89,6 @@ export const createJob = async (req: Request, res: Response) => {
         rounds: true,
       },
     });
-
 
     const whereClause: any = {
       role: 'USER',
@@ -105,7 +104,6 @@ export const createJob = async (req: Request, res: Response) => {
       },
     };
 
-  
     if (cptEligibility === 'CPT') {
       whereClause.isCPT = true;
     } else if (cptEligibility === 'NON_CPT') {
@@ -120,7 +118,9 @@ export const createJob = async (req: Request, res: Response) => {
       },
     });
 
-    console.log(`Found ${eligibleUsers.length} eligible users for CPT eligibility: ${cptEligibility}`);
+    console.log(
+      `Found ${eligibleUsers.length} eligible users for CPT eligibility: ${cptEligibility}`
+    );
 
     for (const user of eligibleUsers) {
       await sendJobPostedEmail(
@@ -171,6 +171,7 @@ export const getJobById = async (req: Request, res: Response) => {
         rounds: {
           orderBy: { roundNumber: 'asc' },
         },
+        applications: true,
       },
     });
 
@@ -287,8 +288,10 @@ export const updateJob = async (req: Request, res: Response) => {
 
     // If CPT eligibility changed and job eligibility expanded, notify new eligible users
     if (cptEligibilityChanged) {
-      console.log(`CPT eligibility changed from ${existingJob.cptEligibility} to ${cptEligibility}`);
-      
+      console.log(
+        `CPT eligibility changed from ${existingJob.cptEligibility} to ${cptEligibility}`
+      );
+
       // Only notify if eligibility is expanding (more users become eligible)
       if (
         (existingJob.cptEligibility === 'CPT' && cptEligibility === 'BOTH') ||
@@ -297,7 +300,7 @@ export const updateJob = async (req: Request, res: Response) => {
         (existingJob.cptEligibility === 'NON_CPT' && cptEligibility === 'CPT')
       ) {
         shouldNotifyUsers = true;
-        
+
         // Build where clause for newly eligible users
         const whereClause: any = {
           role: 'USER',
@@ -390,7 +393,7 @@ export const updateJob = async (req: Request, res: Response) => {
     // Send notifications to newly eligible users if CPT eligibility expanded
     if (shouldNotifyUsers && eligibleUsers.length > 0) {
       console.log(`Sending notifications to ${eligibleUsers.length} newly eligible users`);
-      
+
       for (const user of eligibleUsers) {
         await sendJobPostedEmail(
           user.email,
@@ -398,14 +401,14 @@ export const updateJob = async (req: Request, res: Response) => {
           updatedData.jobTitle || existingJob.jobTitle,
           updatedData.companyName || existingJob.companyName,
           updatedData.jobDescription || existingJob.jobDescription,
-          updatedData.lastDateToApply 
-            ? new Date(updatedData.lastDateToApply).toDateString() 
-            : existingJob.lastDateToApply 
-            ? new Date(existingJob.lastDateToApply).toDateString() 
-            : 'N/A'
+          updatedData.lastDateToApply
+            ? new Date(updatedData.lastDateToApply).toDateString()
+            : existingJob.lastDateToApply
+              ? new Date(existingJob.lastDateToApply).toDateString()
+              : 'N/A'
         );
       }
-      
+
       console.log(`Notifications sent to ${eligibleUsers.length} newly eligible users`);
     }
 
@@ -417,9 +420,9 @@ export const updateJob = async (req: Request, res: Response) => {
     return res.json({
       message: 'Job and rounds updated successfully',
       job: jobWithUpdatedRounds,
-      ...(shouldNotifyUsers && { 
+      ...(shouldNotifyUsers && {
         newlyEligibleUsers: eligibleUsers.length,
-        cptEligibilityChanged: true 
+        cptEligibilityChanged: true,
       }),
     });
   } catch (err) {
@@ -457,13 +460,13 @@ export const deleteJob = async (req: Request, res: Response) => {
 
 export const getJobsByAdmin = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const adminId = req.params.adminId;   
+    const adminId = req.params.adminId;
 
     const jobs = await prisma.job.findMany({
       where: { createdById: adminId },
       orderBy: { postedDate: 'desc' },
       include: {
-        rounds: true,  
+        rounds: true,
       },
     });
 
@@ -471,11 +474,8 @@ export const getJobsByAdmin = async (req: Request, res: Response): Promise<Respo
       message: 'Jobs fetched',
       jobs,
     });
-
   } catch (error) {
     console.error('Error fetching jobs by admin:', error);
     return res.status(500).json({ message: 'Failed to fetch jobs.', error });
   }
 };
-
-
