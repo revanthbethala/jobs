@@ -19,7 +19,6 @@ const AuthPage = () => {
   const year = date.getFullYear();
 
   const renderAuthComponent = () => {
-    console.log("current step", currentStep);
     if (currentStep === "signup" && userType === "user") return <SignupForm />;
     if (currentStep === "otp") return <OtpVerification />;
     if (currentStep === "forgot-password") return <ForgotPassword />;

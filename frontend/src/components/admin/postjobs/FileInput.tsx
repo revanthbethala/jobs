@@ -12,7 +12,7 @@ interface FileInputProps {
   accept?: string;
   className?: string;
   required?: boolean;
-  previewUrl?: string; // from backend
+  previewUrl?: string | null | undefined; // from backend
 }
 
 export const FileInput: React.FC<FileInputProps> = ({

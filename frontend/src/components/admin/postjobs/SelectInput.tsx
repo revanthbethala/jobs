@@ -93,7 +93,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       <div className="relative">
         <select
           {...registration}
-          defaultValue={registration?.value || ""}
+          // defaultValue={registration?.value || ""}
           className={cn(
             "peer w-full appearance-none rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             error && "border-destructive ring-destructive focus:ring-destructive",

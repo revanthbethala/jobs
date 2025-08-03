@@ -66,8 +66,11 @@ export interface JobFormData {
   jobRole: string;
   jobType: string;
   companyName: string;
+  cptType: string;
+  serviceAgreement?: string;
+  numberOfVacancies?: string;
   companyWebsite: string;
-  companyLogo: File | null;
+  companyLogo?: File | null;
   companyEmail: string;
   companyPhone: string;
   allowedBranches: string[];

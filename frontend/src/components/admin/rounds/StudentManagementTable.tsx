@@ -36,28 +36,27 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-const ITEMS_PER_CHUNK = 20;
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 function StudentManagementTable() {
   const { jobId } = useParams();
   const { selectedRound, rounds } = useJobRoundsStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedQuery, isDebouncing] = useDebounce(searchTerm, 500);
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_CHUNK);
   const [isDeleting, setIsDeleting] = useState(false);
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
 
   const round = rounds?.find((r) => r.roundNumber === selectedRound);
   const roundName = round?.roundName;
   const roundId = round?.id;
   const isEnabled = !!jobId && !!roundName;
   const { showRoundData } = useJobRoundsStore();
+
   const { data, isLoading, error, isError, refetch } = useQuery({
     queryKey: ["round-details", jobId, roundName, showRoundData],
     queryFn: () => getSpecificRoundResults(jobId!, roundName!),
-    enabled: isEnabled,
-    retry: false,
   });
+
   const handleExportToExcel = () => {
     const exportData = (data?.roundResults ?? []).map((result) => ({
       "Full Name": `${result.user.firstName} ${result.user.lastName}`,
@@ -83,18 +82,18 @@ function StudentManagementTable() {
 
     saveAs(dataBlob, `${roundName}-round-results.xlsx`);
   };
-  const handleDelete = async (users) => {
-    const usernames = [users];
+
+  const handleDelete = async (username: string | string[]) => {
+    if (typeof username === "string") username = [username];
+
     try {
       setIsDeleting(true);
-      const res = await deleteUserInRound(jobId, roundName, usernames);
-      console.log(res);
-      toast({
-        title: "User deleted successfully",
-      });
+      await deleteUserInRound(jobId, roundName, username);
+      toast({ title: "User deleted successfully" });
+      setSelectedUsernames([]);
       refetch();
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast({
         title: "Error occurred while deleting user",
         variant: "destructive",
@@ -103,6 +102,7 @@ function StudentManagementTable() {
       setIsDeleting(false);
     }
   };
+
   const filteredResults = useMemo(() => {
     const results = data?.roundResults ?? [];
     return results.filter((result) =>
@@ -112,35 +112,17 @@ function StudentManagementTable() {
     );
   }, [data, debouncedQuery]);
 
-  // Infinite scroll: Load more when user scrolls to bottom
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const first = entries[0];
-        if (first.isIntersecting) {
-          setVisibleCount((prev) => prev + ITEMS_PER_CHUNK);
-        }
-      },
-      { threshold: 1 }
-    );
-
-    const currentRef = loadMoreRef.current;
-    if (currentRef) observer.observe(currentRef);
-    return () => {
-      if (currentRef) observer.unobserve(currentRef);
-    };
-  }, []);
-
-  // Reset visible count on new search
-  useEffect(() => {
-    setVisibleCount(ITEMS_PER_CHUNK);
-  }, [debouncedQuery]);
-
   if (!selectedRound || !roundName) {
     return <p className="text-muted">Select a round to view student data.</p>;
   }
 
-  if (isLoading) return <p>Loading round details...</p>;
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-24 flex-col">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <span className="text-xs font-medium">Loading Results...</span>
+      </div>
+    );
 
   if (isError || error) {
     const axiosError = error as AxiosError;
@@ -176,6 +158,20 @@ function StudentManagementTable() {
           <Badge variant="outline">
             {filteredResults.length} students found
           </Badge>
+          <Button
+            variant="destructive"
+            disabled={selectedUsernames.length === 0 || isDeleting}
+            onClick={() => handleDelete(selectedUsernames)}
+          >
+            {isDeleting ? (
+              <span className="flex gap-1 items-center">
+                <Loader2 className="animate-spin h-4 w-4" /> Deleting...
+              </span>
+            ) : (
+              `Delete ${selectedUsernames.length} Selected`
+            )}
+          </Button>
+
           <Button onClick={handleExportToExcel}>Export to Excel</Button>
         </div>
       </div>
@@ -198,27 +194,61 @@ function StudentManagementTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>
-                  <input type="checkbox" />
-                  Select Users
+                <TableHead className="center-m">
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5"
+                    checked={
+                      filteredResults.length > 0 &&
+                      filteredResults.every((r) =>
+                        selectedUsernames.includes(r.user.username)
+                      )
+                    }
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedUsernames(
+                          filteredResults.map((r) => r.user.username)
+                        );
+                      } else {
+                        setSelectedUsernames([]);
+                      }
+                    }}
+                  />
+                  Select All
                 </TableHead>
+
                 <TableHead>Full Name</TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Gender</TableHead>
                 <TableHead>Resume</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Delete</TableHead>
+                {/* <TableHead>Delete</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredResults.slice(0, visibleCount).map((result) => {
+              {filteredResults.map((result) => {
                 const user = result.user;
                 if (result.status !== "Qualified") return null;
                 return (
                   <TableRow key={result.id}>
                     <TableCell>
-                      <Input type="checkbox" />
+                      <input
+                        type="checkbox"
+                        checked={selectedUsernames.includes(user.username)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedUsernames((prev) => [
+                              ...prev,
+                              user.username,
+                            ]);
+                          } else {
+                            setSelectedUsernames((prev) =>
+                              prev.filter((u) => u !== user.username)
+                            );
+                          }
+                        }}
+                      />
                     </TableCell>
 
                     <TableCell>
@@ -248,7 +278,7 @@ function StudentManagementTable() {
                         {result.status}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Trash
@@ -289,13 +319,12 @@ function StudentManagementTable() {
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
-          <div ref={loadMoreRef} className="h-8" />
         </div>
       )}
     </div>

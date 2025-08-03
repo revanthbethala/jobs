@@ -49,6 +49,11 @@ export const jobFormSchema = z.object({
   interviewRounds: z
     .array(interviewRoundSchema)
     .min(1, "At least one interview round is required"),
+  cptType: z.enum(["CPT", "NON_CPT", "BOTH"], {
+    required_error: "Please select CPT type",
+  }),
+  numberOfVacancies: z.string().optional(),
+  serviceAgreement: z.string().optional(),
 });
 
 export type JobFormData = z.infer<typeof jobFormSchema>;

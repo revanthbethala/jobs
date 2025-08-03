@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   deleteJob,
-  getAllJobs,
   jobsPostedByAdmin,
 } from "@/services/jobServices";
 import {
@@ -15,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DateValues, format } from "date-fns";
+import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
   Trash2,

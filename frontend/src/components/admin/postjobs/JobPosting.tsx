@@ -166,6 +166,36 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
             required
           />
         </div>
+        <div className="grid md:grid-cols-2 gap-4 grid-cols-1">
+          <SelectInput
+            label="CPT Type"
+            options={[
+              { label: "CPT", value: "CPT" },
+              { label: "NON_CPT", value: "NON_CPT" },
+              { label: "BOTH", value: "BOTH" },
+            ]}
+            registration={register("cptType")}
+            error={errors.cptType?.message}
+            required
+          />
+
+          <TextInput
+            label="Number of Vacancies"
+            placeholder="e.g., 10"
+            registration={register("numberOfVacancies")}
+            error={errors.numberOfVacancies?.message}
+            type="number"
+          />
+        </div>
+        <div className="grid grid-cols-1 gap-6">
+          <TextArea
+            label="Service Agreement"
+            placeholder="e.g., 2 years of service required after joining"
+            registration={register("serviceAgreement")}
+            error={errors.serviceAgreement?.message}
+            rows={3}
+          />
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SelectInput
@@ -180,7 +210,6 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
             options={JOB_SECTOR_OPTIONS}
             registration={register("jobSector")}
             error={errors.jobSector?.message}
-            required
           />
         </div>
 
