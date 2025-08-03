@@ -16,6 +16,12 @@ const Header = () => {
     setCurrentStep("signup");
     navigate("/auth");
   };
+
+  const handleSignin = () => {
+    setCurrentStep("login");
+    navigate("/auth");
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > heroHeight) {
@@ -122,13 +128,14 @@ const Header = () => {
           >
             <Button
               variant="ghost"
+              onClick={handleSignin}
               className={`hover:bg-white/10 ${
                 isScrolled
                   ? "text-gray-900 hover:text-brand-blue-light"
                   : "text-white hover:text-brand-blue-light"
               }`}
             >
-              <NavLink to="/auth">Sign In</NavLink>
+              Sign In
             </Button>
             <Button
               onClick={handleSignupClick}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Mail, Shield } from "lucide-react";
+import { Eye, EyeOff, Mail, Shield, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 export const AdminLoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { setCurrentStep } = useAuthStore();
   const { toast } = useToast();
   const { loginToken } = useAuthStore();
   const navigate = useNavigate();
@@ -39,7 +40,8 @@ export const AdminLoginForm = () => {
       });
       const role = res?.user?.role;
       const { token } = res;
-      loginToken(token, role);
+      const { username, email, id } = res.user;
+      loginToken(token, role, email, username, id);
       navigate("/");
     } catch (err) {
       if (err.response.status == 403) {
@@ -82,17 +84,17 @@ export const AdminLoginForm = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Label htmlFor="email" className="text-brand-gray-dark">
-            Admin Email
+          <Label htmlFor="adminId" className="text-brand-gray-dark">
+            Admin Id
           </Label>
           <div className="relative mt-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400" />
+              <User className="h-5 w-5 text-gray-400" />
             </div>
             <Input
-              id="username"
+              id="adminId"
               type="text"
-              placeholder="Enter your admin email"
+              placeholder="Enter your Admin Id"
               className="pl-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
               {...register("username")}
             />
@@ -153,6 +155,23 @@ export const AdminLoginForm = () => {
           </Button>
         </motion.div>
       </form>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="text-center"
+      >
+        <p className="text-sm text-gray-600">
+          Don't have an account?{" "}
+          <button
+            onClick={() => setCurrentStep("admin-signup")}
+            className="text-brand-blue-light hover:text-brand-blue-dark font-medium transition-colors"
+          >
+            Sign Up
+          </button>
+        </p>
+      </motion.div>
     </div>
   );
 };
+export default AdminLoginForm;

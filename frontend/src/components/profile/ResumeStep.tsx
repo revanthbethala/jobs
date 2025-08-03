@@ -36,6 +36,10 @@ export default function ResumeStep() {
     const file = e.target.files?.[0];
     if (file) {
       try {
+        if (file.size > 500 * 1024) {
+          setErrors({ resume: "File size must be less than 500kb" });
+          return;
+        }
         resumeSchema.parse({ resume: file });
         setResume(file);
         setErrors({});

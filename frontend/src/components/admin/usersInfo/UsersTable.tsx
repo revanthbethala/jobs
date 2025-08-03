@@ -69,13 +69,11 @@ const UsersTable = () => {
       return getPaginatedUsers(page, limit, finalFilters);
     },
     placeholderData: (previousData) => previousData,
-    // staleTime: 60 * 1000,
+    staleTime: 10 * 1000,
   });
-  console.log(filters);
   const users = data?.users || [];
   const totalUsers = data?.totalUsers || 0;
   const totalPages = data?.totalPages || 1;
-  console.log(users);
   const handleExport = () => {
     const dataToExport = users.map((user) => {
       const getEdu = (level: string) =>
@@ -107,8 +105,9 @@ const UsersTable = () => {
     exportToExcel(dataToExport, "Filtered_Users.xlsx");
   };
 
+  console.log(isLoading);
   if (isLoading) {
-    <LoadingSpinner />;
+    return <LoadingSpinner />;
   }
 
   if (isError) {
@@ -189,10 +188,14 @@ const UsersTable = () => {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="hover:bg-muted/50 transition-colors"
+                          className="hover:bg-muted transition-colors"
                         >
-                          <TableCell>
-                            {user.firstName} {user.lastName}
+                          <TableCell className="capitalize">
+                            {user?.firstName ? (
+                              user.firstName + " " + user.lastName
+                            ) : (
+                              <span className="font-bold text-center">-</span>
+                            )}
                           </TableCell>
                           <TableCell>{user.username}</TableCell>
                           <TableCell>{user.email}</TableCell>
@@ -261,7 +264,7 @@ const UsersTable = () => {
                     value={limit}
                     onChange={(e) => {
                       setLimit(Number(e.target.value));
-                      setPage(1); // Reset to page 1 on change
+                      setPage(1);
                     }}
                     className="border border-input rounded-md px-3 py-1 text-sm"
                   >

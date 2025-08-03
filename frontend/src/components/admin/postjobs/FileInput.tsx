@@ -8,7 +8,7 @@ interface FileInputProps {
   label: string;
   error?: string;
   name: string;
-  control: Control<any>;
+  control: Control;
   accept?: string;
   className?: string;
   required?: boolean;
@@ -41,7 +41,7 @@ export const FileInput: React.FC<FileInputProps> = ({
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size <= 3 * 1024 * 1024) {
+      if (file.size <= 150 * 1024) {
         const newUrl = URL.createObjectURL(file);
         setObjectUrl(newUrl);
         setShowPreviewUrl(false);
@@ -50,7 +50,7 @@ export const FileInput: React.FC<FileInputProps> = ({
       } else {
         toast({
           title: "File too large",
-          description: "Please upload an image smaller than 3MB.",
+          description: "Please upload an image smaller than 150KB.",
           variant: "destructive",
         });
         fileInputRef.current!.value = "";
@@ -79,7 +79,7 @@ export const FileInput: React.FC<FileInputProps> = ({
     event.preventDefault();
     const file = event.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      if (file.size <= 3 * 1024 * 1024) {
+      if (file.size <= 150 * 1024) {
         const newUrl = URL.createObjectURL(file);
         setObjectUrl(newUrl);
         setShowPreviewUrl(false);
@@ -88,7 +88,7 @@ export const FileInput: React.FC<FileInputProps> = ({
       } else {
         toast({
           title: "File too large",
-          description: "Please upload an image smaller than 3MB.",
+          description: "Please upload an image smaller than 150KB.",
           variant: "destructive",
         });
       }
@@ -144,9 +144,7 @@ export const FileInput: React.FC<FileInputProps> = ({
           <p className="text-sm font-medium text-foreground">
             Click to upload or drag and drop
           </p>
-          <p className="text-xs text-muted-foreground">
-            PNG, JPG, GIF up to 3MB
-          </p>
+          <p className="text-xs text-muted-foreground">PNG, JPG up to 150KB</p>
         </div>
       )}
 

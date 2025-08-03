@@ -9,36 +9,93 @@ const prisma = new PrismaClient();
 
 import { Role } from '@prisma/client';
 
+const ADMIN_PASSKEY = process.env.ADMIN_PASSKEY || 'ADMIN_SECRET_2024';
+const SUPER_ADMIN_PASSKEY = process.env.SUPER_ADMIN_PASSKEY || 'SUPER_ADMIN_SECRET_2024';
+
 export const signup = async (req: Request, res: Response): Promise<Response> => {
-  const { username, email, password, role } = req.body;
+  const { username, email, password, role, passkey } = req.body;
 
   const existing = await prisma.user.findFirst({
     where: { OR: [{ email }, { username }] },
   });
-  if (existing) return res.status(400).json({ message: 'Username or Email already exists' });
+  if (existing) {
+    return res.status(400).json({
+      message: 'Username or Email already exists',
+    });
+  }
 
-  const hashed = await hashPassword(password);
-  const otp = generateOTP();
-  const expiry = new Date(Date.now() + 10 * 60 * 1000);
+  let assignedRole: Role = Role.USER;
 
-  const assignedRole = role === 'ADMIN' ? Role.ADMIN : Role.USER;
+  if (role === Role.ADMIN) {
+    if (!passkey) {
+      return res.status(400).json({
+        message: 'Passkey is required for admin registration',
+      });
+    }
 
-  await prisma.user.create({
-    data: {
-      username,
-      email,
-      password: hashed,
-      otp,
-      otpExpiry: expiry,
+    if (passkey !== ADMIN_PASSKEY) {
+      return res.status(400).json({
+        message: 'Passkey for admin is incorrect',
+      });
+    }
+
+    assignedRole = Role.ADMIN;
+  } else if (role === Role.SUPER_ADMIN) {
+    if (!passkey) {
+      return res.status(400).json({
+        message: 'Passkey is required for super admin registration',
+      });
+    }
+
+    if (passkey !== SUPER_ADMIN_PASSKEY) {
+      return res.status(400).json({
+        message: 'Passkey for super admin is incorrect',
+      });
+    }
+
+    assignedRole = Role.SUPER_ADMIN;
+  } else if (role === Role.USER || !role) {
+    if (passkey) {
+      return res.status(400).json({
+        message: 'Passkey is not required for student registration',
+      });
+    }
+
+    assignedRole = Role.USER;
+  } else {
+    return res.status(400).json({
+      message: 'Invalid role. Allowed roles are: USER, ADMIN, SUPER_ADMIN',
+    });
+  }
+
+  try {
+    const hashed = await hashPassword(password);
+    const otp = generateOTP();
+    const expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashed,
+        otp,
+        otpExpiry: expiry,
+        role: assignedRole,
+      },
+    });
+
+    await sendOtpEmail(email, otp);
+
+    return res.status(201).json({
+      message: `OTP sent to email. Please verify your ${assignedRole.toLowerCase()} account.`,
       role: assignedRole,
-    },
-  });
-
-  await sendOtpEmail(email, otp);
-
-  return res.status(201).json({
-    message: 'OTP sent to email. Please verify your account.',
-  });
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+    return res.status(500).json({
+      message: 'Registration failed. Please try again.',
+    });
+  }
 };
 
 export const verifyEmail = async (req: Request, res: Response): Promise<Response> => {
@@ -66,6 +123,12 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
   if (!user.isVerified) {
     const otp = generateOTP();
+    const expiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { email: user.email },
+      data: { otp, otpExpiry: expiry },
+    });
     await sendOtpEmail(user.email, otp);
     return res
       .status(403)
@@ -167,25 +230,23 @@ export const updateProfile = async (req: Request, res: Response): Promise<Respon
       education: rawEducation,
       dateOfBirth,
       passedOutYear,
+      isCPT,
       noOfActiveBacklogs,
       percentage,
-      isCPT,
       ...rest
     } = req.body;
 
     const safeData: any = {
       ...rest,
     };
+
     // ✅ Parse required types from strings
+    if (isCPT) safeData.isCPT = isCPT === 'true';
     if (percentage) safeData.percentage = parseFloat(percentage);
     if (noOfActiveBacklogs) safeData.noOfActiveBacklogs = parseInt(noOfActiveBacklogs);
     if (passedOutYear) safeData.passedOutYear = parseInt(passedOutYear);
     if (dateOfBirth) safeData.dateOfBirth = new Date(dateOfBirth);
-    if (isCPT.toLowerCase() === 'true') {
-      safeData.isCPT = true;
-    } else if (isCPT.toLowerCase() === 'false') {
-      safeData.isCPT = false;
-    }
+
     const files = req.files as {
       [fieldname: string]: Express.Multer.File[];
     };
@@ -390,73 +451,64 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
   try {
     const adminId = (req as any).user?.id;
 
-    const [
-      totalJobsPostedByAdmin,
-      jobsWithDetails,
-      totalUsers,
-      totalApplications,
-      totalQualified,
-      btechSpecializations,
-    ] = await Promise.all([
-      prisma.job.count({
-        where: { createdById: adminId },
-      }),
+    const [totalJobsPostedByAdmin, jobsWithDetails, totalUsers, btechSpecializations] =
+      await Promise.all([
+        prisma.job.count({
+          where: { createdById: adminId },
+        }),
 
-      prisma.job.findMany({
-        where: { createdById: adminId },
-        select: {
-          id: true,
-          jobTitle: true,
-          jobRole: true,
-          companyName: true,
-          createdBy: true,
-          salary: true,
-          postedDate: true,
-          applications: {
-            select: {
-              id: true,
-              user: {
-                select: {
-                  education: {
-                    where: { educationalLevel: 'B.Tech' },
-                    select: {
-                      specialization: true,
+        prisma.job.findMany({
+          where: { createdById: adminId },
+          select: {
+            id: true,
+            jobTitle: true,
+            jobRole: true,
+            companyName: true,
+            createdBy: true,
+            salary: true,
+            postedDate: true,
+            applications: {
+              select: {
+                id: true,
+                user: {
+                  select: {
+                    education: {
+                      where: { educationalLevel: 'B.Tech' },
+                      select: {
+                        specialization: true,
+                      },
                     },
                   },
                 },
               },
             },
-          },
-          rounds: {
-            select: {
-              roundNumber: true,
-              roundName: true,
-              results: {
-                where: { status: 'Qualified' },
-                select: { id: true },
+            rounds: {
+              select: {
+                roundNumber: true,
+                roundName: true,
+                results: {
+                  where: { status: 'Qualified' },
+                  select: { id: true },
+                },
               },
             },
           },
-        },
-      }),
+        }),
 
-      prisma.jobApplication.count(),
-      prisma.user.count({ where: { role: 'USER' } }),
-      prisma.results.count({ where: { status: 'Qualified' } }),
-
-      prisma.education.groupBy({
-        by: ['specialization'],
-        where: {
-          educationalLevel: 'B.Tech',
-          specialization: {
-            not: null,
+        prisma.user.count({ where: { role: 'USER' } }),
+        prisma.education.groupBy({
+          by: ['specialization'],
+          where: {
+            educationalLevel: 'B.Tech',
+            specialization: {
+              not: null,
+            },
           },
-        },
-        _count: {
-          specialization: true,
-        },
-      }),
-    ]);
+          _count: {
+            specialization: true,
+          },
+        }),
+      ]);
 
     const jobSummaries = jobsWithDetails.map(job => {
       const totalApplications = job.applications.length;
@@ -517,6 +569,213 @@ export const getAdminDashboard = async (req: Request, res: Response) => {
     console.error('Admin dashboard failed:', error);
     return res.status(500).json({
       message: 'Failed to load admin dashboard',
+      error,
+    });
+  }
+};
+
+export const getAllAdminDashboard = async (req: Request, res: Response) => {
+  try {
+    const [totalJobs, allJobsWithDetails, totalUsers, btechSpecializations, allAdmins] =
+      await Promise.all([
+        // Total jobs posted by all admins
+        prisma.job.count(),
+
+        // All jobs with their details
+        prisma.job.findMany({
+          select: {
+            id: true,
+            jobTitle: true,
+            jobRole: true,
+            companyName: true,
+            createdBy: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+            createdById: true,
+            salary: true,
+            postedDate: true,
+            applications: {
+              select: {
+                id: true,
+                user: {
+                  select: {
+                    education: {
+                      where: { educationalLevel: 'B.Tech' },
+                      select: {
+                        specialization: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            rounds: {
+              select: {
+                roundNumber: true,
+                roundName: true,
+                results: {
+                  where: { status: 'Qualified' },
+                  select: { id: true },
+                },
+              },
+            },
+          },
+        }),
+
+        // Total users
+        prisma.user.count({ where: { role: 'USER' } }),
+
+        // B.Tech specializations
+        prisma.education.groupBy({
+          by: ['specialization'],
+          where: {
+            educationalLevel: 'B.Tech',
+            specialization: {
+              not: null,
+            },
+          },
+          _count: {
+            specialization: true,
+          },
+        }),
+
+        // All admins with their job counts
+        prisma.user.findMany({
+          where: { role: 'ADMIN' },
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            _count: {
+              select: {
+                jobsCreated: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+    // Process job summaries
+    const jobSummaries = allJobsWithDetails.map(job => {
+      const totalApplications = job.applications.length;
+      const totalRounds = job.rounds.length;
+
+      const roundSummaries = job.rounds.map(round => ({
+        roundNumber: round.roundNumber,
+        roundName: round.roundName,
+        qualifiedUsers: round.results.length,
+      }));
+
+      const totalQualifiedUsersAcrossRounds = job.rounds.reduce(
+        (acc, round) => acc + round.results.length,
+        0
+      );
+
+      const qualificationRatio =
+        totalApplications > 0
+          ? ((totalQualifiedUsersAcrossRounds / totalApplications) * 100).toFixed(2)
+          : '0.00';
+
+      const specializationCounts: Record<string, number> = {};
+
+      job.applications.forEach(app => {
+        const btechEdu = app.user?.education?.find(edu => edu.specialization);
+        if (btechEdu?.specialization) {
+          const spec = btechEdu.specialization;
+          specializationCounts[spec] = (specializationCounts[spec] || 0) + 1;
+        }
+      });
+
+      return {
+        jobId: job.id,
+        jobRole: job.jobRole,
+        jobTitle: job.jobTitle,
+        salary: job.salary,
+        companyName: job.companyName,
+        createdBy: job.createdBy.username,
+        createdById: job.createdById,
+        postedAt: job.postedDate,
+        totalApplications,
+        totalRounds,
+        totalQualifiedUsersAcrossRounds,
+        qualificationRatio: `${qualificationRatio}%`,
+        roundSummaries,
+        specializationCounts,
+      };
+    });
+
+    // Group jobs by admin
+    const adminDashboards = allAdmins.map(admin => {
+      const adminJobs = jobSummaries.filter(job => job.createdById === admin.id);
+
+      const totalApplicationsForAdmin = adminJobs.reduce(
+        (acc, job) => acc + job.totalApplications,
+        0
+      );
+
+      const totalQualifiedForAdmin = adminJobs.reduce(
+        (acc, job) => acc + job.totalQualifiedUsersAcrossRounds,
+        0
+      );
+
+      const overallQualificationRatio =
+        totalApplicationsForAdmin > 0
+          ? ((totalQualifiedForAdmin / totalApplicationsForAdmin) * 100).toFixed(2)
+          : '0.00';
+
+      return {
+        adminId: admin.id,
+        adminUsername: admin.username,
+        adminEmail: admin.email,
+        totalJobsPosted: admin._count.jobsCreated,
+        totalApplicationsReceived: totalApplicationsForAdmin,
+        totalQualifiedUsers: totalQualifiedForAdmin,
+        overallQualificationRatio: `${overallQualificationRatio}%`,
+        jobs: adminJobs,
+      };
+    });
+
+    // Overall statistics
+    const totalApplicationsOverall = jobSummaries.reduce(
+      (acc, job) => acc + job.totalApplications,
+      0
+    );
+
+    const totalQualifiedOverall = jobSummaries.reduce(
+      (acc, job) => acc + job.totalQualifiedUsersAcrossRounds,
+      0
+    );
+
+    const overallSystemQualificationRatio =
+      totalApplicationsOverall > 0
+        ? ((totalQualifiedOverall / totalApplicationsOverall) * 100).toFixed(2)
+        : '0.00';
+
+    return res.json({
+      dashboard: {
+        // Overall system statistics
+        totalJobs,
+        totalUsers,
+        totalAdmins: allAdmins.length,
+        totalApplicationsOverall,
+        totalQualifiedOverall,
+        overallSystemQualificationRatio: `${overallSystemQualificationRatio}%`,
+        btechSpecializations,
+
+        // Individual admin dashboards
+        adminDashboards,
+
+        // All job summaries (if needed for overall analysis)
+        allJobSummaries: jobSummaries,
+      },
+    });
+  } catch (error) {
+    console.error('Get all admin dashboards failed:', error);
+    return res.status(500).json({
+      message: 'Failed to load all admin dashboards',
       error,
     });
   }

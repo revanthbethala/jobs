@@ -40,7 +40,6 @@ import {
 } from "@/lib/constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-// Constants - moved to top level to prevent recreation
 
 const buildFormData = (data: JobFormData): FormData => {
   const {

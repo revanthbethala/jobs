@@ -56,6 +56,7 @@ const initialFormData: JobFormData = {
 
 const initialFilters: JobFilters = {
   searchTitle: "",
+  jobType: "",
   status: "",
   salaryRange: "",
   experience: "",
@@ -238,6 +239,9 @@ export const useJobStore = create<JobStore>((set, get) => ({
             return true;
         }
       });
+    }
+    if (filters.jobType) {
+      filtered = filtered.filter((job) => job.jobType === filters.jobType);
     }
 
     set({ filteredJobs: filtered });

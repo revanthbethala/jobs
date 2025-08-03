@@ -27,7 +27,7 @@ export const LoginForm = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const new_data = { ...data };
+      const new_data = { ...data, username: data.username.toUpperCase() };
       const res = await userLogin(new_data);
       toast({
         title: "Login Successful!",
@@ -35,7 +35,8 @@ export const LoginForm = () => {
       });
       const role = res?.user?.role;
       const { token } = res;
-      loginToken(token, role);
+      const { username, email, id } = res.user;
+      loginToken(token, role, email, username, id);
       navigate("/jobs");
     } catch (err) {
       if (err.response.status == 403) {
@@ -86,7 +87,7 @@ export const LoginForm = () => {
               id="collegeId"
               type="text"
               placeholder="Enter your CollegeId"
-              className="pl-10 border-gray-300 focus:outline-none focus:border-brand-blue-light focus:ring-brand-blue-light"
+              className="pl-10 border-gray-300 uppercase focus:outline-none focus:border-brand-blue-light focus:ring-brand-blue-light"
               {...register("username")}
             />
           </div>
@@ -182,3 +183,4 @@ export const LoginForm = () => {
     </div>
   );
 };
+export default LoginForm;

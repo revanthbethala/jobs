@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { userSignUp } from "@/services/authService";
 
-export const SignupForm = () => {
+export const AdminSignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { setCurrentStep, setEmail } = useAuthStore();
+  const { setCurrentStep, setEmail, setPassword, setUsername } = useAuthStore();
   const { toast } = useToast();
 
   const {
@@ -27,17 +27,14 @@ export const SignupForm = () => {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setEmail(data.email);
-      const updated_data = {
-        ...data,
-        username: data.username.toUpperCase(),
-        role: "USER",
-      };
+      setUsername(data.username);
+      setPassword(data.password);
+      const updated_data = { ...data, role: "ADMIN" };
       const res = await userSignUp(updated_data);
       console.log(res);
-      console.log("Signup data:", data);
       toast({
-        title: "Account Created!",
-        description: "Please verify your email with the OTP we sent.",
+        title: "Admin Account Created",
+        description: "Check your inbox for OTP verification.",
       });
       setCurrentStep("otp");
     } catch (error) {
@@ -51,47 +48,49 @@ export const SignupForm = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
         <h2 className="text-2xl font-bold text-brand-gray-dark mb-2">
-          Create Account
+          Admin Registration
         </h2>
         <p className="text-gray-600 text-sm">
-          Join JobQuest and start your career journey
+          Register to manage your institution's JobQuest portal
         </p>
       </motion.div>
 
+      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Admin ID */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <Label htmlFor="username" className="text-brand-gray-dark">
-            CollegeId
+            Admin ID
           </Label>
           <div className="relative mt-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className="h-5 w-5 text-gray-400" />
-            </div>
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               id="username"
               type="text"
-              placeholder="Enter your CollegeId"
-              className="pl-10 border-gray-300 focus:border-brand-blue-light uppercase focus:ring-brand-blue-light"
+              placeholder="Enter your Admin ID"
+              className="pl-10"
               {...register("username")}
             />
           </div>
           {errors.username && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="text-sm text-red-600 mt-1">
               {errors.username.message}
             </p>
           )}
         </motion.div>
 
+        {/* Email */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -101,22 +100,21 @@ export const SignupForm = () => {
             Email Address
           </Label>
           <div className="relative mt-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400" />
-            </div>
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
-              className="pl-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
+              placeholder="admin@yourcollege.edu"
+              className="pl-10"
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
           )}
         </motion.div>
 
+        {/* Password */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -129,33 +127,34 @@ export const SignupForm = () => {
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="Create a strong password"
-              className="pr-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
+              placeholder="Create a secure password"
+              className="pr-10"
               {...register("password")}
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
             >
               {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="text-sm text-red-600 mt-1">
               {errors.password.message}
             </p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
-            Must be at least 8 characters and contain uppercase, lowercase, and
-            number
+          <p className="text-xs text-gray-500 mt-1">
+            Must be atleast 8 characters that includes a uppercase, lowercase,
+            and a number.
           </p>
         </motion.div>
 
+        {/* Submit Button */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,13 +163,14 @@ export const SignupForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-brand-blue-light hover:bg-brand-blue-dark transition-colors"
+            className="w-full bg-brand-blue-light hover:bg-brand-blue-dark"
           >
-            {isSubmitting ? "Creating Account..." : "Create Account"}
+            {isSubmitting ? "Registering..." : "Register as Admin"}
           </Button>
         </motion.div>
       </form>
 
+      {/* Footer */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -178,10 +178,10 @@ export const SignupForm = () => {
         className="text-center"
       >
         <p className="text-sm text-gray-600">
-          Already have an account?{" "}
+          Already have an admin account?{" "}
           <button
-            onClick={() => setCurrentStep("login")}
-            className="text-brand-blue-light hover:text-brand-blue-dark font-medium transition-colors"
+            onClick={() => setCurrentStep("admin-login")}
+            className="text-brand-blue-light hover:text-brand-blue-dark font-medium"
           >
             Sign In
           </button>
@@ -190,4 +190,4 @@ export const SignupForm = () => {
     </div>
   );
 };
-export default SignupForm;
+export default AdminSignupForm;

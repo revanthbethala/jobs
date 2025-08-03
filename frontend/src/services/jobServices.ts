@@ -29,7 +29,7 @@ export const applyJob = async (jobId) => {
   try {
     const res = await axios.post(
       `${backend_url}/api/applications/apply/${jobId}`,
-      {jobId},
+      { jobId },
       {
         headers: {
           "Content-Type": "application/json",
@@ -72,6 +72,21 @@ export const getJobApplications = async (jobId: string) => {
         },
       }
     );
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+export const jobsPostedByAdmin = async () => {
+  try {
+    const token = useAuthStore.getState().token;
+    const adminId = useAuthStore.getState().userId;
+    const res = await axios.get(`${backend_url}/api/jobs/${adminId}/jobs`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return res.data;
   } catch (err) {
     console.log(err);
@@ -126,5 +141,3 @@ export const deleteJob = async (jobId: string) => {
     throw err;
   }
 };
-
-

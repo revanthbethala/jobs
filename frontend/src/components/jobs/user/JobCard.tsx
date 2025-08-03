@@ -15,6 +15,7 @@ import {
   Calendar,
   DollarSign,
   Briefcase,
+  IndianRupeeIcon,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Job } from "@/types/jobTypes";
@@ -58,7 +59,7 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
                 </div>
               </div>
             </div>
-            <Badge variant="secondary" className="flex-shrink-0">
+            <Badge variant="secondary" className="flex-shrink-0 capitalize">
               {job.jobType}
             </Badge>
           </div>
@@ -68,15 +69,18 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-brand-blue-light flex-shrink-0" />
-              <span className="truncate">{job.location}</span>
+              <span className="truncate capitalize">{job.location}</span>
             </div>
             <div className="flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-green-600 flex-shrink-0" />
-              <span className="truncate">{job.salary}</span>
+              <IndianRupeeIcon className="w-4 h-4 text-green-600 flex-shrink-0" />
+              <span className="truncate capitalize">{job.salary}</span>
             </div>
             <div className="flex items-center gap-2">
               <Briefcase className="w-4 h-4 text-orange-600 flex-shrink-0" />
-              <span className="truncate">{job.experience}</span>
+              <span className="truncate">
+                {job.experience}{" "}
+                {!job?.experience?.includes("years") && "years"}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-purple-600 flex-shrink-0" />
@@ -89,17 +93,21 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
           </div>
 
           <div className="space-y-2">
-            {/* <p className="text-sm text-gray-700 line-clamp-2">
-              {job.jobDescription}
-            </p> */}
+            <p className="text-sm text-gray-700 line-clamp-2">
+              {job.jobDescription.slice(0, 100)}...
+            </p>
             <div className="flex flex-wrap gap-1">
               {job.skillsRequired.slice(0, 4).map((skill) => (
-                <Badge key={skill} variant="outline" className="text-xs">
+                <Badge
+                  key={skill}
+                  variant="outline"
+                  className="text-xs capitalize"
+                >
                   {skill}
                 </Badge>
               ))}
               {job.skillsRequired.length > 4 && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs ">
                   +{job.skillsRequired.length - 4} more
                 </Badge>
               )}

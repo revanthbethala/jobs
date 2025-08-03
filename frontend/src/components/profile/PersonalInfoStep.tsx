@@ -38,11 +38,11 @@ export default function PersonalInfoStep() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file size (2MB limit)
-      if (file.size > 2 * 1024 * 1024) {
+      // Validate file size (150kb limit)
+      if (file.size > 150 * 1024) {
         setErrors((prev) => ({
           ...prev,
-          profilePic: "Profile picture must be less than 2MB",
+          profilePic: "Profile picture must be less than 150KB",
         }));
         return;
       }
@@ -102,7 +102,7 @@ export default function PersonalInfoStep() {
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Profile Picture */}
-          {/* <div className="flex flex-col items-center space-y-4">
+          <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               {showProfilePic ? (
                 <img
@@ -159,7 +159,7 @@ export default function PersonalInfoStep() {
                 {errors.profilePic}
               </p>
             )}
-          </div> */}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Non-editable fields */}

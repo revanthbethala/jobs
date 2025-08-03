@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, useNavigate, Link } from "react-router-dom";
 import {
   User,
   Briefcase,
@@ -28,6 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Skeleton } from "./ui/skeleton";
 
 const SideNav = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -35,7 +36,7 @@ const SideNav = () => {
   const navigate = useNavigate();
   const { logOut } = useAuthStore();
   const isMobile = useIsMobile();
-  const { role } = useAuthStore();
+  const { role, username, email } = useAuthStore();
 
   // Handle responsive behavior
   useEffect(() => {
@@ -135,13 +136,18 @@ const SideNav = () => {
         <div>
           <div className="h-16 px-4 py-4 border-b border-gray-200/60 flex items-center justify-between">
             {(!isCollapsed || isMobile) && (
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
-                  <Briefcase className="h-4 w-4 text-white" />
-                </div>
-                <h1 className="text-lg font-semibold text-gray-900 tracking-tight">
-                  JobQuest
-                </h1>
+              <div className="flex items-center justify-center space-x-2">
+                <Link
+                  to="/jobs"
+                  className=" rounded-lg flex items-center justify-center"
+                >
+                  <div className="flex items-center  gap-4">
+                    <Briefcase className="h-6 w-6 text-brand-blue-dark" />
+                    <h1 className="text-lg font-bold tracking-loose">
+                      JobQuest
+                    </h1>
+                  </div>
+                </Link>
               </div>
             )}
 
@@ -203,21 +209,31 @@ const SideNav = () => {
         {/* User section and Logout */}
         <div className="border-t border-gray-200/60 p-3 space-y-2">
           {/* User info - only show when not collapsed */}
-          {/* {(!isCollapsed || isMobile) && (
-            <div className="flex items-center px-3 py-2 text-sm">
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <User className="h-4 w-4 text-gray-600" />
-              </div>
-              <div className="ml-3 flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  John Doe
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  john@example.com
-                </p>
-              </div>
+          {(!isCollapsed || isMobile) && (
+            <div className="flex items-center px-3 py-2 text-sm border-b border-gray-200 hover:bg-muted/95 rounded-lg">
+              {!username || !email ? (
+                <>
+                  <Skeleton className="w-8 h-8 rounded-full mr-3" />
+                  <div className="flex-1 space-y-1">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                    <User className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <div className="ml-1 flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {username}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">{email}</p>
+                  </div>
+                </>
+              )}
             </div>
-          )} */}
+          )}
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -278,9 +294,7 @@ const SideNav = () => {
             </Button>
 
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold capitalize">
-                Job Quest
-              </h1>
+              <h1 className="text-lg font-semibold capitalize">Job Quest</h1>
             </div>
           </header>
         )}

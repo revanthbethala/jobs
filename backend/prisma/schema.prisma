@@ -80,14 +80,16 @@ model Job {
   jobType        String?  @db.VarChar(100)
   postedDate     DateTime @default(now())
 
-  companyName    String           @db.VarChar(255)
-  companyWebsite String?          @db.VarChar(255)
-  companyLogo    String?          @db.VarChar(500)
-  companyEmail   String?          @db.VarChar(255)
-  companyPhone   String?          @db.VarChar(50)
-  applications   JobApplication[]
-  rounds         Round[]
-  roundResults   Results[]
+  companyName      String           @db.VarChar(255)
+  companyWebsite   String?          @db.VarChar(255)
+  companyLogo      String?          @db.VarChar(500)
+  companyEmail     String?          @db.VarChar(255)
+  companyPhone     String?          @db.VarChar(50)
+  serviceAgreement Int?             @default(0)
+  noOfVacancies    Int?             @default(1)
+  applications     JobApplication[]
+  rounds           Round[]
+  roundResults     Results[]
 
   lastDateToApply DateTime?
 
@@ -99,6 +101,7 @@ model Job {
 }
 
 enum Role {
+  SUPER_ADMIN
   ADMIN
   USER
 }

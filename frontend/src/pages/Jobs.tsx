@@ -42,7 +42,7 @@ export default function Jobs() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       {/* Top Filter Bar */}
       <TopFilterBar onOpenFilters={handleOpenFilters} />
 

@@ -1,6 +1,6 @@
 import { useDashboardStore } from "@/store/dashboardStore";
 import { motion } from "framer-motion";
-import { Briefcase, Users, Calendar } from "lucide-react";
+import { Briefcase, Users, Calendar, BriefcaseBusiness } from "lucide-react";
 import SpecializationChart from "../components/admin/dashboard/SpecializationChart";
 import StatCard from "../components/admin/dashboard/StatCard";
 import JobsTimelineChart from "../components/admin/dashboard/JobTimelineChart";
@@ -10,6 +10,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminDashboard } from "@/services/userServices";
 import { useEffect } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { setDashboardData } = useDashboardStore();
@@ -69,23 +72,13 @@ const Dashboard = () => {
             delay={0.2}
             color="green"
           />
-          {/* <StatCard
-            title="Total Applications"
-            value={totalApplications}
-            icon={Target}
-            delay={0.3}
-            color="purple"
-          /> */}
           <StatCard
             title="Peak Day Jobs"
             value={peakDate.count}
             suffix=""
             icon={Calendar}
             delay={0.4}
-            trend={`${new Date(peakDate.date).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}`}
+            trend={peakDate.date ? format(peakDate?.date, "yy/mm/dd") : null}
             color="orange"
           />
         </div>
@@ -111,7 +104,9 @@ const Dashboard = () => {
               </div>
             </>
           ) : (
-            <div className="text-red-600 flex items-center justify-center font-semibold">No data available</div>
+            <div className="text-red-600 flex items-center justify-center font-semibold">
+              No applications received
+            </div>
           )}
         </div>
 
@@ -126,24 +121,40 @@ const Dashboard = () => {
               <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
               Your Posted Jobs
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-              {jobSummaries.map((job, index) => (
-                <JobsInfo
-                  key={job.jobId}
-                  jobTitle={job.jobTitle}
-                  jobId={job.jobId}
-                  companyName={job.companyName}
-                  jobRole={job.jobRole}
-                  postedAt={job.postedAt}
-                  totalApplications={job.totalApplications}
-                  // qualificationRatio={job.qualificationRatio}
-                  totalRounds={job.totalRounds}
-                  specializationCounts={job.specializationCounts}
-                  index={index}
-                  peakJobsCount={peakDate.count}
-                  peakDate={peakDate.date}
-                />
-              ))}
+            <div
+              className={`${
+                jobSummaries.length > 0
+              } ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6':
+                null`}
+            >
+              {jobSummaries.length > 0 ? (
+                jobSummaries.map((job, index) => (
+                  <JobsInfo
+                    key={job.jobId}
+                    jobTitle={job.jobTitle}
+                    jobId={job.jobId}
+                    companyName={job.companyName}
+                    jobRole={job.jobRole}
+                    postedAt={job.postedAt}
+                    totalApplications={job.totalApplications}
+                    // qualificationRatio={job.qualificationRatio}
+                    totalRounds={job.totalRounds}
+                    specializationCounts={job.specializationCounts}
+                    index={index}
+                    peakJobsCount={peakDate.count}
+                    peakDate={peakDate.date}
+                  />
+                ))
+              ) : (
+                <div className=" flex flex-col items-center justify-center text-center text-gray-500 px-4">
+                  <BriefcaseBusiness className="w-16 h-16 mb-4 opacity-60" />
+                  <h3 className="text-lg font-semibold">No jobs posted yet</h3>
+                  <p className="text-sm mt-1">Click here to create one.</p>
+                  <Button className="mt-4 bg-brand-blue-light hover:bg-brand-blue-light/80">
+                    <Link to="/post-jobs">Post a Job</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

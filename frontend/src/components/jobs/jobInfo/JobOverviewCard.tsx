@@ -29,7 +29,7 @@ export function JobOverviewCard({
         <CardContent className="p-6 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
             {/* Left Section */}
-            <div className="flex flex-col sm:flex-row items-start gap-4 flex-1">
+            <div className="flex flex-col items-start gap-4 flex-1">
               <div className="flex gap-x-5 items-center">
                 {job.companyLogo && (
                   <div className="relative shrink-0">
@@ -118,7 +118,7 @@ export function JobOverviewCard({
 
               {job?.applications?.length > 0 && (
                 <span className="text-sm text-brand-blue-dark tracking-tight font-medium">
-                  {job.applications.length}+ students applied
+                  {job.applications.length}+ candidates applied
                 </span>
               )}
             </div>

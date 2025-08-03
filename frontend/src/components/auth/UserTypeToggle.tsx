@@ -6,7 +6,11 @@ export const UserTypeToggle = () => {
 
   const handleToggle = (type: UserType) => {
     setUserType(type);
-    setCurrentStep("login");
+    if (type === "user") {
+      setCurrentStep("login");
+    } else if (type === "admin") {
+      setCurrentStep("admin-accessKey");
+    }
   };
 
   return (
@@ -46,3 +50,4 @@ export const UserTypeToggle = () => {
     </div>
   );
 };
+export default UserTypeToggle;

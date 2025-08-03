@@ -1,13 +1,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/authStore";
-import { OtpVerification } from "@/components/auth/OtpVerification";
-import { ForgotPassword } from "@/components/auth/ForgotPassword";
-import { ResetPassword } from "@/components/auth/ResetPassword";
-import { SignupForm } from "@/components/auth/SignupForm";
-import { AdminLoginForm } from "@/components/auth/AdminLoginForm";
-import { LoginForm } from "@/components/auth/LoginForm";
 import { UserTypeToggle } from "@/components/auth/UserTypeToggle";
-import { LoginEmail } from "@/components/auth/LoginEmail";
+import { Suspense, lazy } from "react";
+import AdminAccessKey from "@/components/auth/AdminAccessKey";
+
+const OtpVerification = lazy(() => import("@/components/auth/OtpVerification"));
+const ForgotPassword = lazy(() => import("@/components/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/components/auth/ResetPassword"));
+const SignupForm = lazy(() => import("@/components/auth/SignupForm"));
+const AdminLoginForm = lazy(() => import("@/components/auth/AdminLoginForm"));
+const LoginForm = lazy(() => import("@/components/auth/LoginForm"));
+const LoginEmail = lazy(() => import("@/components/auth/LoginEmail"));
+const AdminSignupForm = lazy(() => import("@/components/auth/AdminSignUp"));
 
 const AuthPage = () => {
   const { userType, currentStep } = useAuthStore();
@@ -15,19 +19,23 @@ const AuthPage = () => {
   const year = date.getFullYear();
 
   const renderAuthComponent = () => {
+    console.log("current step", currentStep);
+    if (currentStep === "signup" && userType === "user") return <SignupForm />;
     if (currentStep === "otp") return <OtpVerification />;
     if (currentStep === "forgot-password") return <ForgotPassword />;
     if (currentStep === "reset-password") return <ResetPassword />;
     if (currentStep === "login-email") return <LoginEmail />;
-    if (currentStep === "signup" && userType === "user") return <SignupForm />;
-    if (userType === "admin") return <AdminLoginForm />;
+    if (currentStep === "admin-signup" && userType === "admin")
+      return <AdminSignupForm />;
+    if (currentStep === "admin-accessKey" && userType === "admin")
+      return <AdminAccessKey />;
+    if (currentStep === "admin-login") return <AdminLoginForm />;
     return <LoginForm />;
   };
 
   const hideToggle = ["otp", "forgot-password", "reset-password"].includes(
     currentStep
   );
-
 
   return (
     <div className="min-h-screen bg-gray-200/30 flex items-center justify-center px-4 py-8">

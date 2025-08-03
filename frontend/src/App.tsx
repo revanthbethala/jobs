@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useAuthStore } from "@/store/authStore";
@@ -16,7 +16,6 @@ const ProfileDisplay = lazy(
 const JobRounds = lazy(() => import("./components/admin/rounds/JobRounds"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const UsersInfo = lazy(() => import("./components/admin/usersInfo/UsersInfo"));
-import ExcelReader from "@/components/ExcelReader";
 const JobApplications = lazy(
   () => import("@/components/admin/JobApplications")
 );
@@ -30,12 +29,29 @@ const AppliedJobs = lazy(() => import("@/components/jobs/user/AppliedJobs"));
 const ProtectedRoute = lazy(
   () => import("@/components/landing/ProtectedRoute")
 );
-
 const PostedJobs = lazy(() => import("@/components/admin/PostedJobs"));
 const JobDetails = lazy(() => import("@/components/jobs/user/JobDetails"));
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "./services/profileService";
 
 export default function App() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["user-info"],
+    queryFn: getProfile,
+    enabled: isLoggedIn,
+  });
+
+  const { setEmail, setUserId, setUsername, setRole } = useAuthStore();
+
+  useEffect(() => {
+    if (!isLoading && !isError && data?.user) {
+      setEmail(data.user.email);
+      setUserId(data.user.id);
+      setUsername(data.user.username);
+      setRole(data.user.role);
+    }
+  }, [data, isLoading, isError, setEmail, setUserId, setUsername, setRole]);
 
   const router = createBrowserRouter([
     {
@@ -78,10 +94,6 @@ export default function App() {
               element: <JobDetailsPage />,
             },
           ],
-        },
-        {
-          path: "excel",
-          element: <ExcelReader />,
         },
         {
           path: "users",

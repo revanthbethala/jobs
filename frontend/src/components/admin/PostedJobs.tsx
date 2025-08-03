@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { deleteJob, getAllJobs } from "@/services/jobServices";
+import {
+  deleteJob,
+  getAllJobs,
+  jobsPostedByAdmin,
+} from "@/services/jobServices";
 import {
   Table,
   TableBody,
@@ -47,9 +51,14 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
 export default function MyJobsTable() {
-  const { data, isLoading, isError, refetch } = useQuery({
+  const {
+    data: jobsData,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["posted-jobs"],
-    queryFn: getAllJobs,
+    queryFn: jobsPostedByAdmin,
   });
 
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
@@ -109,6 +118,7 @@ export default function MyJobsTable() {
       <div className="p-4 text-red-600 font-medium">Failed to load jobs.</div>
     );
   }
+  const data = jobsData?.jobs;
   if (data.length === 0) {
     return (
       <div className="h-[calc(100vh-150px)] flex flex-col items-center justify-center text-center text-gray-500 px-4">

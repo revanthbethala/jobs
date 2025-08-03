@@ -42,6 +42,7 @@ export interface JobFilters {
   status: string; // Replace companyName with status
   salaryRange: string;
   experience: string;
+  jobType: string;
   postedDate: string;
   eligibility: string;
 }

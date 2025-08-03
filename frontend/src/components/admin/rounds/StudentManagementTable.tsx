@@ -52,7 +52,7 @@ function StudentManagementTable() {
   const roundId = round?.id;
   const isEnabled = !!jobId && !!roundName;
   const { showRoundData } = useJobRoundsStore();
-  const { data, isLoading, error, isError } = useQuery({
+  const { data, isLoading, error, isError, refetch } = useQuery({
     queryKey: ["round-details", jobId, roundName, showRoundData],
     queryFn: () => getSpecificRoundResults(jobId!, roundName!),
     enabled: isEnabled,
@@ -92,6 +92,7 @@ function StudentManagementTable() {
       toast({
         title: "User deleted successfully",
       });
+      refetch();
     } catch (err) {
       console.log(err);
       toast({
@@ -197,6 +198,10 @@ function StudentManagementTable() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>
+                  <input type="checkbox" />
+                  Select Users
+                </TableHead>
                 <TableHead>Full Name</TableHead>
                 <TableHead>Username</TableHead>
                 <TableHead>Email</TableHead>
@@ -212,6 +217,10 @@ function StudentManagementTable() {
                 if (result.status !== "Qualified") return null;
                 return (
                   <TableRow key={result.id}>
+                    <TableCell>
+                      <Input type="checkbox" />
+                    </TableCell>
+
                     <TableCell>
                       {user.firstName} {user.lastName}
                     </TableCell>
@@ -255,7 +264,7 @@ function StudentManagementTable() {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               This action cannot be undone. This will
-                              permanently delete this round.
+                              permanently delete this user.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
 

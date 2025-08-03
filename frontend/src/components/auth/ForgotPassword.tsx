@@ -36,7 +36,7 @@ export const ForgotPassword = () => {
       });
       setCurrentStep("reset-password");
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast({
         title: "Error",
         description: "Failed to send reset code. Please try again.",
@@ -133,3 +133,4 @@ export const ForgotPassword = () => {
     </div>
   );
 };
+export default ForgotPassword;

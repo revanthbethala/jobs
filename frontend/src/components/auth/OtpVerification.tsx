@@ -16,7 +16,7 @@ export const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(30);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { email, setCurrentStep, setAuthenticated } = useAuthStore();
+  const { email, setCurrentStep } = useAuthStore();
   const { toast } = useToast();
   const {
     handleSubmit,
@@ -85,7 +85,6 @@ export const OtpVerification = () => {
           description:
             "Your account has been successfully verified.Please Login to Continue",
         });
-        setAuthenticated(true);
         setCurrentStep("login");
       } else if (res === 400 || res === 401) {
         setOtp(["", "", "", "", "", ""]);
@@ -107,7 +106,8 @@ export const OtpVerification = () => {
       console.error("OTP verification failed:", error);
       toast({
         title: "Network or Server Error",
-        description: error?.message || "Unable to verify at this time.",
+        description:
+          error?.response?.message || "Unable to verify at this time.",
         variant: "destructive",
       });
     }
@@ -192,3 +192,4 @@ export const OtpVerification = () => {
     </div>
   );
 };
+export default OtpVerification;

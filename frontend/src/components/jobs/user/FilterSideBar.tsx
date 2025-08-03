@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { X, Filter, RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 import { useJobStore } from "@/store/jobStore";
+import { JOB_TYPE_OPTIONS } from "@/lib/constants";
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -188,6 +189,30 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                 </div>
 
                 {/* Posted Date */}
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    Job Type
+                  </Label>
+                  <Select
+                    value={filters.jobType}
+                    onValueChange={(value) =>
+                      handleFilterChange("jobType", value)
+                    }
+                  >
+                    <SelectTrigger className="h-11 border-gray-300 focus:border-brand-blue-light">
+                      <SelectValue placeholder="Select job type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {JOB_TYPE_OPTIONS.map((jobType) => (
+                        <SelectItem className="" value={jobType.value}>
+                          {jobType.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>

@@ -87,7 +87,7 @@ const SpecializationChart = ({ data }: SpecializationChartProps) => {
       transition={{ duration: 0.6, delay: 0.4 }}
       className="h-full"
     >
-      <Card className="bg-gradient-to-br from-white to-blue-50/50 shadow-sm border-0 shadow-lg h-full flex flex-col">
+      <Card className="bg-gradient-to-br from-white to-blue-50/50  border-0 shadow-lg h-full flex flex-col">
         <CardHeader className="pb-3 flex-shrink-0">
           <CardTitle className="text-base md:text-lg font-semibold flex items-center gap-2">
             <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-sm">
@@ -111,7 +111,7 @@ const SpecializationChart = ({ data }: SpecializationChartProps) => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={renderCustomizedLabel}
+                  // label={renderCustomizedLabel}
                   outerRadius={90}
                   innerRadius={40}
                   fill="#8884d8"

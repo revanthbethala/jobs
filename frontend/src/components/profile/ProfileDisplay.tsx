@@ -6,7 +6,6 @@ import {
   MapPin,
   Calendar,
   GraduationCap,
-  FileText,
   Building,
   Download,
   CheckCircle,
@@ -26,7 +25,6 @@ export default function ProfileDisplay() {
     queryKey: ["profileData"],
     queryFn: getProfile,
   });
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -107,13 +105,11 @@ export default function ProfileDisplay() {
                 >
                   <a
                     href={import.meta.env.VITE_BACKEND_URL + data.resume}
-                    download
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Download Resume</span>
+                    <span>View Resume</span>
                   </a>
                 </Button>
               )}
