@@ -36,7 +36,7 @@ export const AdminLoginForm = () => {
       console.log(res);
       toast({
         title: "Login Successful!",
-        description: "Welcome back to JobQuest.",
+        description: "Welcome back to Hive.",
       });
       const role = res?.user?.role;
       const { token } = res;

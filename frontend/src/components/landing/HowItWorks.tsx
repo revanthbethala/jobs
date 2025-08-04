@@ -78,7 +78,7 @@ const HowItWorks = () => {
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Follow our simple 4-step process to find and land your dream job
-            with JobQuest.
+            with Hive.
           </p>
         </motion.div>
 
@@ -185,7 +185,7 @@ const HowItWorks = () => {
             </h3>
             <p className="text-gray-600 mb-6">
               Join thousands of professionals who have transformed their careers
-              with JobQuest.
+              with Hive.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}

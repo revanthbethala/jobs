@@ -144,7 +144,7 @@ const SideNav = () => {
                   <div className="flex items-center  gap-4">
                     <Briefcase className="h-6 w-6 text-brand-blue-dark" />
                     <h1 className="text-lg font-bold tracking-loose">
-                      JobQuest
+                      Hive
                     </h1>
                   </div>
                 </Link>
@@ -294,14 +294,14 @@ const SideNav = () => {
             </Button>
 
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-semibold capitalize">Job Quest</h1>
+              <h1 className="text-lg font-semibold capitalize">Hive</h1>
             </div>
           </header>
         )}
 
         {/* Page content */}
         <main className="flex-1">
-          <div className="p-4 md:p-6 lg:p-8">
+          <div className="p-1 md:p-6 lg:p-8">
             <Outlet />
           </div>
         </main>

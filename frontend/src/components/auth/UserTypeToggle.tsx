@@ -7,9 +7,9 @@ export const UserTypeToggle = () => {
   const handleToggle = (type: UserType) => {
     setUserType(type);
     if (type === "user") {
-      setCurrentStep("login");
+      setCurrentStep("signup");
     } else if (type === "admin") {
-      setCurrentStep("admin-accessKey");
+      setCurrentStep("admin-signup");
     }
   };
 

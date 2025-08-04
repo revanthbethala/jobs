@@ -3,8 +3,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useAuthStore } from "@/store/authStore";
 import LoadingSpinner from "./components/LoadingSpinner";
-import AdminDashboard from "./pages/AdminDashboard";
-import JobDetailsPage from "./pages/JobDetailsPage";
+
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const JobDetailsPage = lazy(() => import("./pages/JobDetailsPage"));
 
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const AuthPage = lazy(() => import("@/pages/AuthPage"));
@@ -31,18 +32,27 @@ const ProtectedRoute = lazy(
 );
 const PostedJobs = lazy(() => import("@/components/admin/PostedJobs"));
 const JobDetails = lazy(() => import("@/components/jobs/user/JobDetails"));
+
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "./services/profileService";
 
 export default function App() {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+  const { token, logOut } = useAuthStore();
+  const { setEmail, setUserId, setUsername, setRole } = useAuthStore();
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["user-info"],
     queryFn: getProfile,
     enabled: isLoggedIn,
   });
 
-  const { setEmail, setUserId, setUsername, setRole } = useAuthStore();
+  useEffect(() => {
+    if (!token) {
+      logOut();
+      // Redirect should be handled within a layout component (not here)
+    }
+  }, [token, logOut]);
 
   useEffect(() => {
     if (!isLoading && !isError && data?.user) {
@@ -79,7 +89,7 @@ export default function App() {
           ),
         },
         {
-          path: "/dashboard",
+          path: "dashboard",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
               <ProtectedRoute allowedRoles={["ADMIN"]}>
@@ -89,10 +99,7 @@ export default function App() {
           ),
           children: [
             { index: true, element: <Dashboard /> },
-            {
-              path: "jobs/:jobId",
-              element: <JobDetailsPage />,
-            },
+            { path: "jobs/:jobId", element: <JobDetailsPage /> },
           ],
         },
         {

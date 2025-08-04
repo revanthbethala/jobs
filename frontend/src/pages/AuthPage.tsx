@@ -53,7 +53,7 @@ const AuthPage = () => {
               transition={{ delay: 0.2 }}
               className="text-4xl font-extrabold text-white"
             >
-              JobQuest
+              Hive
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
@@ -95,7 +95,7 @@ const AuthPage = () => {
           transition={{ delay: 0.8 }}
           className="text-center mt-8  text-sm tracking-wide"
         >
-          © {year} <span className="font-semibold">JobQuest</span>. All rights
+          © {year} <span className="font-semibold">Hive</span>. All rights
           reserved.
         </motion.div>
       </div>

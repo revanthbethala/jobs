@@ -322,7 +322,7 @@ export const sendRoundResultEmail = async (
   opportunityLink: string = 'https://jobquest.com/opportunities'
 ): Promise<void> => {
   const isQualified = status === 'Qualified';
-  
+
   const roundResultTemplate = `
   <!DOCTYPE html>
   <html lang="en">
@@ -409,9 +409,10 @@ export const sendRoundResultEmail = async (
               text-transform: uppercase;
               letter-spacing: 1px;
               margin-bottom: 30px;
-              ${isQualified 
-                ? 'background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);'
-                : 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);'
+              ${
+                isQualified
+                  ? 'background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);'
+                  : 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);'
               }
           }
           
@@ -608,10 +609,11 @@ export const sendRoundResultEmail = async (
               <h1 class="round-name">${roundName}</h1>
               
               <div class="message">
-                  ${isQualified 
-                    ? `<p><strong>Congratulations!</strong> You have successfully <strong>qualified</strong> for the <strong>${roundName}</strong> round.</p>
+                  ${
+                    isQualified
+                      ? `<p><strong>Congratulations!</strong> You have successfully <strong>qualified</strong> for the <strong>${roundName}</strong> round.</p>
                        <p>Your performance was outstanding and we're excited to see you move forward in the process.</p>`
-                    : `<p>Thank you for your participation in the <strong>${roundName}</strong> round.</p>
+                      : `<p>Thank you for your participation in the <strong>${roundName}</strong> round.</p>
                        <p>While you haven't qualified this time, we appreciate your effort and encourage you to explore other opportunities with us.</p>`
                   }
               </div>
@@ -619,12 +621,13 @@ export const sendRoundResultEmail = async (
               <div class="next-steps">
                   <h3>
                       <span class="next-steps-icon">${isQualified ? '🚀' : '🔍'}</span>
-                      ${isQualified ? 'What\'s Next?' : 'Keep Exploring'}
+                      ${isQualified ? "What's Next?" : 'Keep Exploring'}
                   </h3>
                   <p>
-                      ${isQualified 
-                        ? 'Stay tuned for the next round instructions. We\'ll send you detailed information about the upcoming assessment within the next 24-48 hours.'
-                        : 'Don\'t let this stop you! We have many other exciting opportunities that might be perfect for your skills and experience.'
+                      ${
+                        isQualified
+                          ? "Stay tuned for the next round instructions. We'll send you detailed information about the upcoming assessment within the next 24-48 hours."
+                          : "Don't let this stop you! We have many other exciting opportunities that might be perfect for your skills and experience."
                       }
                   </p>
               </div>
@@ -687,7 +690,6 @@ export const sendJobApplicationEmail = async (
   companyName: string,
   dashboardLink: string = 'https://jobquest.com/dashboard'
 ): Promise<void> => {
-  
   const jobApplicationTemplate = `
   <!DOCTYPE html>
   <html lang="en">
@@ -1191,7 +1193,6 @@ export const sendJobPostedEmail = async (
   lastDateToApply: string,
   applyLink: string = 'https://jobquest.com/jobs'
 ): Promise<void> => {
-
   const jobNotificationTemplate = `
   <!DOCTYPE html>
   <html lang="en">
@@ -1730,4 +1731,3 @@ export const sendJobPostedEmail = async (
     throw error;
   }
 };
-

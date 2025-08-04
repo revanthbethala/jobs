@@ -43,7 +43,9 @@ export const SignupForm = () => {
     } catch (error) {
       toast({
         title: "Signup Failed",
-        description: "Something went wrong. Please try again.",
+        description:
+          error.response.data.message ||
+          "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }
@@ -60,7 +62,7 @@ export const SignupForm = () => {
           Create Account
         </h2>
         <p className="text-gray-600 text-sm">
-          Join JobQuest and start your career journey
+          Join Hive and start your career journey
         </p>
       </motion.div>
 

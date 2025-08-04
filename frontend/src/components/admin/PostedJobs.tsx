@@ -170,7 +170,7 @@ export default function MyJobsTable() {
           placeholder="Search by job title..."
           className="w-full sm:w-1/2 p-2 border text-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <Badge variant="outline">{filteredJobs.length} application(s)</Badge>
+        <Badge variant="outline">{filteredJobs.length} jobs(s) posted</Badge>
       </div>
 
       {/* Table */}

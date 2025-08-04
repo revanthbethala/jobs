@@ -112,7 +112,7 @@ export const FileInput: React.FC<FileInputProps> = ({
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
 
-      {currentPreview ? (
+      {previewUrl ? (
         <div className="relative w-32 h-32 rounded overflow-hidden border group">
           <img
             src={currentPreview}

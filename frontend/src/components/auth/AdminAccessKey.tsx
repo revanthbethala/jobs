@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,14 +7,10 @@ import { useAuthStore } from "@/store/authStore";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { userSignUp } from "@/services/authService";
 
 const accessKeySchema = z.object({
-  accessKey: z
-    .string()
-    .regex(
-      /^[a-zA-Z0-9!@#$%^&*()_+\-=\\[\]{};':"\\|,.<>/?]{8}$/,
-      "Access Key must be 8 characters with letters, numbers, or symbols"
-    ),
+  accessKey: z.string(),
 });
 
 type AccessKeyForm = z.infer<typeof accessKeySchema>;
@@ -23,7 +18,7 @@ type AccessKeyForm = z.infer<typeof accessKeySchema>;
 export const AdminAccessKey = () => {
   const { setCurrentStep } = useAuthStore();
   const { toast } = useToast();
-
+  const { username, password, email } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -32,19 +27,28 @@ export const AdminAccessKey = () => {
     resolver: zodResolver(accessKeySchema),
   });
 
-  const onSubmit = (data: AccessKeyForm) => {
-    const VALID_KEY = "Bit12345";
-
-    if (data.accessKey === VALID_KEY) {
+  const onSubmit = async (data: AccessKeyForm) => {
+    try {
+      const updated_data = {
+        passkey: data.accessKey,
+        username,
+        password,
+        email,
+        role: "ADMIN",
+      };
+      const res = await userSignUp(updated_data);
+      console.log(res);
       toast({
-        title: "Access Granted",
-        description: "You may now create an Admin account.",
+        title: "Admin Account Created",
+        description: "Check your inbox for OTP verification.",
       });
-      setCurrentStep("admin-login");
-    } else {
+      setCurrentStep("otp");
+    } catch (err) {
       toast({
         title: "Invalid Key",
-        description: "The access key you entered is not valid.",
+        description:
+          err.response.data.message ||
+          "The access key you entered is not valid.",
         variant: "destructive",
       });
     }
@@ -78,7 +82,6 @@ export const AdminAccessKey = () => {
           <Input
             type="text"
             placeholder="Enter Access Key"
-            maxLength={8}
             className="text-center tracking-widest font-semibold"
             {...register("accessKey")}
           />
@@ -104,9 +107,15 @@ export const AdminAccessKey = () => {
         </motion.div>
       </form>
 
-      {/* <div className="text-center text-sm text-gray-500 mt-2">
-        Contact your system administrator if you do not have an access key.
-      </div> */}
+      <div className="text-center text-sm  mt-2">
+        Back to SignUp?{" "}
+        <span
+          className="font-medium text-brand-blue-light cursor-pointer"
+          onClick={() => setCurrentStep("admin-signup")}
+        >
+          SignUp
+        </span>
+      </div>
     </div>
   );
 };

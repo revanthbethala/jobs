@@ -67,13 +67,13 @@ const About = () => {
             variant="outline"
             className="mb-4 text-brand-blue-dark border-brand-blue-dark"
           >
-            About JobQuest
+            About Hive
           </Badge>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-brand-gray-dark mb-6">
             Revolutionizing Job Search
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            At JobQuest, we believe that finding the right job should be an
+            At Hive, we believe that finding the right job should be an
             exciting journey, not a frustrating process. Our mission is to
             connect talented professionals with innovative companies through
             intelligent matching and personalized experiences.

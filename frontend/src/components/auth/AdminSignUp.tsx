@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Loader2, Mail, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { signupSchema, SignupFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
@@ -29,18 +29,13 @@ export const AdminSignupForm = () => {
       setEmail(data.email);
       setUsername(data.username);
       setPassword(data.password);
-      const updated_data = { ...data, role: "ADMIN" };
-      const res = await userSignUp(updated_data);
-      console.log(res);
-      toast({
-        title: "Admin Account Created",
-        description: "Check your inbox for OTP verification.",
-      });
-      setCurrentStep("otp");
+      setCurrentStep("admin-accessKey");
     } catch (error) {
       toast({
         title: "Signup Failed",
-        description: "Something went wrong. Please try again.",
+        description:
+          error.response.data.message ||
+          "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }
@@ -58,7 +53,7 @@ export const AdminSignupForm = () => {
           Admin Registration
         </h2>
         <p className="text-gray-600 text-sm">
-          Register to manage your institution's JobQuest portal
+          Register to manage your institution's Hive portal
         </p>
       </motion.div>
 
@@ -165,7 +160,13 @@ export const AdminSignupForm = () => {
             disabled={isSubmitting}
             className="w-full bg-brand-blue-light hover:bg-brand-blue-dark"
           >
-            {isSubmitting ? "Registering..." : "Register as Admin"}
+            {isSubmitting ? (
+              <span className="flex gap-2 items-center justify-center">
+                <Loader2 className="animate-spin" /> Registering...
+              </span>
+            ) : (
+              "Register as Admin"
+            )}
           </Button>
         </motion.div>
       </form>

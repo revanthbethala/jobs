@@ -102,7 +102,7 @@ const Footer = () => {
           viewport={{ once: true }}
           className="py-6 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 text-sm text-blue-200"
         >
-          <div>© 2025 JobQuest. All rights reserved.</div>
+          <div>© 2025 Hive. All rights reserved.</div>
           <div>💙 Made by Shuriken</div>
         </motion.div>
       </div>

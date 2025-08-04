@@ -31,7 +31,7 @@ export const LoginForm = () => {
       const res = await userLogin(new_data);
       toast({
         title: "Login Successful!",
-        description: "Welcome back to JobQuest.",
+        description: "Welcome back to Hive.",
       });
       const role = res?.user?.role;
       const { token } = res;

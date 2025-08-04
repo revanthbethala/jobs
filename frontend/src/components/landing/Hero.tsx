@@ -54,7 +54,7 @@ const Hero = () => {
           >
             Find Your Dream Job with{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-blue-100">
-              JobQuest
+              Hive
             </span>
           </motion.h1>
 

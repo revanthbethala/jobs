@@ -88,16 +88,7 @@ const Header = () => {
                 isScrolled ? "text-gray-900" : "text-white"
               }`}
             >
-              Job
-              <span
-                className={`${
-                  isScrolled
-                    ? "text-brand-blue-light" // or adjust if you want a different shade
-                    : "text-brand-blue-light"
-                }`}
-              >
-                Quest
-              </span>
+              Hive
             </h1>
           </motion.div>
 
