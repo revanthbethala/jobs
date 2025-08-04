@@ -59,7 +59,6 @@ export default function App() {
       setEmail(data.user.email);
       setUserId(data.user.id);
       setUsername(data.user.username);
-      setRole(data.user.role);
     }
   }, [data, isLoading, isError, setEmail, setUserId, setUsername, setRole]);
 

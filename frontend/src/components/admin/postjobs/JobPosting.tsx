@@ -64,7 +64,7 @@ const buildFormData = (data: JobFormData): FormData => {
   }
 
   // Handle interview rounds - send as JSON string for backend parsing
-  
+
   const interviewRoundsArray = Array.isArray(interviewRounds)
     ? interviewRounds.map((round) => ({
         roundNumber: round.roundNumber,
@@ -78,7 +78,6 @@ const buildFormData = (data: JobFormData): FormData => {
   if (skillsRequired && skillsRequired.length > 0) {
     formData.append("skillsRequired", skillsRequired.join(","));
   }
-
   // Handle allowedBranches – send each item separately
 
   if (allowedBranches && allowedBranches.length > 0) {
@@ -383,6 +382,7 @@ const JobPostingForm = () => {
         lastDateToApply: jobData.lastDateToApply
           ? new Date(jobData.lastDateToApply)
           : undefined,
+        noOfVacancies: jobData?.numberOfVacancies,
         allowedBranches: jobData.allowedBranches || [],
         allowedPassingYears: (jobData.allowedPassingYears || []).map(String),
         skillsRequired: jobData.skillsRequired || [],
