@@ -60,6 +60,7 @@ const initialFormData: JobFormData = {
 const initialFilters: JobFilters = {
   searchTitle: "",
   jobType: "",
+  location: "",
   status: "",
   salaryRange: "",
   experience: "",
@@ -229,6 +230,8 @@ export const useJobStore = create<JobStore>((set, get) => ({
       const now = new Date();
       filtered = filtered.filter((job) => {
         const postedDate = new Date(job.postedDate);
+        console.log("Posted date", postedDate);
+
         const diffTime = Math.abs(now.getTime() - postedDate.getTime());
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         switch (filters.postedDate) {
@@ -245,6 +248,11 @@ export const useJobStore = create<JobStore>((set, get) => ({
     }
     if (filters.jobType) {
       filtered = filtered.filter((job) => job.jobType === filters.jobType);
+    }
+    if (filters.location) {
+      filtered = filtered.filter((job) =>
+        job.location?.toLowerCase().includes(filters.location.toLowerCase())
+      );
     }
 
     set({ filteredJobs: filtered });

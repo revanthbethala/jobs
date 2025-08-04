@@ -29,7 +29,7 @@ export function TopFilterBar({ onOpenFilters }: TopFilterBarProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div className="container mx-auto px-4 py-4">
+      <div className=" mx-auto px-4 py-4">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           {/* Search Bar */}
           <div className="relative flex-1 max-w-md w-full">

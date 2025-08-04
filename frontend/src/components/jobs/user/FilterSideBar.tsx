@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { X, Filter, RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 import { useJobStore } from "@/store/jobStore";
-import { JOB_TYPE_OPTIONS } from "@/lib/constants";
+import { JOB_TYPE_OPTIONS, LOCATIONS } from "@/lib/constants";
 
 interface FilterSidebarProps {
   isOpen: boolean;
@@ -74,7 +74,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
           >
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="sticky top-0  border-b border-gray-200 p-6 z-10">
+              <div className=" border-b border-gray-200 p-6 z-10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-gradient-to-br from-brand-blue-light to-brand-blue-dark rounded-lg">
@@ -102,40 +102,6 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
               {/* Filter Content */}
               <div className="flex-1 p-6 space-y-6">
-                {/* Application Status */}
-                {/* <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-brand-blue-light rounded-full"></div>
-                    Application Status
-                  </Label>
-                  <Select value={filters.status} onValueChange={(value) => handleFilterChange("status", value)}>
-                    <SelectTrigger className="h-11 border-gray-300 focus:border-brand-blue-light">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Applications</SelectItem>
-                      <SelectItem value="pending">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-yellow-600" />
-                          Pending
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="accepted">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          Accepted
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="rejected">
-                        <div className="flex items-center gap-2">
-                          <XCircle className="w-4 h-4 text-red-600" />
-                          Rejected
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div> */}
-
                 {/* Salary Range */}
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
@@ -164,7 +130,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                 {/* Experience */}
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                     Experience Level
                   </Label>
                   <Select
@@ -188,7 +154,6 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                   </Select>
                 </div>
 
-                {/* Posted Date */}
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -213,6 +178,29 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                   </Select>
                 </div>
 
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    Location
+                  </Label>
+                  <Select
+                    value={filters.location}
+                    onValueChange={(value) =>
+                      handleFilterChange("location", value)
+                    }
+                  >
+                    <SelectTrigger className="h-11 border-gray-300 focus:border-brand-blue-light">
+                      <SelectValue placeholder="Select Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LOCATIONS.map((loc) => (
+                        <SelectItem className="" value={loc}>
+                          {loc}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                     <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
@@ -292,7 +280,7 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
               </div>
 
               {/* Footer */}
-              <div className="sticky bottom-0  border-t border-gray-200 p-6 space-y-3">
+              <div className="  border-t border-gray-200 p-6 space-y-3">
                 <Button
                   onClick={handleClearFilters}
                   variant="outline"

@@ -110,6 +110,29 @@ export const JOB_SECTOR_OPTIONS = [
   { value: "Other", label: "Other" },
 ];
 
+export const LOCATIONS = [
+  "Bengaluru",
+  "Hyderabad",
+  "Pune",
+  "Chennai",
+  "Gurugram",
+  "Noida",
+  "Mumbai",
+  "Delhi",
+  "Kolkata",
+  "Ahmedabad",
+  "Mohali",
+  "Jaipur",
+  "Indore",
+  "Coimbatore",
+  "Trivandrum",
+  "Kochi",
+  "Nagpur",
+  "Mysuru",
+  "Bhubaneswar",
+  "Visakhapatnam",
+];
+
 const currentYear = new Date().getFullYear();
 
 export const PASSING_YEAR_OPTIONS = Array.from(

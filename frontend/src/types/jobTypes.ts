@@ -39,6 +39,7 @@ export interface AppliedJob {
 
 export interface JobFilters {
   searchTitle: string;
+  location: string;
   status: string; // Replace companyName with status
   salaryRange: string;
   experience: string;
