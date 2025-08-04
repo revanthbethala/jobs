@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import Cookies from "js-cookie";
+import { Navigate } from "react-router-dom";
 
 export type UserType = "user" | "admin";
 export type AuthStep =
