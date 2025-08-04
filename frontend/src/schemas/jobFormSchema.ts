@@ -19,7 +19,7 @@ export const jobFormSchema = z.object({
   experience: z.string().min(1, "Experience is required"),
   jobRole: z.string().min(1, "Job role is required"),
   jobType: z.string().min(1, "Job type is required"),
-  jobSector: z.string().min(1, "Job sector is required"),
+  jobSector: z.string().optional().nullable(),
   customSector: z.string().optional(),
 
   // Company Information

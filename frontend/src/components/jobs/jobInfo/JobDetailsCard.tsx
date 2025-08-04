@@ -31,14 +31,16 @@ export function JobDetailsCard({ job, itemVariants }: JobDetailsCardProps) {
             <span className="text-sm text-gray-500">Job Type</span>
             <Badge variant="outline">{job.jobType}</Badge>
           </div>
+          <hr />
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-500">No. of Vacancies</span>
+            {job.noOfVacancies}
+          </div>
         </CardContent>
       </Card>
     </motion.div>
   );
 }
-
-
-
 
 interface CompanyContactCardProps {
   companyWebsite?: string;

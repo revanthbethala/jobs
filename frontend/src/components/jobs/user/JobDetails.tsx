@@ -103,7 +103,8 @@ export default function JobDetails() {
       setJobStatus("Pending");
       toast({
         title: "Applied to job successfully",
-        description:"Your application had been sent to recruiter.Please wait for further instructions"
+        description:
+          "Your application had been sent to recruiter.Please wait for further instructions",
       });
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -206,6 +207,7 @@ export default function JobDetails() {
               {/* Interview Process - TOP PRIORITY */}
               <JobDescription
                 description={job.jobDescription}
+                serviceAgreement={job.serviceAgreement}
                 isExpanded={isDescriptionExpanded}
                 onToggleExpanded={() =>
                   setIsDescriptionExpanded(!isDescriptionExpanded)

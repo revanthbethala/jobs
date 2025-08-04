@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface JobDescriptionProps {
   description: string;
+  serviceAgreement: string;
   isExpanded: boolean;
   onToggleExpanded: () => void;
   itemVariants: Variants;
@@ -12,6 +13,7 @@ interface JobDescriptionProps {
 
 export function JobDescription({
   description,
+  serviceAgreement,
   isExpanded,
   onToggleExpanded,
   itemVariants,
@@ -19,7 +21,7 @@ export function JobDescription({
   const shouldShowToggle = description.length > 300;
 
   return (
-    <motion.div variants={itemVariants}>
+    <motion.div variants={itemVariants} className="space-y-3">
       <Card className="border-0 shadow-lg">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl">Job Description</CardTitle>
@@ -66,6 +68,27 @@ export function JobDescription({
                   )}
                 </motion.div>
               )}
+            </AnimatePresence>
+          </div>
+        </CardContent>
+      </Card>
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl">Service Agreement</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key="collapsed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <p className="text-gray-700 leading-relaxed">
+                  {serviceAgreement}
+                </p>
+              </motion.div>
             </AnimatePresence>
           </div>
         </CardContent>

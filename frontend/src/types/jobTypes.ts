@@ -17,6 +17,8 @@ export interface Job {
   companyEmail: string;
   applications: object[];
   companyPhone: string;
+  noOfVacancies: number | null | undefined;
+  serviceAgreement: string | null | undefined;
   lastDateToApply: string;
   allowedBranches: string[];
   allowedPassingYears: string[];
