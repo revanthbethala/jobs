@@ -40,6 +40,7 @@ import {
 } from "@/lib/constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { watch } from "fs";
 
 const buildFormData = (data: JobFormData): FormData => {
   const {
@@ -122,6 +123,7 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
             registration={register("jobRole")}
             error={errors.jobRole?.message}
             required
+            value={watch("jobRole")}
           />
         </div>
 
@@ -203,12 +205,14 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
             options={JOB_TYPE_OPTIONS}
             registration={register("jobType")}
             error={errors.jobType?.message}
+            value={watch("jobType")}
             required
           />
           <SelectInput
             label="Job Sector"
             options={JOB_SECTOR_OPTIONS}
             registration={register("jobSector")}
+            value={watch("jobSector")}
             error={errors.jobSector?.message}
           />
         </div>

@@ -77,7 +77,7 @@ export const JOB_ROLE_OPTIONS = [
   { value: "system-admin", label: "System Administrator" },
   { value: "support-engineer", label: "Support Engineer" },
   { value: "researcher", label: "Research Scientist" },
-  { value: "intern", label: "Intern" },
+  { value: "ai-engineer", label: "AI Engineer" },
 ];
 
 export const JOB_TYPE_OPTIONS = [
@@ -96,6 +96,7 @@ export const BRANCH_OPTIONS = [
   { value: "IT", label: "IT" },
   { value: "MECH", label: "MECH" },
   { value: "EEE", label: "EEE" },
+  { value: "CIVIL", label: "CIVIL" },
   { value: "ECE", label: "ECE" },
   { value: "CSE-R", label: "CSE-R" },
 ];

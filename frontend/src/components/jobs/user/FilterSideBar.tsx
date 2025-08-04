@@ -22,7 +22,8 @@ interface FilterSidebarProps {
 }
 
 export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
-  const { filters, setFilters, clearFilters, filteredJobs } = useJobStore();
+  const { filters, setFilters, clearFilters, filteredJobs, jobs } =
+    useJobStore();
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ [key]: value });
@@ -193,9 +194,9 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                       <SelectValue placeholder="Select Location" />
                     </SelectTrigger>
                     <SelectContent>
-                      {LOCATIONS.map((loc) => (
-                        <SelectItem className="" value={loc}>
-                          {loc}
+                      {jobs.map((job) => (
+                        <SelectItem className="" value={job?.location}>
+                          {job?.location}
                         </SelectItem>
                       ))}
                     </SelectContent>

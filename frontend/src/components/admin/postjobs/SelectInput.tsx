@@ -143,7 +143,7 @@ interface SelectInputProps {
   registration: UseFormRegisterReturn;
   className?: string;
   required?: boolean;
-  value?: string; // 🔹 Add this
+  value?; // 🔹 Add this
 }
 
 export const SelectInput: React.FC<SelectInputProps> = ({
@@ -154,7 +154,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
   registration,
   className,
   required = false,
-  // value, // 🔹 Receive current value from parent form
+  value, // 🔹 Receive current value from parent form
 }) => {
   return (
     <FormField
@@ -164,7 +164,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       className={className}
     >
       <Select
-        // value={value}
+        value={value}
         onValueChange={(value) =>
           registration.onChange({
             target: { name: registration.name, value },

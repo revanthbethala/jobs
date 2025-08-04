@@ -35,9 +35,7 @@ const Footer = () => {
               viewport={{ once: true }}
               className="lg:col-span-2"
             >
-              <h2 className="text-2xl font-bold mb-4">
-                Job<span className="text-brand-blue-light">Quest</span>
-              </h2>
+              <h2 className="text-2xl font-bold mb-4">Hive</h2>
               <p className="text-blue-200 mb-6 leading-relaxed">
                 Empowering careers and connecting talent with opportunity. Your
                 journey to professional success starts here.
