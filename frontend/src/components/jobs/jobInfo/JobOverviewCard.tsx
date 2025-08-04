@@ -88,7 +88,6 @@ export function JobOverviewCard({
               <p className="text-lg sm:text-xl font-bold capitalize text-gray-800">
                 Salary: {job.salary}
               </p>
-
               {role === "USER" && (
                 <>
                   {jobStatus ? (

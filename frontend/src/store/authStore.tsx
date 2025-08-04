@@ -46,7 +46,7 @@ interface AuthState {
 
 // Get token and userId from cookies
 const storedToken = Cookies.get("token") || "";
-// const storedRole = Cookies.get("role") || null;
+const storedRole = Cookies.get("role") || null;
 
 export const useAuthStore = create<AuthState>((set) => ({
   userType: "user",
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: storedToken,
   isLoggedIn: !!storedToken,
   userId: "",
-  role: "USER",
+  role: storedRole,
 
   setUserType: (type) => set({ userType: type }),
   setCurrentStep: (step) => set({ currentStep: step }),
@@ -71,6 +71,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   loginToken: (token, role, email, username, userId) => {
     const expiresInDays = 1;
     Cookies.set("token", token, { expires: expiresInDays });
+    Cookies.set("role", role, { expires: expiresInDays });
     set({
       token,
       isLoggedIn: true,
@@ -83,6 +84,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logOut: () => {
     Cookies.remove("token");
+    Cookies.remove("role");
     set({
       token: "",
       isLoggedIn: false,
