@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Github } from "lucide-react";
+import HiveLogo from "@/assets/Hive_white.png";
+import ShurikenLogo from "@/assets/ShurikenLogo.png";
 
 const Footer = () => {
   const footerLinks = {
@@ -22,7 +24,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-brand-blue-dark text-white flex justify-around px-20 ">
+    <footer className="bg-brand-blue-dark text-white flex justify-around px-7 lg:px-20 ">
       <div className="">
         {/* Main Footer Content */}
         <div className="py-12">
@@ -35,7 +37,7 @@ const Footer = () => {
               viewport={{ once: true }}
               className="lg:col-span-2"
             >
-              <h2 className="text-2xl font-bold mb-4">Hive</h2>
+              <img src={HiveLogo} alt="Hive Logo" className="h-10 mb-4" />
               <p className="text-blue-200 mb-6 leading-relaxed">
                 Empowering careers and connecting talent with opportunity. Your
                 journey to professional success starts here.
@@ -101,7 +103,11 @@ const Footer = () => {
           className="py-6 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 text-sm text-blue-200"
         >
           <div>© 2025 Hive. All rights reserved.</div>
-          <div>💙 Made by Shuriken</div>
+          <div className="flex items-center gap-1">
+            <span>Made by</span>
+          <img src={ShurikenLogo} alt="Shuriken Logo" className="h-5" />
+            <span> Shuriken</span>
+          </div>
         </motion.div>
       </div>
     </footer>

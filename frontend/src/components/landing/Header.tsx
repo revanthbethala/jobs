@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Menu, User, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-
+import HiveWhite from "@/assets/Hive_white.png";
+import HiveBlue from "@/assets/Hive_B.png";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,6 +13,7 @@ const Header = () => {
   const setCurrentStep = useAuthStore((state) => state.setCurrentStep);
 
   const heroHeight = 600;
+
   const handleSignupClick = () => {
     setCurrentStep("signup");
     navigate("/auth");
@@ -24,40 +26,30 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > heroHeight) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > heroHeight);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
   const navItems = [
     { name: "Home", href: "#home" },
     { name: "About", href: "#about" },
     { name: "Services", href: "#services" },
     { name: "OurPath", href: "#how-it-works" },
-    // { name: "Jobs", href: "#services" },
   ];
 
   const menuVariants: Variants = {
     closed: {
       opacity: 0,
       height: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
     open: {
       opacity: 1,
       height: "auto",
-      transition: {
-        duration: 0.3,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
@@ -76,20 +68,21 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+          {/* Logo with Image */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             className="flex-shrink-0"
           >
-            <h1
-              className={`text-2xl font-bold ${
-                isScrolled ? "text-gray-900" : "text-white"
-              }`}
-            >
-              <a href="#home">Hive</a>
-            </h1>
+            <a href="#home" className="flex items-center">
+              <img
+                loading="lazy"
+                src={isScrolled ? HiveBlue : HiveWhite}
+                alt="Hive Logo"
+                className="h-12 w-auto"
+              />
+            </a>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -98,8 +91,7 @@ const Header = () => {
               <a
                 href={item.href}
                 key={item.name}
-                // to={item.href}
-                className={` ${
+                className={`${
                   isScrolled
                     ? "text-gray-900 hover:text-brand-blue-light"
                     : "text-white hover:text-brand-blue-light"
@@ -142,7 +134,7 @@ const Header = () => {
 
           {/* Mobile Menu Button */}
           <motion.button
-            className={`md:hidden p-2  ${
+            className={`md:hidden p-2 ${
               isScrolled ? "text-black" : "text-white"
             }`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -158,7 +150,6 @@ const Header = () => {
           </motion.button>
         </div>
 
-        {/* Mobile Menu */}
         {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
@@ -185,17 +176,16 @@ const Header = () => {
                         ? "text-gray-900 hover:text-brand-blue-light"
                         : "text-white/90 hover:text-white"
                     }`}
-                    // onClick={() => setIsMenuOpen(false)}
                   >
                     {item.name}
                   </motion.a>
                 ))}
-                <div className="pt-4  flex gap-3 items-center">
+                <div className="pt-4 flex gap-3 items-center">
                   <Button
                     className={`w-full bg-white/20 hover:bg-white/10 ${
                       isScrolled
-                        ? "text-gray-900  hover:border hover:border-gray-200"
-                        : "text-white "
+                        ? "text-gray-900 hover:border hover:border-gray-200"
+                        : "text-white"
                     }`}
                   >
                     <NavLink to="/auth">Sign In</NavLink>

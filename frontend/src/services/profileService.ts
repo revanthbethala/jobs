@@ -22,7 +22,6 @@ export const getProfile = async () => {
   }
 };
 
-// ✅ Update user profile
 export const updateProfile = async (data) => {
   try {
     const token = useAuthStore.getState().token;
@@ -36,39 +35,6 @@ export const updateProfile = async (data) => {
     return response.data;
   } catch (error) {
     console.error("Error updating profile:", error);
-    throw error;
-  }
-};
-
-// ✅ Upload file (resume or profile picture)
-export const uploadFile = async (
-  file: File,
-  type: "resume" | "profilePicture"
-): Promise<string> => {
-  try {
-    const token = useAuthStore.getState().token;
-    if (!token) throw new Error("No authentication token");
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("type", type);
-
-    const response = await fetch(`${API_BASE}/upload`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to upload file");
-    }
-
-    const result = await response.json();
-    return result.url; // backend must return `url` or update accordingly
-  } catch (error) {
-    console.error("Error uploading file:", error);
     throw error;
   }
 };

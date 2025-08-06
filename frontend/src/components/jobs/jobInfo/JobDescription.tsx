@@ -72,27 +72,29 @@ export function JobDescription({
           </div>
         </CardContent>
       </Card>
-      <Card className="border-0 shadow-lg">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl">Service Agreement</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="collapsed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <p className="text-gray-700 leading-relaxed">
-                  {serviceAgreement}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </CardContent>
-      </Card>
+      {serviceAgreement && (
+        <Card className="border-0 shadow-lg">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl">Service Agreement</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key="collapsed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <p className="text-gray-700 leading-relaxed">
+                    {serviceAgreement}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </motion.div>
   );
 }
