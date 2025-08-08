@@ -71,7 +71,7 @@ export interface JobFormData {
   companyName: string;
   cptType: string;
   serviceAgreement?: string;
-  numberOfVacancies?: string;
+  noOfVacancies?: string;
   companyWebsite: string;
   companyLogo?: File | null;
   companyEmail: string;

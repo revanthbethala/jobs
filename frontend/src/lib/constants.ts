@@ -80,6 +80,11 @@ export const JOB_ROLE_OPTIONS = [
   { value: "ai-engineer", label: "AI Engineer" },
 ];
 
+export const CPT_TYPES = [
+  { label: "CPT", value: "CPT" },
+  { label: "NON_CPT", value: "NON_CPT" },
+  { label: "BOTH", value: "BOTH" },
+];
 export const JOB_TYPE_OPTIONS = [
   { value: "full-time", label: "Full-Time" },
   { value: "part-time", label: "Part-Time" },
@@ -134,6 +139,7 @@ export const LOCATIONS = [
   "Visakhapatnam",
 ];
 
+export const category = ["OC", "OC-EWS", "OBC", "SC", "ST", "Others"];
 const currentYear = new Date().getFullYear();
 
 export const PASSING_YEAR_OPTIONS = Array.from(

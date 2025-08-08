@@ -145,8 +145,8 @@ const UsersTable = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Full Name</TableHead>
                       <TableHead>Username</TableHead>
+                      <TableHead>Full Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Gender</TableHead>
                       <TableHead>10th</TableHead>
@@ -188,8 +188,9 @@ const UsersTable = () => {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="hover:bg-muted transition-colors"
+                          className="hover:bg-muted transition-colors border-b border-b-gray-200"
                         >
+                          <TableCell>{user.username}</TableCell>
                           <TableCell className="capitalize">
                             {user?.firstName ? (
                               user.firstName + " " + user.lastName
@@ -197,7 +198,6 @@ const UsersTable = () => {
                               <span className="font-bold text-center">-</span>
                             )}
                           </TableCell>
-                          <TableCell>{user.username}</TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
                             <Badge variant="outline">
@@ -269,7 +269,7 @@ const UsersTable = () => {
                     className="border border-input rounded-md px-3 py-1 text-sm"
                   >
                     <option value="">{1}</option>
-                    {[5, 10, 20, 50].map((value) => (
+                    {[10, 25, 50].map((value) => (
                       <option key={value} value={value}>
                         {value}
                       </option>

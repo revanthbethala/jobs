@@ -10,6 +10,7 @@ import {
   Download,
   CheckCircle,
   BookOpen,
+  User2,
 } from "lucide-react";
 import { getProfile } from "@/services/profileService";
 import { Button } from "../ui/button";
@@ -31,8 +32,8 @@ export default function ProfileDisplay() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-sm border max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center p-8 rounded-lg shadow-sm border max-w-md">
           <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <User className="w-6 h-6 text-red-500" />
           </div>
@@ -48,8 +49,8 @@ export default function ProfileDisplay() {
   const data = userData?.user;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen ">
+      <div className="max-w-7xl mx-auto px-2">
         {/* Profile Header */}
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-8">
           <div className="px-6 py-8">
@@ -92,6 +93,7 @@ export default function ProfileDisplay() {
                   )}
                   {data.gender && (
                     <div className="flex items-center gap-2">
+                      <User2 className="w-4 h-4 text-gray-400" />
                       <span>{data.gender}</span>
                     </div>
                   )}
@@ -100,7 +102,7 @@ export default function ProfileDisplay() {
 
               {data.resume && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   className="border-gray-300 hover:bg-gray-50 text-gray-700"
                 >
                   <a

@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/authStore";
 import { User, FileText } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const navigate = useNavigate();
-
+  const { username } = useAuthStore();
   return (
     <div className="min-h-screen">
       {/* Navigation */}
@@ -17,12 +18,12 @@ export default function Profile() {
                 <User size={27} />
               </div>
               <span className="text-xl font-bold text-brand-blue-dark">
-                ProfileBuilder
+                Welcome Back, {username}
               </span>
             </div>
 
             {/* Buttons Section */}
-            <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            {/* <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Button
                 variant="outline"
                 className="flex items-center justify-center gap-2 w-full xs:w-auto"
@@ -38,7 +39,7 @@ export default function Profile() {
                 <User className="w-4 h-4" />
                 <span className="text-sm">View Profile</span>
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </nav>

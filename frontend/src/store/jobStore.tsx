@@ -48,7 +48,7 @@ const initialFormData: JobFormData = {
   companyEmail: "",
   companyPhone: "",
   serviceAgreement: "",
-  numberOfVacancies: "",
+  noOfVacancies: "",
   cptType: "BOTH",
   allowedBranches: [],
   allowedPassingYears: [],

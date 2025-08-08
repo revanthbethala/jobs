@@ -31,7 +31,9 @@ export const jobFormSchema = z.object({
     .or(z.literal("")),
   companyLogo: z.instanceof(File).optional().nullable(),
   companyEmail: z.string().email("Please enter a valid email"),
-  companyPhone: z.string().min(10, "Please enter a valid phone number"),
+  companyPhone: z
+    .string()
+    .regex(/^[6-9]\d{9}$/, "Please enter a valid phone number"),
 
   // Eligibility Criteria
   allowedBranches: z
@@ -52,7 +54,7 @@ export const jobFormSchema = z.object({
   cptType: z.enum(["CPT", "NON_CPT", "BOTH"], {
     required_error: "Please select CPT type",
   }),
-  numberOfVacancies: z.string().optional(),
+  noOfVacancies: z.string().optional(),
   serviceAgreement: z.string().optional(),
 });
 

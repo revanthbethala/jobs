@@ -37,6 +37,7 @@ import {
   JOB_SECTOR_OPTIONS,
   BRANCH_OPTIONS,
   PASSING_YEAR_OPTIONS,
+  CPT_TYPES,
 } from "@/lib/constants";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -119,7 +120,8 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
           <SelectInput
             label="Job Role"
             options={JOB_ROLE_OPTIONS}
-            registration={register("jobRole")}
+            control={control}
+            name="jobRole"
             error={errors.jobRole?.message}
             required
           />
@@ -146,14 +148,14 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <TextInput
             label="Location"
-            placeholder="e.g., New York, NY"
+            placeholder="e.g., Chennai,India"
             registration={register("location")}
             error={errors.location?.message}
             required
           />
           <TextInput
             label="Salary"
-            placeholder="e.g., $80,000 - $120,000"
+            placeholder="e.g.,8LPA-29LPA"
             registration={register("salary")}
             error={errors.salary?.message}
             required
@@ -169,12 +171,9 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
         <div className="grid md:grid-cols-2 gap-4 grid-cols-1">
           <SelectInput
             label="CPT Type"
-            options={[
-              { label: "CPT", value: "CPT" },
-              { label: "NON_CPT", value: "NON_CPT" },
-              { label: "BOTH", value: "BOTH" },
-            ]}
-            registration={register("cptType")}
+            options={CPT_TYPES}
+            name="cptType"
+            control={control}
             error={errors.cptType?.message}
             required
           />
@@ -182,8 +181,8 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
           <TextInput
             label="Number of Vacancies"
             placeholder="e.g., 10"
-            registration={register("numberOfVacancies")}
-            error={errors.numberOfVacancies?.message}
+            registration={register("noOfVacancies")}
+            error={errors.noOfVacancies?.message}
             type="number"
           />
         </div>
@@ -200,15 +199,18 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <SelectInput
             label="Job Type"
+            name="jobType"
+            control={control}
             options={JOB_TYPE_OPTIONS}
-            registration={register("jobType")}
             error={errors.jobType?.message}
             required
           />
+
           <SelectInput
             label="Job Sector"
             options={JOB_SECTOR_OPTIONS}
-            registration={register("jobSector")}
+            name="jobSector"
+            control={control}
             error={errors.jobSector?.message}
           />
         </div>
@@ -258,7 +260,7 @@ const CompanyInformationSection: React.FC<CompanyInformationSectionProps> =
           label="Company Logo"
           name="companyLogo"
           control={control}
-          previewUrl={logoUrl} // Assuming this is the base URL for your uploads
+          previewUrl={logoUrl}
           error={errors.companyLogo?.message}
           accept="image/*"
         />
@@ -274,7 +276,7 @@ const CompanyInformationSection: React.FC<CompanyInformationSectionProps> =
           />
           <TextInput
             label="Company Phone"
-            placeholder="+1 (555) 123-4567"
+            placeholder="+91 7457372873"
             registration={register("companyPhone")}
             error={errors.companyPhone?.message}
             type="tel"
@@ -382,7 +384,6 @@ const JobPostingForm = () => {
         lastDateToApply: jobData.lastDateToApply
           ? new Date(jobData.lastDateToApply)
           : undefined,
-        noOfVacancies: jobData?.numberOfVacancies,
         allowedBranches: jobData.allowedBranches || [],
         allowedPassingYears: (jobData.allowedPassingYears || []).map(String),
         skillsRequired: jobData.skillsRequired || [],
@@ -422,10 +423,9 @@ const JobPostingForm = () => {
         console.error("Error creating job posting:", error);
         toast({
           title: "Error",
-          description:
-            error instanceof Error
-              ? error.message
-              : "Failed to create job posting. Please try again.",
+          description: error
+            ? error.response.data.message
+            : "Failed to create job posting. Please try again.",
           variant: "destructive",
         });
       }

@@ -9,28 +9,29 @@ interface FileInputProps {
   error?: string;
   name: string;
   control: Control;
+  previewUrl?: string;
   accept?: string;
   className?: string;
   required?: boolean;
-  previewUrl?: string | null | undefined; // from backend
 }
 
 export const FileInput: React.FC<FileInputProps> = ({
   label,
   error,
   name,
+  previewUrl,
   control,
   accept = "image/*",
-  className,
   required = false,
-  previewUrl,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { field } = useController({ name, control });
+  const { field } = useController({
+    name,
+    control,
+    defaultValue: null,
+  });
 
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
-  const [showPreviewUrl, setShowPreviewUrl] = useState(!!previewUrl);
-  const [removedPreviewOnce, setRemovedPreviewOnce] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -38,84 +39,56 @@ export const FileInput: React.FC<FileInputProps> = ({
     };
   }, [objectUrl]);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.size <= 150 * 1024) {
-        const newUrl = URL.createObjectURL(file);
-        setObjectUrl(newUrl);
-        setShowPreviewUrl(false);
-        setRemovedPreviewOnce(true);
-        field.onChange(file);
-      } else {
-        toast({
-          title: "File too large",
-          description: "Please upload an image smaller than 150KB.",
-          variant: "destructive",
-        });
-        fileInputRef.current!.value = "";
-      }
+  const handleFileChange = (file: File) => {
+    if (file.size <= 150 * 1024) {
+      const url = URL.createObjectURL(file);
+      setObjectUrl(url);
+      field.onChange(file);
+    } else {
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 150KB.",
+        variant: "destructive",
+      });
+      fileInputRef.current!.value = "";
     }
   };
 
-  const handleRemoveFile = () => {
-    fileInputRef.current!.value = "";
-    field.onChange(null);
-
-    if (objectUrl) {
-      URL.revokeObjectURL(objectUrl);
-      setObjectUrl(null);
-    }
-
-    // If we previously removed previewUrl, don't show it again
-    if (previewUrl && !removedPreviewOnce) {
-      setShowPreviewUrl(true);
-    } else {
-      setShowPreviewUrl(false);
-    }
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) handleFileChange(file);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const file = event.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      if (file.size <= 150 * 1024) {
-        const newUrl = URL.createObjectURL(file);
-        setObjectUrl(newUrl);
-        setShowPreviewUrl(false);
-        setRemovedPreviewOnce(true);
-        field.onChange(file);
-      } else {
-        toast({
-          title: "File too large",
-          description: "Please upload an image smaller than 150KB.",
-          variant: "destructive",
-        });
-      }
-    }
+    if (file?.type.startsWith("image/")) handleFileChange(file);
   };
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   };
 
-  const currentPreview = (() => {
-    if (field.value instanceof File && objectUrl) return objectUrl;
-    if (showPreviewUrl && previewUrl) return previewUrl;
-    return null;
-  })();
+  const handleRemoveFile = () => {
+    fileInputRef.current!.value = "";
+    field.onChange(null);
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl);
+      setObjectUrl(null);
+    }
+  };
 
   return (
-    <div className={cn("space-y-2 animate-fade-in-up", className)}>
+    <div className={cn("space-y-2 animate-fade-in-up")}>
       <label className="text-sm font-medium text-foreground">
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
 
-      {previewUrl ? (
+      {objectUrl ? (
         <div className="relative w-32 h-32 rounded overflow-hidden border group">
           <img
-            src={currentPreview}
+            src={objectUrl}
             alt="Preview"
             className="w-full h-full object-cover rounded"
           />
@@ -155,7 +128,9 @@ export const FileInput: React.FC<FileInputProps> = ({
         onChange={handleFileSelect}
         className="hidden"
       />
-
+      {previewUrl && (
+        <img src={import.meta.env.VITE_BACKEND_URL + previewUrl} alt="logo" />
+      )}
       {error && (
         <p className="text-sm text-destructive animate-slide-in-right">
           {error}

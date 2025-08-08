@@ -12,6 +12,7 @@ import {
   UsersRound,
   Pencil,
   ChartColumnIcon,
+  UserRoundPen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
@@ -68,7 +69,13 @@ const SideNav = () => {
   };
 
   const navItems = [
-    { name: "Profile", path: "/profile", icon: User, roles: ["USER"] },
+    { name: "My Profile", path: "/profile", icon: User, roles: ["USER"] },
+    {
+      name: "Update Profile",
+      path: "/profile/update-profile",
+      icon: UserRoundPen,
+      roles: ["USER"],
+    },
     {
       name: "Dashboard",
       path: "/dashboard",
@@ -143,9 +150,7 @@ const SideNav = () => {
                 >
                   <div className="flex items-center  gap-4">
                     <Briefcase className="h-6 w-6 text-brand-blue-dark" />
-                    <h1 className="text-lg font-bold tracking-loose">
-                      Hive
-                    </h1>
+                    <h1 className="text-lg font-bold tracking-loose">Hive</h1>
                   </div>
                 </Link>
               </div>
@@ -176,6 +181,7 @@ const SideNav = () => {
                 .map((item) => (
                   <NavLink
                     key={item.path}
+                    end
                     to={item.path}
                     onClick={closeMobileSidebar}
                     className={({ isActive }) =>

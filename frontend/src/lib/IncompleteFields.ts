@@ -5,7 +5,7 @@ export function getIncompleteFields(user): number {
   if (!profile) return 0;
 
   for (const key in profile) {
-    if (key == "profilePic" || key == "resume" || key == "profilePic") continue;
+    if (key == "profilePic" || key == "resume" || key === "token") continue;
 
     const value = profile[key];
 
@@ -43,7 +43,6 @@ export function getIncompleteFields(user): number {
       incompleteFields.push(key);
     }
   }
-  console.log("fields", incompleteFields);
 
   return incompleteFields.length;
 }

@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  deleteJob,
-  jobsPostedByAdmin,
-} from "@/services/jobServices";
+import { deleteJob, jobsPostedByAdmin } from "@/services/jobServices";
 import {
   Table,
   TableBody,
@@ -48,6 +45,7 @@ import { Job } from "@/types/jobTypes";
 import useDebounce from "@/hooks/use-debounce";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import LoadingSpinner from "../LoadingSpinner";
 
 export default function MyJobsTable() {
   const {
@@ -103,13 +101,7 @@ export default function MyJobsTable() {
   };
 
   if (isLoading) {
-    return (
-      <div className="p-4 space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full rounded-xl" />
-        ))}
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   if (isError) {

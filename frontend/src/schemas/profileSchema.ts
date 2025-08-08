@@ -10,7 +10,9 @@ export const personalInfoSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
-  phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
+  phoneNumber: z
+    .string()
+    .regex(/^[6-9]\d{9}$/, "Please enter a valid phone number"),
   address: z.string().min(1, "Address is required"),
   fatherName: z.string().min(1, "Father's name is required"),
   motherName: z.string().min(1, "Mother's name is required"),

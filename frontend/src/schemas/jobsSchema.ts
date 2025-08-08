@@ -1,4 +1,3 @@
-import { cptEligibility } from "@/lib/constants";
 import { z } from "zod";
 
 export const interviewRoundSchema = z.object({
@@ -9,7 +8,6 @@ export const interviewRoundSchema = z.object({
 });
 
 export const jobFormSchema = z.object({
-  // Job Details
   jobTitle: z.string().min(1, "Job title is required"),
   jobDescription: z
     .string()
@@ -22,7 +20,6 @@ export const jobFormSchema = z.object({
   jobType: z.string().min(1, "Job type is required"),
   jobSector: z.string().min(1, "Job sector is required"),
   customSector: z.string().optional(),
-  // cptEligibility: z.string().min(1,"CPT Eligibility required"),
   // Company Information
   companyName: z.string().min(1, "Company name is required"),
   companyWebsite: z
@@ -53,7 +50,7 @@ export const jobFormSchema = z.object({
   cptType: z.enum(["CPT", "NON_CPT", "BOTH"], {
     required_error: "Please select CPT type",
   }),
-  numberOfVacancies: z.string().optional().nullable(),
+  noOfVacancies: z.string().optional().nullable(),
   serviceAgreement: z.string().optional().nullable(),
 });
 

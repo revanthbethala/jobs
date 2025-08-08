@@ -34,7 +34,7 @@ export const useUserFiltersStore = create<UserFiltersState>((set) => ({
   maxActiveBacklogs: undefined,
   showAllData: false,
   page: 1,
-  limit: 5,
+  limit: 10,
 
   // Set multiple filters
   setFilters: (filters) => set((state) => ({ ...state, ...filters })),
