@@ -3,7 +3,12 @@ import { z } from "zod";
 const currentYear = new Date().getFullYear();
 
 export const personalInfoSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  username: z
+    .string()
+    .regex(
+      /^[0-9]{2}KN(1A|5A)[0-9]{2}[A-Z0-9]{2}$/i,
+      "Please enter a valid Id"
+    ),
   isCPT: z.boolean(),
   email: z.string().email("Invalid email address"),
   gender: z.string().min(1, "Gender is required"),
