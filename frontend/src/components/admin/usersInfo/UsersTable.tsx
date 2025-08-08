@@ -121,40 +121,53 @@ const UsersTable = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      // className="w-screen"
     >
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="space-y-3">
-              <h2>Users Information</h2>
-              <Badge variant="outline">{totalUsers} user(s) found</Badge>
+          <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-2 sm:space-y-3">
+              <h2 className="text-lg sm:text-xl font-semibold">
+                Users Information
+              </h2>
+              <Badge variant="outline" className="text-xs sm:text-sm">
+                {totalUsers} user(s) found
+              </Badge>
             </div>
-            <div>
-              <Button onClick={handleExport}>Export to Excel</Button>
-            </div>
+            <Button
+              size="sm"
+              onClick={handleExport}
+              className="w-full sm:w-auto"
+            >
+              Export to Excel
+            </Button>
           </CardTitle>
         </CardHeader>
+
         <CardContent>
           {users.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-muted-foreground text-sm sm:text-base">
               No users found matching the current filters.
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <Table>
+              <div className="overflow-x-auto rounded-md border border-gray-200">
+                <Table className="min-w-[1000px] text-sm">
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="bg-muted">
                       <TableHead>Username</TableHead>
                       <TableHead>Full Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Gender</TableHead>
                       <TableHead>10th</TableHead>
-                      <TableHead>12th/Diploma </TableHead>
+                      <TableHead>12th/Diploma</TableHead>
                       <TableHead>B.Tech</TableHead>
                       <TableHead>Branch</TableHead>
                       <TableHead>Passed Year</TableHead>
                       <TableHead>Active Backlogs</TableHead>
+                      <TableHead>Father Name</TableHead>
+                      <TableHead>Mother Name</TableHead>
+                      <TableHead>City</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -163,12 +176,10 @@ const UsersTable = () => {
                         user.education.find(
                           (edu: Education) => edu.educationalLevel === level
                         );
-
                       const tenth = getEdu("10th");
                       const interOrDiploma =
                         getEdu("12th") || getEdu("Diploma");
                       const btech = getEdu("B.Tech");
-
                       const totalBacklogs = user.education.reduce(
                         (sum: number, edu: Education) =>
                           sum + (edu.noOfActiveBacklogs || 0),
@@ -193,7 +204,7 @@ const UsersTable = () => {
                           <TableCell>{user.username}</TableCell>
                           <TableCell className="capitalize">
                             {user?.firstName ? (
-                              user.firstName + " " + user.lastName
+                              `${user.firstName} ${user.lastName}`
                             ) : (
                               <span className="font-bold text-center">-</span>
                             )}
@@ -206,22 +217,11 @@ const UsersTable = () => {
                               )}
                             </Badge>
                           </TableCell>
+                          <TableCell>{getPercentBadge(tenth)}</TableCell>
                           <TableCell>
-                            {getPercentBadge(tenth) ?? (
-                              <span className="text-muted-foreground">-</span>
-                            )}
+                            {getPercentBadge(interOrDiploma)}
                           </TableCell>
-                          <TableCell>
-                            {getPercentBadge(interOrDiploma) ?? (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {getPercentBadge(btech) ?? (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </TableCell>
-
+                          <TableCell>{getPercentBadge(btech)}</TableCell>
                           <TableCell>
                             {btech?.specialization ?? (
                               <span className="text-muted-foreground">-</span>
@@ -241,6 +241,9 @@ const UsersTable = () => {
                               {totalBacklogs}
                             </Badge>
                           </TableCell>
+                          <TableCell>{user.fatherName}</TableCell>
+                          <TableCell>{user.motherName}</TableCell>
+                          <TableCell>{user.city}</TableCell>
                         </motion.tr>
                       );
                     })}
@@ -249,13 +252,12 @@ const UsersTable = () => {
               </div>
 
               {/* Pagination Controls */}
-
-              <div className="mt-3">
+              <div className="mt-4 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
                 {/* Rows Per Page */}
-                <div className="flex items-center gap-2 pt-3">
+                <div className="flex items-center gap-2">
                   <label
                     htmlFor="rows-per-page"
-                    className="text-sm text-gray-600 "
+                    className="text-sm text-gray-600 whitespace-nowrap"
                   >
                     Rows per page:
                   </label>
@@ -268,8 +270,7 @@ const UsersTable = () => {
                     }}
                     className="border border-input rounded-md px-3 py-1 text-sm"
                   >
-                    <option value="">{1}</option>
-                    {[10, 25, 50].map((value) => (
+                    {[5, 10, 25, 50].map((value) => (
                       <option key={value} value={value}>
                         {value}
                       </option>
@@ -278,7 +279,7 @@ const UsersTable = () => {
                 </div>
 
                 <Pagination>
-                  <PaginationContent className="gap-2">
+                  <PaginationContent className="gap-1">
                     <PaginationItem>
                       <PaginationPrevious
                         onClick={() => {
@@ -290,9 +291,17 @@ const UsersTable = () => {
                       />
                     </PaginationItem>
 
-                    {[1, 2, 3].map((p) =>
-                      p <= totalPages ? (
-                        <PaginationItem key={p}>
+                    {/* Only render surrounding pages */}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(
+                        (p) =>
+                          Math.abs(p - page) <= 2 || p === 1 || p === totalPages
+                      )
+                      .map((p, index, arr) => (
+                        <PaginationItem
+                          key={p}
+                          className="flex gap-1 items-center"
+                        >
                           <PaginationLink
                             isActive={page === p}
                             onClick={() => setPage(p)}
@@ -300,46 +309,11 @@ const UsersTable = () => {
                           >
                             {p}
                           </PaginationLink>
+                          {index < arr.length - 1 && arr[index + 1] - p > 1 && (
+                            <PaginationEllipsis />
+                          )}
                         </PaginationItem>
-                      ) : null
-                    )}
-
-                    {page > 4 && page < totalPages - 2 && (
-                      <>
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-
-                        <PaginationItem>
-                          <PaginationLink
-                            isActive
-                            onClick={() => setPage(page)}
-                            className="cursor-pointer"
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-
-                        <PaginationItem>
-                          <PaginationEllipsis />
-                        </PaginationItem>
-                      </>
-                    )}
-
-                    {totalPages > 3 &&
-                      [totalPages - 2, totalPages - 1, totalPages].map((p) =>
-                        p > 3 && p !== page ? (
-                          <PaginationItem key={p}>
-                            <PaginationLink
-                              isActive={page === p}
-                              onClick={() => setPage(p)}
-                              className="cursor-pointer"
-                            >
-                              {p}
-                            </PaginationLink>
-                          </PaginationItem>
-                        ) : null
-                      )}
+                      ))}
 
                     <PaginationItem>
                       <PaginationNext

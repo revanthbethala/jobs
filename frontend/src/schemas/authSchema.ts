@@ -19,11 +19,9 @@ export const adminLoginSchema = z.object({
 export const signupSchema = z.object({
   username: z
     .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(20, "Username must be less than 20 characters")
     .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
+      /^[0-9]{2}KN(1A|5A)[0-9]{2}[A-Z0-9]{2}$/i,
+      "Please enter a valid Id"
     ),
   email: z
     .string()

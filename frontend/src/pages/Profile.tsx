@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
-import { User, FileText } from "lucide-react";
+import { User } from "lucide-react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Profile() {

@@ -213,7 +213,10 @@ const SideNav = () => {
         </div>
 
         {/* User section and Logout */}
-        <div className="border-t border-gray-200/60 p-3 space-y-2">
+        <div
+          className="border-t border-gray-200/60 p-3 space-y-2"
+          cursor-pointer
+        >
           {/* User info - only show when not collapsed */}
           {(!isCollapsed || isMobile) && (
             <div className="flex items-center px-3 py-2 text-sm border-b border-gray-200 hover:bg-muted/95 rounded-lg">
@@ -226,7 +229,7 @@ const SideNav = () => {
                   </div>
                 </>
               ) : (
-                <>
+                <Link to="/profile" className="flex">
                   <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
                     <User className="h-4 w-4 text-gray-600" />
                   </div>
@@ -236,7 +239,7 @@ const SideNav = () => {
                     </p>
                     <p className="text-xs text-gray-500 truncate">{email}</p>
                   </div>
-                </>
+                </Link>
               )}
             </div>
           )}
