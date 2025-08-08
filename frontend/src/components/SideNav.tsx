@@ -213,10 +213,7 @@ const SideNav = () => {
         </div>
 
         {/* User section and Logout */}
-        <div
-          className="border-t border-gray-200/60 p-3 space-y-2"
-          cursor-pointer
-        >
+        <div className="border-t border-gray-200/60 p-3 space-y-2">
           {/* User info - only show when not collapsed */}
           {(!isCollapsed || isMobile) && (
             <div className="flex items-center px-3 py-2 text-sm border-b border-gray-200 hover:bg-muted/95 rounded-lg">

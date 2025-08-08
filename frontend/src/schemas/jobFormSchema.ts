@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { nan, z } from "zod";
 
 export const interviewRoundSchema = z.object({
   id: z.string(),
@@ -29,7 +29,16 @@ export const jobFormSchema = z.object({
     .url("Please enter a valid URL")
     .optional()
     .or(z.literal("")),
-  companyLogo: z.instanceof(File).optional().nullable(),
+  companyLogo: z
+    .union([
+      z.instanceof(File), // New file upload
+      z.string().url(), // Existing logo URL
+      z.literal(""), // Empty string
+      z.null(), // Null
+      z.undefined(), // Undefined
+    ])
+    .nullable()
+    .optional(),
   companyEmail: z.string().email("Please enter a valid email"),
   companyPhone: z
     .string()

@@ -84,7 +84,6 @@ export const FileInput: React.FC<FileInputProps> = ({
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
-
       <div
         className={cn(
           "grid gap-10",
@@ -139,7 +138,7 @@ export const FileInput: React.FC<FileInputProps> = ({
             <div className="w-28 h-28 rounded overflow-hidden border">
               <img
                 src={previewUrl}
-                alt="Existing Preview"
+                alt="Preview"
                 className="w-full h-full object-cover rounded"
               />
             </div>

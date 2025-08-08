@@ -33,6 +33,7 @@ export function JobOverviewCard({
               <div className="flex gap-x-5 items-center">
                 {job.companyLogo && (
                   <div className="relative shrink-0">
+                    {/* {`${import.meta.env.VITE_BACKEND_URL}${job.companyLogo}`} */}
                     <img
                       loading="lazy"
                       src={`${import.meta.env.VITE_BACKEND_URL}${

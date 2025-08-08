@@ -99,8 +99,7 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
                     className="text-xs"
                   >
                     {option.label}
-                    <button
-                      type="button"
+                    <span
                       onClick={(e) => {
                         e.stopPropagation();
                         removeOption(option.value);
@@ -108,7 +107,7 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
                       className="ml-1 hover:bg-secondary/80 rounded-full p-0.5"
                     >
                       <X className="w-3 h-3" />
-                    </button>
+                    </span>
                   </Badge>
                 ))
               )}

@@ -177,13 +177,13 @@ const JobDetailsSection: React.FC<JobDetailsSectionProps> = memo(
             error={errors.cptType?.message}
             required
           />
-
+          {console.log(errors)}
           <TextInput
             label="Number of Vacancies"
             placeholder="e.g., 10"
             registration={register("noOfVacancies")}
             error={errors.noOfVacancies?.message}
-            type="number"
+            type="text"
           />
         </div>
         <div className="grid grid-cols-1 gap-6">
@@ -381,6 +381,8 @@ const JobPostingForm = () => {
     if (jobData) {
       reset({
         ...jobData,
+        companyLogo: null,
+        noOfVacancies: String(jobData.noOfVacancies),
         lastDateToApply: jobData.lastDateToApply
           ? new Date(jobData.lastDateToApply)
           : undefined,
@@ -398,40 +400,38 @@ const JobPostingForm = () => {
   const showCustomSector = useMemo(() => jobSector === "Other", [jobSector]);
 
   // Memoized submit handler
-  const onSubmit = useCallback(
-    async (data: JobFormData) => {
-      try {
-        const formData = buildFormData(data);
-        if (jobId) {
-          const response = await updateJob(formData, jobId);
-          toast({
-            title: "Success!",
-            description: "Job has been updated successfully.",
-          });
-          refetch();
-        } else {
-          const response = await postJob(formData);
-          toast({
-            title: "Success!",
-            description: "Job posting has been created successfully.",
-          });
-        }
-        navigate("/posted-jobs");
-        reset();
-        resetForm();
-      } catch (error) {
-        console.error("Error creating job posting:", error);
+  const onSubmit = async (data: JobFormData) => {
+    try {
+      console.log("form data", data);
+      const formData = buildFormData(data);
+      if (jobId) {
+        const response = await updateJob(formData, jobId);
         toast({
-          title: "Error",
-          description: error
-            ? error.response.data.message
-            : "Failed to create job posting. Please try again.",
-          variant: "destructive",
+          title: "Success!",
+          description: "Job has been updated successfully.",
+        });
+        refetch();
+      } else {
+        const response = await postJob(formData);
+        toast({
+          title: "Success!",
+          description: "Job posting has been created successfully.",
         });
       }
-    },
-    [toast, reset, resetForm]
-  );
+      navigate("/posted-jobs");
+      reset();
+      resetForm();
+    } catch (error) {
+      console.error("Error creating job posting:", error);
+      toast({
+        title: "Error",
+        description: error
+          ? error.response.data.message
+          : "Failed to create job posting. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleReset = useCallback(() => {
     reset();
