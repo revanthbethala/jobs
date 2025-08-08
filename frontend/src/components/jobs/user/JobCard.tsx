@@ -49,6 +49,7 @@ export default function JobCard({ job, onViewDetails, index }: JobCardProps) {
                   className="rounded-lg object-cover"
                 />
               </div> */}
+
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-lg capitalize text-gray-900 truncate">
                   {job.jobTitle}

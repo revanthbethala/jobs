@@ -54,7 +54,7 @@ export const jobFormSchema = z.object({
   cptType: z.enum(["CPT", "NON_CPT", "BOTH"], {
     required_error: "Please select CPT type",
   }),
-  noOfVacancies: z.string().optional(),
+  noOfVacancies: z.number().optional().nullable(),
   serviceAgreement: z.string().optional(),
 });
 

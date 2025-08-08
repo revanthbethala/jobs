@@ -85,41 +85,67 @@ export const FileInput: React.FC<FileInputProps> = ({
         {required && <span className="text-destructive ml-1">*</span>}
       </label>
 
-      {objectUrl ? (
-        <div className="relative w-32 h-32 rounded overflow-hidden border group">
-          <img
-            src={objectUrl}
-            alt="Preview"
-            className="w-full h-full object-cover rounded"
-          />
-          <button
-            type="button"
-            onClick={handleRemoveFile}
-            className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1 hover:bg-destructive/80 transition"
-            title="Remove image"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          className={cn(
-            "w-full p-6 rounded-lg border-2 border-dashed border-input bg-background",
-            "hover:border-primary transition-colors duration-200 cursor-pointer",
-            "flex flex-col items-center justify-center text-center",
-            error && "border-destructive"
+      <div
+        className={cn(
+          "grid gap-10",
+          previewUrl
+            ? "grid-cols-2 justify-between items-center"
+            : "grid-cols-1"
+        )}
+      >
+        <div>
+          {objectUrl ? (
+            <div className="relative w-32 h-32 rounded overflow-hidden border group">
+              <img
+                src={objectUrl}
+                alt="Preview"
+                className="w-full h-full object-cover rounded"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveFile}
+                className="absolute top-1 right-1 bg-destructive text-white rounded-full p-1 hover:bg-destructive/80 transition"
+                title="Remove image"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              className={cn(
+                "w-full p-6 rounded-lg border-2 border-dashed border-input bg-background",
+                "hover:border-primary transition-colors duration-200 cursor-pointer",
+                "flex flex-col items-center justify-center text-center",
+                error && "border-destructive"
+              )}
+            >
+              <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+              <p className="text-sm font-medium text-foreground">
+                Click to upload or drag and drop
+              </p>
+              <p className="text-xs text-muted-foreground">
+                PNG, JPG up to 150KB
+              </p>
+            </div>
           )}
-        >
-          <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-          <p className="text-sm font-medium text-foreground">
-            Click to upload or drag and drop
-          </p>
-          <p className="text-xs text-muted-foreground">PNG, JPG up to 150KB</p>
         </div>
-      )}
+
+        {previewUrl && (
+          <div className="flex flex-col gap-2">
+            <span className="font-medium">Uploaded Logo</span>
+            <div className="w-28 h-28 rounded overflow-hidden border">
+              <img
+                src={previewUrl}
+                alt="Existing Preview"
+                className="w-full h-full object-cover rounded"
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       <input
         ref={fileInputRef}
@@ -128,9 +154,6 @@ export const FileInput: React.FC<FileInputProps> = ({
         onChange={handleFileSelect}
         className="hidden"
       />
-      {previewUrl && (
-        <img src={import.meta.env.VITE_BACKEND_URL + previewUrl} alt="logo" />
-      )}
       {error && (
         <p className="text-sm text-destructive animate-slide-in-right">
           {error}

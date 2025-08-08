@@ -248,7 +248,6 @@ export default function ResumeStep() {
                     className="hidden"
                   />
                   <Button
-                    disabled
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     className="border-brand-blue-light text-brand-blue-light hover:bg-brand-blue-light hover:text-white"
