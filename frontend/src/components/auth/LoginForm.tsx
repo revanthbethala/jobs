@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, User } from "lucide-react";
+import { Eye, EyeOff, Loader2, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { loginSchema, LoginFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
@@ -159,7 +159,14 @@ export const LoginForm = () => {
             disabled={isSubmitting}
             className="w-full bg-brand-blue-light hover:bg-brand-blue-dark transition-colors"
           >
-            {isSubmitting ? "Signing In..." : "Sign In"}
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="animate-spin" />
+                Signing In...
+              </span>
+            ) : (
+              "Sign In"
+            )}
           </Button>
         </motion.div>
       </form>

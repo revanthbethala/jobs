@@ -5,6 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {format} from "date-fns";
 import {
   BarChart,
   Bar,
@@ -157,7 +158,7 @@ const JobDetailsDashboard = ({ jobSummaries }: JobDetailsProps) => {
             },
             {
               title: "Posted Date",
-              value: new Date(job.postedAt).toLocaleDateString(),
+              value: format(new Date(job.postedAt), "dd/MM/yyyy"),
               icon: Calendar,
               color: "orange",
               gradient: "from-orange-500 to-orange-600",

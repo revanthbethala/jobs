@@ -1,5 +1,5 @@
 import { create } from "zustand";
-
+import { format } from "date-fns";
 interface RoundSummary {
   roundNumber: number;
   roundName: string;
@@ -56,7 +56,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   getPeakJobsDate: () => {
     const { jobSummaries } = get();
     const jobsByDate = jobSummaries.reduce((acc, job) => {
-      const date = new Date(job.postedAt).toDateString();
+      const date = format(new Date(job.postedAt), "dd/MM/yy");
       acc[date] = (acc[date] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);

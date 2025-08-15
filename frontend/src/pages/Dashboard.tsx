@@ -72,15 +72,27 @@ const Dashboard = () => {
             delay={0.2}
             color="green"
           />
-          <StatCard
-            title="Peak Day Jobs"
-            value={peakDate.count}
-            suffix=""
-            icon={Calendar}
-            delay={0.4}
-            trend={peakDate.date ? format(peakDate?.date, "yy/mm/dd") : null}
-            color="orange"
-          />
+          {peakDate.date ? (
+            <StatCard
+              title="Peak Day Jobs"
+              value={peakDate.count}
+              suffix=""
+              icon={Calendar}
+              delay={0.4}
+              trend={peakDate.date || null}
+              color="orange"
+            />
+          ) : (
+            <StatCard
+              title="Peak Day Jobs"
+              value={0}
+              suffix=""
+              icon={Calendar}
+              delay={0.4}
+              trend="No data found"
+              color="orange"
+            />
+          )}
         </div>
 
         {/* Professional Charts Section with Fixed Spacing */}
@@ -117,16 +129,16 @@ const Dashboard = () => {
           transition={{ duration: 0.6, delay: 0.8 }}
         >
           <div className="bg-white rounded-xl shadow-sm border p-4 md:p-6">
-            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center gap-2">
+            <h2
+              className={
+                jobSummaries.length > 0 &&
+                `text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center gap-2`
+              }
+            >
               <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
               Your Posted Jobs
             </h2>
-            <div
-              className={`${
-                jobSummaries.length > 0
-              } ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6':
-                null`}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {jobSummaries.length > 0 ? (
                 jobSummaries.map((job, index) => (
                   <JobsInfo

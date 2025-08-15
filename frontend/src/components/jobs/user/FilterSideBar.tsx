@@ -51,7 +51,9 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
       document.body.style.overflow = "unset";
     };
   }, [isOpen, onClose]);
-
+  const locations = jobs.map((job) => job?.location);
+  const location_data = new Set(locations);
+  const uniqueLocations = Array.from(location_data).map((location) => location);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -193,10 +195,10 @@ export default function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                     <SelectTrigger className="h-11 border-gray-300 focus:border-brand-blue-light">
                       <SelectValue placeholder="Select Location" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {jobs.map((job) => (
-                        <SelectItem className="" value={job?.location}>
-                          {job?.location}
+                    <SelectContent className="capitalize">
+                      {uniqueLocations.map((loc) => (
+                        <SelectItem className="capitalize" value={loc}>
+                          {loc}
                         </SelectItem>
                       ))}
                     </SelectContent>
