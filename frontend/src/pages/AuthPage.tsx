@@ -24,9 +24,9 @@ const AuthPage = () => {
     if (currentStep === "forgot-password") return <ForgotPassword />;
     if (currentStep === "reset-password") return <ResetPassword />;
     if (currentStep === "login-email") return <LoginEmail />;
-    if (currentStep === "admin-signup" && userType === "admin")
+    if (currentStep === "admin-signup" && (userType === "admin"||userType === "superAdmin"))
       return <AdminSignupForm />;
-    if (currentStep === "admin-accessKey" && userType === "admin")
+    if (currentStep === "admin-accessKey" &&( userType === "admin" || userType === "superAdmin"))
       return <AdminAccessKey />;
     if (currentStep === "admin-login") return <AdminLoginForm />;
     return <LoginForm />;

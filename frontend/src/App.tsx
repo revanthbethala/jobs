@@ -47,13 +47,6 @@ export default function App() {
     enabled: isLoggedIn,
   });
 
-  // useEffect(() => {
-  //   if (!token) {
-  //     logOut();
-  //     // Redirect should be handled within a layout component (not here)
-  //   }
-  // }, [token, logOut]);
-
   useEffect(() => {
     if (!isLoading && !isError && data?.user) {
       setEmail(data.user.email);
@@ -81,7 +74,7 @@ export default function App() {
           index: true,
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN", "USER"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "USER", "SUPER_ADMIN"]}>
                 <Jobs />
               </ProtectedRoute>
             </Suspense>
@@ -91,7 +84,7 @@ export default function App() {
           path: "dashboard",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <AdminDashboard />
               </ProtectedRoute>
             </Suspense>
@@ -105,7 +98,7 @@ export default function App() {
           path: "users",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <UsersInfo />
               </ProtectedRoute>
             </Suspense>
@@ -115,7 +108,7 @@ export default function App() {
           path: "jobs",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN", "USER"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "USER", "SUPER_ADMIN"]}>
                 <Jobs />
               </ProtectedRoute>
             </Suspense>
@@ -135,7 +128,7 @@ export default function App() {
           path: "post-job",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <JobPostingForm />
               </ProtectedRoute>
             </Suspense>
@@ -145,7 +138,7 @@ export default function App() {
           path: "job-rounds/:jobId",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <JobRounds />
               </ProtectedRoute>
             </Suspense>
@@ -155,7 +148,7 @@ export default function App() {
           path: "update-job/:jobId",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <JobPostingForm />
               </ProtectedRoute>
             </Suspense>
@@ -165,7 +158,7 @@ export default function App() {
           path: "posted-jobs",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <PostedJobs />
               </ProtectedRoute>
             </Suspense>
@@ -175,7 +168,7 @@ export default function App() {
           path: "applications/:jobId",
           element: (
             <Suspense fallback={<LoadingSpinner />}>
-              <ProtectedRoute allowedRoles={["ADMIN"]}>
+              <ProtectedRoute allowedRoles={["ADMIN", "SUPER_ADMIN"]}>
                 <JobApplications />
               </ProtectedRoute>
             </Suspense>

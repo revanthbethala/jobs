@@ -52,48 +52,50 @@ export const SignupForm = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-md w-full mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      {/* Header */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
       >
-        <h2 className="text-2xl font-bold text-brand-gray-dark mb-2">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-gray-dark mb-2 text-center sm:text-left">
           Create Account
         </h2>
-        <p className="text-gray-600 text-sm">
+        <p className="text-gray-600 text-sm sm:text-base text-center sm:text-left">
           Join Hive and start your career journey
         </p>
       </motion.div>
 
+      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* College ID */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <Label htmlFor="username" className="text-brand-gray-dark">
-            CollegeId
+            College ID
           </Label>
           <div className="relative mt-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <User className="h-5 w-5 text-gray-400" />
-            </div>
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               id="username"
               type="text"
-              placeholder="Enter your CollegeId"
-              className="pl-10 border-gray-300 focus:border-brand-blue-light uppercase focus:ring-brand-blue-light"
+              placeholder="Enter your College ID"
+              className="pl-10 border-gray-300 focus:border-brand-blue-light uppercase focus:ring-brand-blue-light text-sm sm:text-base"
               {...register("username")}
             />
           </div>
           {errors.username && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="mt-1 text-xs sm:text-sm text-red-600">
               {errors.username.message}
             </p>
           )}
         </motion.div>
 
+        {/* Email */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,22 +105,23 @@ export const SignupForm = () => {
             Email Address
           </Label>
           <div className="relative mt-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Mail className="h-5 w-5 text-gray-400" />
-            </div>
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               id="email"
               type="email"
               placeholder="Enter your email"
-              className="pl-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
+              className="pl-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light text-sm sm:text-base"
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            <p className="mt-1 text-xs sm:text-sm text-red-600">
+              {errors.email.message}
+            </p>
           )}
         </motion.div>
 
+        {/* Password */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -132,32 +135,33 @@ export const SignupForm = () => {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Create a strong password"
-              className="pr-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light"
+              className="pr-10 border-gray-300 focus:border-brand-blue-light focus:ring-brand-blue-light text-sm sm:text-base"
               {...register("password")}
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-5 w-5" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-5 w-5" />
               )}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-sm text-red-600">
+            <p className="mt-1 text-xs sm:text-sm text-red-600">
               {errors.password.message}
             </p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs sm:text-sm text-gray-500">
             Must be at least 8 characters and contain uppercase, lowercase, and
-            number
+            a number.
           </p>
         </motion.div>
 
+        {/* Submit Button */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -166,20 +170,21 @@ export const SignupForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-brand-blue-light hover:bg-brand-blue-dark transition-colors"
+            className="w-full bg-brand-blue-light hover:bg-brand-blue-dark transition-colors text-sm sm:text-base"
           >
             {isSubmitting ? "Creating Account..." : "Create Account"}
           </Button>
         </motion.div>
       </form>
 
+      {/* Footer */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
         className="text-center"
       >
-        <p className="text-sm text-gray-600">
+        <p className="text-xs sm:text-sm text-gray-600">
           Already have an account?{" "}
           <button
             onClick={() => setCurrentStep("login")}

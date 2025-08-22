@@ -43,6 +43,7 @@ export const AdminLoginForm = () => {
       const { username, email, id } = res.user;
       loginToken(token, role, email, username, id);
       navigate("/");
+      console.log(res);
     } catch (err) {
       if (err.response.status == 403) {
         toast({

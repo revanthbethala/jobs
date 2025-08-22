@@ -8,7 +8,7 @@ type ProtectedRouteProps = {
 
 function ProtectedRoute({
   children,
-  allowedRoles = ["USER", "ADMIN"],
+  allowedRoles = ["USER", "ADMIN", "SUPER_ADMIN"],
 }: ProtectedRouteProps) {
   const { token, isLoggedIn, role } = useAuthStore();
   const location = useLocation();

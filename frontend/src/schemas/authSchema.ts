@@ -36,6 +36,21 @@ export const signupSchema = z.object({
     ),
 });
 
+export const adminSignupSchema = z.object({
+  username: z.string().min(3, "Username is required"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      "Password must contain at least one lowercase letter, one uppercase letter, and one number"
+    ),
+});
+
 export const otpSchema = z.object({
   otp: z
     .string()
@@ -73,6 +88,7 @@ export const resetPasswordSchema = z
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type AdminLoginFormData = z.infer<typeof adminLoginSchema>;
 export type SignupFormData = z.infer<typeof signupSchema>;
+export type AdminSignupFormData = z.infer<typeof adminSignupSchema>;
 export type OtpFormData = z.infer<typeof otpSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;

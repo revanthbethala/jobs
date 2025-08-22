@@ -6,17 +6,14 @@ import { ArrowLeft, CloudCog, Mail, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { otpSchema, OtpFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { otpVerification } from "@/services/authService";
-import { useNavigate } from "react-router-dom";
 
 export const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [timer, setTimer] = useState(30);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { email, setCurrentStep } = useAuthStore();
+  const { email, setCurrentStep, userType } = useAuthStore();
   const { toast } = useToast();
   const {
     handleSubmit,
@@ -85,7 +82,7 @@ export const OtpVerification = () => {
           description:
             "Your account has been successfully verified.Please Login to Continue",
         });
-        setCurrentStep("login");
+        setCurrentStep(userType === "user" ? "login" : "admin-login");
       } else if (res === 400 || res === 401) {
         setOtp(["", "", "", "", "", ""]);
         setValue("otp", "");

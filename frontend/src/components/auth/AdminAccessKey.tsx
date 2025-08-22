@@ -18,7 +18,7 @@ type AccessKeyForm = z.infer<typeof accessKeySchema>;
 export const AdminAccessKey = () => {
   const { setCurrentStep } = useAuthStore();
   const { toast } = useToast();
-  const { username, password, email } = useAuthStore();
+  const { username, password, email, userType } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -34,7 +34,7 @@ export const AdminAccessKey = () => {
         username,
         password,
         email,
-        role: "ADMIN",
+        role: userType === "superAdmin" ? "SUPER_ADMIN" : "ADMIN",
       };
       const res = await userSignUp(updated_data);
       console.log(res);

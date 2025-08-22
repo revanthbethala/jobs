@@ -9,13 +9,11 @@ import { useJobStore } from "@/store/jobStore";
 import { useQuery } from "@tanstack/react-query";
 import { getAllJobs } from "@/services/jobServices";
 import JobDetails from "@/components/jobs/user/JobDetails";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Jobs() {
-  const { filteredJobs, selectedJob, jobs, setJobs, setSelectedJob } =
-    useJobStore();
-
+  const { filteredJobs, setJobs, setSelectedJob } = useJobStore();
   const [filtersOpen, setFiltersOpen] = useState(false);
-
   const { isLoading, error, data } = useQuery({
     queryKey: ["jobFetch"],
     queryFn: getAllJobs,

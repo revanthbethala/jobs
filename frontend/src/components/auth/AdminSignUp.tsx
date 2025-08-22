@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Mail, User } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
-import { signupSchema, SignupFormData } from "@/schemas/authSchema";
+import { signupSchema,adminSignupSchema, AdminSignupFormData } from "@/schemas/authSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { userSignUp } from "@/services/authService";
 
 export const AdminSignupForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,11 +19,11 @@ export const AdminSignupForm = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
+  } = useForm<AdminSignupFormData>({
+    resolver: zodResolver(adminSignupSchema),
   });
 
-  const onSubmit = async (data: SignupFormData) => {
+  const onSubmit = async (data: AdminSignupFormData) => {
     try {
       setEmail(data.email);
       setUsername(data.username);
@@ -42,23 +41,24 @@ export const AdminSignupForm = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
+        className="text-center sm:text-left"
       >
-        <h2 className="text-2xl font-bold text-brand-gray-dark mb-2">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-gray-dark mb-2">
           Admin Registration
         </h2>
-        <p className="text-gray-600 text-sm">
+        <p className="text-gray-600 text-sm sm:text-base">
           Register to manage your institution's Hive portal
         </p>
       </motion.div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
         {/* Admin ID */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -69,17 +69,17 @@ export const AdminSignupForm = () => {
             Admin ID
           </Label>
           <div className="relative mt-1">
-            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               id="username"
               type="text"
               placeholder="Enter your Admin ID"
-              className="pl-10"
+              className="pl-10 text-sm sm:text-base"
               {...register("username")}
             />
           </div>
           {errors.username && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-xs sm:text-sm text-red-600 mt-1">
               {errors.username.message}
             </p>
           )}
@@ -95,17 +95,19 @@ export const AdminSignupForm = () => {
             Email Address
           </Label>
           <div className="relative mt-1">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               id="email"
               type="email"
               placeholder="admin@yourcollege.edu"
-              className="pl-10"
+              className="pl-10 text-sm sm:text-base"
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="text-sm text-red-600 mt-1">{errors.email.message}</p>
+            <p className="text-xs sm:text-sm text-red-600 mt-1">
+              {errors.email.message}
+            </p>
           )}
         </motion.div>
 
@@ -123,13 +125,13 @@ export const AdminSignupForm = () => {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Create a secure password"
-              className="pr-10"
+              className="pr-10 text-sm sm:text-base"
               {...register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
             >
               {showPassword ? (
                 <EyeOff className="h-5 w-5" />
@@ -139,13 +141,13 @@ export const AdminSignupForm = () => {
             </button>
           </div>
           {errors.password && (
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-xs sm:text-sm text-red-600 mt-1">
               {errors.password.message}
             </p>
           )}
-          <p className="text-xs text-gray-500 mt-1">
-            Must be atleast 8 characters that includes a uppercase, lowercase,
-            and a number.
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Must be at least 8 characters including uppercase, lowercase, and a
+            number.
           </p>
         </motion.div>
 
@@ -158,11 +160,12 @@ export const AdminSignupForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-brand-blue-light hover:bg-brand-blue-dark"
+            className="w-full bg-brand-blue-light hover:bg-brand-blue-dark text-sm sm:text-base py-2 sm:py-3"
           >
             {isSubmitting ? (
               <span className="flex gap-2 items-center justify-center">
-                <Loader2 className="animate-spin" /> Registering...
+                <Loader2 className="animate-spin h-4 w-4 sm:h-5 sm:w-5" />{" "}
+                Registering...
               </span>
             ) : (
               "Register as Admin"
@@ -176,9 +179,9 @@ export const AdminSignupForm = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="text-center"
+        className="text-center mt-6"
       >
-        <p className="text-sm text-gray-600">
+        <p className="text-xs sm:text-sm text-gray-600">
           Already have an admin account?{" "}
           <button
             onClick={() => setCurrentStep("admin-login")}

@@ -80,25 +80,25 @@ const SideNav = () => {
       name: "Dashboard",
       path: "/dashboard",
       icon: ChartColumnIcon,
-      roles: ["ADMIN"],
+      roles: ["ADMIN", "SUPER_ADMIN"],
     },
     {
       name: "Users",
       path: "/users",
       icon: UsersRound,
-      roles: ["ADMIN"],
+      roles: ["ADMIN", "SUPER_ADMIN"],
     },
     {
       name: "All Jobs",
       path: "/jobs",
       icon: Briefcase,
-      roles: ["USER", "ADMIN"],
+      roles: ["USER", "ADMIN", "SUPER_ADMIN"],
     },
     {
       name: "My Job Postings",
       path: "/posted-jobs",
       icon: Briefcase,
-      roles: ["ADMIN"],
+      roles: ["ADMIN", "SUPER_ADMIN"],
     },
     {
       name: "Applied Jobs",
@@ -110,7 +110,7 @@ const SideNav = () => {
       name: "Post a Job",
       path: "/post-job",
       icon: Pencil,
-      roles: ["ADMIN"],
+      roles: ["ADMIN", "SUPER_ADMIN"],
     },
   ];
 
