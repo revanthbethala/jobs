@@ -24,7 +24,7 @@ export const UserTypeToggle = () => {
         initial={false}
         animate={{
           x: `${typeIndex * 100}%`, // move highlight
-          width: "33.3333%", // one-third of container
+          width: "50%", // one-third of container
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       />
@@ -58,7 +58,7 @@ export const UserTypeToggle = () => {
       </button>
 
       {/* Super Admin */}
-      <button
+      {/* <button
         onClick={() => handleToggle("superAdmin")}
         className={`relative z-10 flex-1 py-2 sm:py-3 px-2 sm:px-4 
           text-xs sm:text-sm md:text-base font-medium rounded-lg transition-colors duration-200
@@ -69,7 +69,7 @@ export const UserTypeToggle = () => {
           }`}
       >
         Super Admin
-      </button>
+      </button> */}
     </div>
   );
 };
